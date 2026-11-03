@@ -1,0 +1,13 @@
+__pycache__/
+cache/
+evidence/
+*.pdf
+*.html
+v*_*.txt
+e2b_*.py
+price.py
+out/product_lines.csv
+out/interval_table.csv
+out/baseline_*
+out/engine/
+.DS_Store

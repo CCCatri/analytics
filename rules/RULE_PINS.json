@@ -1,0 +1,60 @@
+{
+ "2020": {
+  "address": "https://operations.nfl.com/media/4693/2020-nfl-rulebook.pdf",
+  "address_answer": "404 when read 2026-10-26",
+  "source": "https://web.archive.org/web/20260324004108id_/https://operations.nfl.com/media/4693/2020-nfl-rulebook.pdf",
+  "archive_timestamp": "20260324004108",
+  "file": "rules/nfl_rulebook_2020.pdf",
+  "sha": "463cb79d457a",
+  "bytes": 2390574,
+  "pages": 94
+ },
+ "2021": {
+  "address": "https://operations.nfl.com/media/5427/2021-nfl-rulebook.pdf",
+  "address_answer": "404 when read 2026-10-26",
+  "source": "https://web.archive.org/web/20241215080310id_/https://operations.nfl.com/media/5427/2021-nfl-rulebook.pdf",
+  "archive_timestamp": "20241215080310",
+  "file": "rules/nfl_rulebook_2021.pdf",
+  "sha": "02548455a418",
+  "bytes": 2908747,
+  "pages": 95
+ },
+ "2023": {
+  "address": "https://operations.nfl.com/media/gsaaatbb/2023-rulebook.pdf",
+  "address_answer": "404 when read 2026-10-26",
+  "source": "https://web.archive.org/web/20250222065408id_/https://operations.nfl.com/media/gsaaatbb/2023-rulebook.pdf",
+  "archive_timestamp": "20250222065408",
+  "file": "rules/nfl_rulebook_2023.pdf",
+  "sha": "52c69f98b2b9",
+  "bytes": 4840510,
+  "pages": 232
+ },
+ "2024": {
+  "address": "https://operations.nfl.com/media/24emxacq/2024-nfl-rulebook.pdf",
+  "address_answer": "404 when read 2026-10-26",
+  "source": "https://web.archive.org/web/20260508203618id_/https://operations.nfl.com/media/24emxacq/2024-nfl-rulebook.pdf",
+  "archive_timestamp": "20260508203618",
+  "file": "rules/nfl_rulebook_2024.pdf",
+  "sha": "ce6429bd15f6",
+  "bytes": 2627752,
+  "pages": 86
+ },
+ "2025": {
+  "address": "https://edge-operations.nfl.com/the-rules/nfl-rulebook/",
+  "address_answer": "forwards to the 2026 rulebook page when read 2026-10-26",
+  "source": "https://web.archive.org/web/20260515105154id_/https://edge-operations.nfl.com/the-rules/nfl-rulebook/",
+  "archive_timestamp": "20260515105154",
+  "file": "rules/nfl_rulebook_2025.html",
+  "sha": "7a519a0aa0f0",
+  "bytes": 537310,
+  "pages": null
+ },
+ "2026": {
+  "address": "on disk",
+  "file": "rules/nfl_rulebook_2026.pdf",
+  "sha": "144cec5bffd2",
+  "bytes": 3844147,
+  "pages": 91,
+  "note": "pinned only; no season cites it (v4 b)"
+ }
+}
