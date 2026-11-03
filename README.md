@@ -27,7 +27,7 @@ Progress is counted as marks: 7 levels, 4 marks each, 28 in all; **earned: 1** (
 
 **The standing rule, and the incident that made it.** Every check also runs on the record's own games, and its failure rate there prints before its pass on the engine counts, beside its planted fault. It came from one defect: the clock checks read a NumPy true/false that Python never treats as true or false; 15,773 plays and 7,279 foul rows were classed wrong before the check was run on real games and failed 4,982 of 88,023 stretches it had been allowed to fail 0 of. Fixed once; every result read under the defect was kept as history and excluded from measurement; a plant added that a NumPy input at a boundary must fail. It came back once (Oct 31, a read's own code) and was caught by the same rule.
 
-**Banned as inputs:** market lines of any kind, and nflfastR's own model outputs fit on all seasons. One season (2022) is never read by any fit.
+**Banned as inputs:** market lines of any kind, and nflfastR's own model outputs fit on all seasons. One season (2022) is never read by any fit, and it certifies nothing: earlier iterations used it as a hold-out, and their record was deleted 2026-10-26, so its access history cannot be shown (targets/E1_TARGETS.md, 2c). Certification moves to 2026 games still to be played, each forecast written before kickoff; forecasts saved so far: 0.
 
 ## Known defects, read from the code on Nov 3
 
