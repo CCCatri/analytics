@@ -22,7 +22,7 @@ Slices add up exactly; each number carries its range (2SE); each "because" names
 2. Retire the hand checks behind the commit instrument (it runs beside them; 86 of 86 agree).
 3. L1's sentence in product, with its range.
 4. Then L2 to L6 in order, each MAPPED → MEASURED → IN PRODUCT → SCORED, one term at a time, each given the level above as it happened.
-5. Certification on 2026 games still to be played: each forecast written before kickoff, stamped, scored after. 2022 certifies nothing (its earlier access history was deleted 2026-10-26). Forecasts saved so far: 0.
+5. Certification on 2026 games still to be played: each forecast written before kickoff, stamped, scored after. 2022 certifies nothing: earlier iterations tested against it, their record was deleted 2026-10-26, and deleting that record does not undo what those tests contributed to later design. This is a plan until forecasts and outcomes exist; forecasts saved so far: 0.
 
 ## Hypotheses carried, not yet measured
 
