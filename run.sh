@@ -26,4 +26,4 @@ print("  plays", round(r["plays"], 2), "possessions", round(r["possessions"], 2)
 print("  decision:", r["line"].split("|")[2].strip())
 PY
 stage "5. record checks and the engine (need the nflverse raw files; see README)"
-if [[ -d data/raw ]]; then python3 product/check_possessions.py && python3 product/check_downs.py && python3 product/engine.py; else echo "SKIPPED: data/raw absent"; fi
+if [[ -d data/raw ]]; then python3 product/check_possessions.py && python3 product/check_clock.py && python3 product/check_downs.py && PYTHONPATH=product python3 -c "import sys, engine; engine.alone_main(sys.argv[1:])" out/engine out/engine_alone; else echo "SKIPPED: data/raw absent"; fi

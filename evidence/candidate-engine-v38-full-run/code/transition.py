@@ -3,21 +3,21 @@ Product code. The record's adapter (the rebuild of the record's states) and the 
 attributes (its row's columns), the engine its generated ones (its draws); neither computes the resulting state itself. A part whose inputs are missing
 comes back UNKNOWN with its reason, never filled.
 Landed from chain e2b_v17_1725d9c82df1's shared library (lib_trans) as 96229f766489; tb_rules takes the Rule 11 Section 6 spots as an argument.
-the engine-vs-record stage v18 c adds one case: a foul on a play that stands (stand(), the event's 'foul_stand'): the play's result kept and the foul enforced on it, by the
+E2b v18 c adds one case: a foul on a play that stands (stand(), the event's 'foul_stand'): the play's result kept and the foul enforced on it, by the
 family rules.py's X2 lists name (rules.py 3d9b5a3b1985, each list citing its article) and the season's Dead Ball Foul article (rb: 'the down counts',
 'a taunting foul that occurs at any time'), from the row's own columns (yards_gained, penalty_yards, penalty_team, first_down_penalty) and the spot its
 text says the foul was enforced at; where those do not give a part, the parts are UNKNOWN with the reason. Every other answer is 96229f766489's.
-the engine-vs-record stage v19 part 2: stand() reads the defense's foul with no award by rules.py's Item 5 Exceptions (DEF_NEXT the next down, DEF_SAME the same down); and the
+E2b v19 part 2: stand() reads the defense's foul with no award by rules.py's Item 5 Exceptions (DEF_NEXT the next down, DEF_SAME the same down); and the
 yards of a foul are computed here, by its article, from the spot it is enforced at (foul_yards: the book's distance, half the distance to the
 offender's goal where the book sets it; spot_foul_yards: pass interference by the defense, a spot foul), for the engine and the record check alike.
-the engine-vs-record stage v19 r: a distance foul whose enforcement would carry the ball to or past the fouling team's goal line is placed half the distance from the
+E2b v19 r: a distance foul whose enforcement would carry the ball to or past the fouling team's goal line is placed half the distance from the
 enforcement spot to that goal (goal_half: the book's half-the-distance article, printed by line in each chain), in after_one and stand() alike, never
 UNKNOWN; pass interference by the defense takes the foul's depth (the record's penalty_yards on a wiped row) and, in the end zone, the 1-yard line or half
 the distance from the previous spot, whichever is more beneficial (the season's book, printed by line).
-the engine-vs-record stage v19 s, t: a fraction of a yard is a spot (s1, t1: kept exactly however many times half the distance halves it, never rounded; the engine writes the record's columns in the record's marking); the offense's
+E2b v19 s, t: a fraction of a yard is a spot (s1, t1: kept exactly however many times half the distance halves it, never rounded; the engine writes the record's columns in the record's marking); the offense's
 unnecessary roughness on a play that stands, enforced at the play's end (the succeeding spot), is a dead ball foul by the season's Dead Ball Foul article:
 'enforced from the succeeding spot, and the down counts' (s3: OFF_DEAD_BOOK; a play whose result stands carries no accepted live-ball foul by the offense).
-Its known-right cases (FIXTURES, each true by the article it names, built by hand) and its injected_faults (PLANTS, each must fail a case) live here;
+Its known-right cases (FIXTURES, each true by the article it names, built by hand) and its plants (PLANTS, each must fail a case) live here;
 test_transition.py runs them and proves this file byte-identical in its answers to the chain's copy."""
 import math, re
 import pandas as pd
@@ -384,7 +384,7 @@ FIXTURES = [
      poss_after="BBB"), _RB, ("BBB", 1, 10, 62.0, False, ())),
     ("7-3-2a a turnover on downs stands whoever recovers a fumble on the play", _S0(4, 5, 40), dict(kind="snap", gain=2, poss_after="AAA"), _RB, ("BBB", 1, 10, 62, False, ())),
     # v18 c: a foul on a play that stands
-    ("7-3-1(b) the defense's report mask after a 6-yard run, 1st and 10 at the 70: 15 yards from the end, a first down", _S0(1, 10, 70),
+    ("7-3-1(b) the defense's face mask after a 6-yard run, 1st and 10 at the 70: 15 yards from the end, a first down", _S0(1, 10, 70),
      dict(kind="snap", gain=6, foul_stand=dict(by="defense", yards=15, name="Face Mask", award=True, spot=64.0)), _RB, ("AAA", 1, 10, 49, False, ())),
     ("the Dead Ball Foul article: the offense's taunting after a 4-yard gain, 2nd and 10 at the 60: the down counts", _S0(2, 10, 60),
      dict(kind="snap", gain=4, foul_stand=dict(by="offense", yards=15, name="Taunting", award=False, spot=56.0)), dict(_RB, dead_counts=True), ("AAA", 3, 21, 71, False, ())),
@@ -403,7 +403,7 @@ FIXTURES = [
     # v19 part 2
     ("14-1-2 Item 5 Exceptions: the defense's delay of game on a play that stands, 1st and 10 at the 92, 2 yards: the next down", _S0(1, 10, 92),
      dict(kind="snap", gain=2, foul_stand=dict(by="defense", yards=5, name="Defensive Delay of Game", award=False, spot=90.0)), _RB, ("AAA", 2, 3, 85, False, ())),
-    ("14-1-2 Item 5 Exceptions: too many players on a play that stands, 3rd and 9 at the 50, 1 yard: the same down", _S0(3, 9, 50),
+    ("14-1-2 Item 5 Exceptions: too many men on a play that stands, 3rd and 9 at the 50, 1 yard: the same down", _S0(3, 9, 50),
      dict(kind="snap", gain=1, foul_stand=dict(by="defense", yards=5, name="Defensive Too Many Men on Field", award=False, spot=49.0)), _RB, ("AAA", 3, 3, 44, False, ())),
     ("pass interference in the end zone from the 10 (a spot foul): first down at the 1, goal to go", _S0(3, 8, 10),
      dict(kind="foul", by="defense", yards=9, outcome="def_award"), _RB, ("AAA", 1, 1, 1, False, ())),
@@ -436,29 +436,29 @@ def run_fixtures(fn):
     return len(FIXTURES), bad
 
 
-def injected_fault_stand(old, new):
-    """A changed copy of stand() (v18 c's injected_fault): stand() and after_one() run from a copy of this module's names with the one line replaced."""
+def planted_stand(old, new):
+    """A changed copy of stand() (v18 c's plant): stand() and after_one() run from a copy of this module's names with the one line replaced."""
     import inspect
     src = inspect.getsource(stand)
-    if src.count(old) != 1: raise record.DataGap(f"a injected_fault's anchor is in stand() {src.count(old)} times")
+    if src.count(old) != 1: raise record.GAP(f"a plant's anchor is in stand() {src.count(old)} times")
     ns = dict(globals()); exec(src.replace(old, new), ns); exec(inspect.getsource(after_one), ns)
     return lambda st, ev, rb: second(ns["after_one"](st, ev, rb), ev)
 
 
-def injected(src, old, new):
-    """A changed copy of the transition (a injected_fault): its source with one line replaced, run in a copy of this module's names."""
-    if src.count(old) != 1: raise record.DataGap(f"a injected_fault's anchor is in the transition {src.count(old)} times")
+def planted(src, old, new):
+    """A changed copy of the transition (a plant): its source with one line replaced, run in a copy of this module's names."""
+    if src.count(old) != 1: raise record.GAP(f"a plant's anchor is in the transition {src.count(old)} times")
     ns = dict(globals()); exec(src.replace(old, new), ns)
     return lambda st, ev, rb: second(ns["after_one"](st, ev, rb), ev)
 
 
-# each injected_fault: one line of after_one replaced; each must make a known-right case fail (a injected_fault that fails none means the cases cannot see that line)
+# each plant: one line of after_one replaced; each must make a known-right case fail (a plant that fails none means the cases cannot see that line)
 PLANTS = {"the next down not counted (3-8-5)": ('    nd = next_down(down, "next")[0]\n    if nd > 4:   # 3-8-2: four downs', '    nd = down\n    if nd > 4:   # 3-8-2: four downs'),
           "the yards copied whole past the goal line (no half-the-distance article; v19 r2)": ("            yl2 = goal_half(yl, yd, by)\n", "            yl2 = None\n"),
           "v19 t1: a state that holds only half yards (the spot rounded to the nearest half)": ("            yl2 = goal_half(yl, yd, by)\n", "            yl2 = goal_half(yl, yd, by); yl2 = None if yl2 is None else round(2 * yl2) / 2\n"),
           "v19 s1: the half yard rounded (the ball put on a whole yard)": ("            yl2 = goal_half(yl, yd, by)\n", "            yl2 = goal_half(yl, yd, by); yl2 = None if yl2 is None else float(round(yl2))\n"),
           "a punt touchback at the 25 (Rule 11 Section 6 says the 20)": ('return series(recv, 100 - sp, "punt, touchback', 'return series(recv, 100 - 25, "punt, touchback')}
-# v18 c's injected_fault, in stand(): the defense's foul enforced toward the defense (the yards added, not taken)
+# v18 c's plant, in stand(): the defense's foul enforced toward the defense (the yards added, not taken)
 STAND_PLANTS = {"the defense's foul on a play that stands enforced the wrong way": ('    yl2 = end - yd if by == "defense" else end + yd\n', '    yl2 = end + yd if by == "defense" else end + yd\n'),
                 "v19 s3: the offense's unnecessary roughness not read by the Dead Ball Foul article": ("    if name in rules.OFF_AFTER or name in OFF_DEAD_BOOK:", "    if name in rules.OFF_AFTER:"),
                 "14-1-2 Item 5 Exceptions' next down read as the same down": ('            nd = next_down(down, "next")[0]\n            if nd > 4: return series(dfn, 100 - yl2, f"{P}, the defense\'s with no award',

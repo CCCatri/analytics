@@ -366,7 +366,7 @@ def events(season):
                 print(f"  {r['game_id']} play {r['play_id']} kind {r['kind']} play_type {r['play_type']} yards {r['yards_gained']} down {r['down']} penalty {r['penalty']}")
             raise DataGap(f"events {season}: {col} missing on {n} rows (section 9 KIND_NEEDS)")
     print(f"events {season} rows {len(df)} kinds {df['kind'].value_counts().to_dict()} scrimmage {int(sc.sum())} "
-          f"null flags on non-scrimmage rows (read as not set) {null_flags} revision_stage {time.time() - t0:.1f}s")
+          f"null flags on non-scrimmage rows (read as not set) {null_flags} wall {time.time() - t0:.1f}s")
     df = df.drop(columns=["desc"])   # read only for the snap test; events returns EVENT_COLUMNS + kind
     return df
 

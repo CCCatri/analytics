@@ -1,18 +1,18 @@
-"""engine.py - engine v0, part E1a (v4: X6 read from each season's rule book), to E1_TARGETS.md. Games played out snap by snap on rules.py (X1-X6) and league-wide rates, written in the record's columns.
-Not product: the engine is the floor the engine-vs-record stage grades. Decision when it runs: NO_CHANGE.
+"""e1.py - engine v0, part E1a (v4: X6 read from each season's rule book), to E1_TARGETS.md. Games played out snap by snap on rules.py (X1-X6) and league-wide rates, written in the record's columns.
+Not product: the engine is the floor E2 judges. Verdict when it runs: PRINTED.
 Inputs (E1_TARGETS.md section 1): rules.py; for season s, league-wide rates read from the five other unsealed seasons (never s, never 2022); the schedule
 (teams, season, week, home side, game type). Bins: down, distance (1-3, 4-6, 7-10, 11+), field (own 1-20, own 21-50, opp 49-21, opp 20-1), time (normal,
 last 2:00 of the first half, last 5:00 of the game, overtime), score (behind 9+, behind 1-8, tied, ahead 1-8, ahead 9+). A bin with fewer than MIN_BIN plays
 is merged with the next coarser bin (score dropped, then time, then distance, then field, then down); every pool prints its merges.
 Rates are drawn as whole recorded outcomes from the bin's plays (a recorded play's kind, yards, completion, interception, fumble lost, out of bounds).
 Writes out/sim_games.csv (stamped on line 1 with this file's sha, the targets' sha, rules.py's sha, out/r7_seasons.csv's sha and the seed) and
-out/e1_checks.csv (every check's count, stamped). The record checks (check_possessions, check_clock, check_downs) read the engine's games through record.raw_frame, the record's one reader,
+out/e1_checks.csv (every check's count, stamped). The record checks (r1, r2, r4) read the engine's games through record.raw_frame, the record's one reader,
 pointed at the engine's rows: the only change is the input. v0's choices the targets do not fix are printed by choices()."""
 import hashlib, os, re, sys, io, json, datetime
 from collections import Counter, defaultdict
 import numpy as np, pandas as pd
-import record, policy, rules
-import check_possessions, check_clock, check_downs
+import record, contract, rules
+import r1, r2, r4
 from rules import (SNAP_KINDS, PRESNAP_OFFENSE, OFF_DURING, LOSS_OF_DOWN, OFF_AFTER, DEF_AWARD, DEF_NEXT, next_down, next_possession, clock_class,
                    oob_window, foul_window, warns, beyond)
 
@@ -29,18 +29,18 @@ OUT_SIM = "out/sim_games.csv"
 OUT_CHECKS = "out/e1_checks.csv"
 SEED = 20261026
 MIN_BIN = 30
-R1A = True        # the engine-vs-record stage R1a (E2_TARGETS.md the engine-vs-record stage v2 d): how long each stretch lasts. False plays v0's clock exactly (checked byte for byte by the chain)
-PACE_SPLIT = {}   # the engine-vs-record stage v4 a: the clock classes whose stretches in the last 2:00 of a half are keyed by score state (one test per class, each keyed cell MIN_BIN or more)
+R1A = True        # E2b R1a (E2_TARGETS.md E2b v2 d): how long each stretch lasts. False plays v0's clock exactly (checked byte for byte by the chain)
+PACE_SPLIT = {}   # E2b v4 a: the clock classes whose stretches in the last 2:00 of a half are keyed by score state (one test per class, each keyed cell MIN_BIN or more)
 PLAY_CLOCK = 40   # 4-6-1: the 40 seconds rules.play_clock reads; with this much game clock or less left after a play on a running clock, the offense decides whether to snap again before 0:00
-QE_BAND = 10      # the engine-vs-record stage v4 e: the quarter-end cell's coarser width in seconds left (a chosen number, compared at 5, 10 and 20 by the chain)
-R1B = True        # the engine-vs-record stage R1b (E2_TARGETS.md the engine-vs-record stage v4 c): how often the clock stops. False plays R1a's clock exactly
-R1D = True        # the engine-vs-record stage v12-v13 (the race, v10 b): the seconds after a running-clock play, the stopped-clock timeouts and the pre-snap fouls from the fitted race; False plays the floor (R1a+R1b) exactly
+QE_BAND = 10      # E2b v4 e: the quarter-end cell's coarser width in seconds left (a chosen number, compared at 5, 10 and 20 by the chain)
+R1B = True        # E2b R1b (E2_TARGETS.md E2b v4 c): how often the clock stops. False plays R1a's clock exactly
+R1D = True        # E2b v12-v13 (the race, v10 b): the seconds after a running-clock play, the stopped-clock timeouts and the pre-snap fouls from the fitted race; False plays the floor (R1a+R1b) exactly
 RACE_CHUNK = 48    # computing only: the walk asks the race for this many seconds at a time
 RACE_STOP_ACTS = ["snap STOP", "snap PARTIAL", "foul", "kickoff", "try", "timeout", "two-minute warning", "start of the quarter"]
-RUNOFF_RESTART = {}   # the engine-vs-record stage v14 d: 15-5-2 per season's book: True when its printed article adds 'or a clock that would have otherwise restarted before the next snap'
-SIM_SEASONS = [s for s in policy.SEASONS if s != policy.HOLD]
-CALL = set(policy.CALL_KINDS)
-HALF_TIMEOUTS = 3       # rule text (Rule 4, Section 5), not read from the book in this chain (overtime's timeouts are the season rules's, quoted from Rule 16)
+RUNOFF_RESTART = {}   # E2b v14 d: 15-5-2 per season's book: True when its printed article adds 'or a clock that would have otherwise restarted before the next snap'
+SIM_SEASONS = [s for s in contract.SEASONS if s != contract.HOLD]
+CALL = set(contract.CALL_KINDS)
+HALF_TIMEOUTS = 3       # rule text (Rule 4, Section 5), not read from the book in this chain (overtime's timeouts are X6's, quoted from Rule 16)
 COLS = ["game_id", "play_id", "order_sequence", "season", "week", "season_type", "home_team", "away_team", "posteam", "defteam", "qtr",
         "quarter_seconds_remaining", "game_seconds_remaining", "time_of_day", "end_clock_time", "play_type", "down", "ydstogo", "yardline_100",
         "yards_gained", "desc", "fixed_drive", "pass", "rush", "sack", "qb_scramble", "complete_pass", "incomplete_pass", "interception", "fumble_lost",
@@ -76,14 +76,14 @@ def choices():
         "F6 is not played on a play that scores, turns the ball over, ends in a safety, or fails on 4th down; each such draw is counted.",
         "Turnovers, punts, missed field goals and kickoffs place the next snap at a spot drawn from the record's next snaps in the same field bin; returns for a"
         " touchdown, muffs kept by the kicking team and fumbles on returns are not played (counted). A kickoff touchback is placed at X6's rule spot (quoted from the"
-        " season's book: the 25 through 2023, the 30 in 2024, the 35 in 2025); from 2024 the book's second spot, the 20 for a kick that first lands in the acceptance"
+        " season's book: the 25 through 2023, the 30 in 2024, the 35 in 2025); from 2024 the book's second spot, the 20 for a kick that first lands in the landing"
         " zone, is not played: every engine touchback is at the first spot (the record's touchbacks at the 20 are printed beside it).",
         "A kick is an onside try when its text says 'onside' (E1a v2 a: section 0's short kicks without it were squibs, played as kickoffs). When one may be tried is"
         " X6's rule, quoted from the season's book: 2019-2023 any free kick (no article names an onside kick), 2024 the 4th period by a team trailing, 2025 any"
         " period by a team trailing; within what the rule allows, how often one is tried is the five other seasons' rate in the (period, score) cell.",
         "Timeouts are drawn after a snap by (time, score), for the offense or the defense of the next snap, while the team has one left: three a half in regulation (rule text, Rule 4 Section 5, not read in this chain);"
         " in overtime X6's quoted timeouts (two in the regular-season period, three in each postseason overtime half).",
-        "Clock: the class after each play is rules.clock_class over the play's own events (the same events check_clock reads); STOP holds the clock to the next snap, PARTIAL"
+        "Clock: the class after each play is rules.clock_class over the play's own events (the same events r2 reads); STOP holds the clock to the next snap, PARTIAL"
         " restarts it after a stopped part drawn from the record's PARTIAL stretches, RUN runs it. After a foul outside the windows on a running clock (4-3-2e) the"
         " clock is stopped for the enforcement and starts on the Referee's whistle, the snap within the season's book's play clock of it (4-6-2e): the stopped part"
         " and the game seconds to the snap drawn together from the record's restarts after such fouls (v19 y1). A timeout, a foul in its window, or the two-minute warning stops a"
@@ -192,7 +192,7 @@ def score_bin(d):
 
 
 def late_half(q, qa):
-    """the engine-vs-record stage v2 a: the last 2:00 of a half (quarters 2 and 4)."""
+    """E2b v2 a: the last 2:00 of a half (quarters 2 and 4)."""
     return q in (2, 4) and qa <= 120
 
 
@@ -213,7 +213,7 @@ def late_score(q, qa, diff):
 
 FULL = [("down", "dist", "field", "time", "score"), ("down", "dist", "field", "time"), ("down", "dist", "field"), ("down", "field"), ("down",), ()]
 FULL_YL = [("down", "dist", "yl20", "time", "score"), ("down", "dist", "yl5", "time", "score"), ("down", "dist", "yl5", "time"), ("down", "dist", "yl5"), ("down", "yl5"), ("yl5in",)] + FULL   # v33 (ac and its additions 1, 2): inside the 20 the yards-to-goal key is the last key dropped: the yard line, then the 5-yard cell through the time, score, distance and down merges, then the 5-yard cell alone (yl5in: None outside the 20, so it holds no bin there and every draw outside the 20 resolves where it does today), then today's field-cell levels
-PLAY2_LV = [("kind", "inc_k", "ob_k") + l for l in [("down", "dist", "yl20", "time", "score"), ("down", "dist", "yl20", "time"), ("down", "dist", "yl20"), ("down", "yl20"), ("yl20in",)] + FULL_YL[1:6]] + [("kind", "yl5in")] + [("kind", "inc_k", "ob_k") + l for l in FULL]   # v36 af1: inside the 20 the yard line kept ahead of time and score (then the yard line alone, yl20in: None outside the 20), then ac1's 5-yard-cell levels as accepted, (kind, 5-yard cell), the field-cell levels; outside the 20 each new level repeats a accepted one in the accepted order
+PLAY2_LV = [("kind", "inc_k", "ob_k") + l for l in [("down", "dist", "yl20", "time", "score"), ("down", "dist", "yl20", "time"), ("down", "dist", "yl20"), ("down", "yl20"), ("yl20in",)] + FULL_YL[1:6]] + [("kind", "yl5in")] + [("kind", "inc_k", "ob_k") + l for l in FULL]   # v36 af1: inside the 20 the yard line kept ahead of time and score (then the yard line alone, yl20in: None outside the 20), then ac1's 5-yard-cell levels as landed, (kind, 5-yard cell), the field-cell levels; outside the 20 each new level repeats a landed one in the landed order
 
 
 def _hy(v):
@@ -253,7 +253,7 @@ class Pool:
                 self.used[i] += 1; self.last = i   # ac0: the level this draw resolved at (read by the caller's counters)
                 v = self.vals[idx[rng.integers(len(idx))]]
                 return dict(zip(self.cols, v))
-        raise record.DataGap(f"engine pool {self.name}: no recorded outcome at any level for {key}")
+        raise record.GAP(f"e1 pool {self.name}: no recorded outcome at any level for {key}")
 
     def merges(self):
         return (f"{self.name}: outcomes {self.n} | bins per level {self.nbins} | bins under {MIN_BIN} per level {self.small} | draws per level "
@@ -262,28 +262,28 @@ class Pool:
 
 # ---------------- the record, read for rates ----------------
 EXTRA_T = {}
-for _d in (check_possessions.EXTRA, check_downs.EXTRA):
+for _d in (r1.EXTRA, r4.EXTRA):
     EXTRA_T.update(_d)
 for _k in ("quarter_seconds_remaining", "out_of_bounds", "touchback", "time_of_day", "end_clock_time", "replay_or_challenge"):
-    EXTRA_T[_k] = check_clock.TYPES[_k]
+    EXTRA_T[_k] = r2.TYPES[_k]
 for _k in list(EXTRA_T):
     if _k in record.EVENT_COLUMNS and _k not in ("game_id", "play_id"):
         del EXTRA_T[_k]
 
 
 def load(season):
-    """One season of the record (or of the engine, when raw_frame points at it): record.events joined to the extra columns check_possessions, check_clock and check_downs read."""
+    """One season of the record (or of the engine, when raw_frame points at it): record.events joined to the extra columns r1, r2 and r4 read."""
     ev = record.events(season)
-    ex = record.typed(record.raw_frame(policy.PBP_FILE.format(season=season), list(EXTRA_T), f"engine {season}"), EXTRA_T, f"engine {season}")
+    ex = record.typed(record.raw_frame(contract.PBP_FILE.format(season=season), list(EXTRA_T), f"e1 {season}"), EXTRA_T, f"e1 {season}")
     d = ev.merge(ex, on=["game_id", "play_id"], how="inner", validate="one_to_one")
     if len(d) != len(ev) or len(d) != len(ex):
-        raise record.DataGap(f"engine {season}: events {len(ev)} and extras {len(ex)} do not join one-to-one ({len(d)})")
+        raise record.GAP(f"e1 {season}: events {len(ev)} and extras {len(ex)} do not join one-to-one ({len(d)})")
     for c in d.columns:
         if str(d[c].dtype) == "Int64":
             d[c] = d[c].to_numpy(dtype=float, na_value=np.nan)
     d = d.sort_values(["game_id", "order_sequence"]).reset_index(drop=True)
     for col, k in (("time_of_day", "W"), ("end_clock_time", "E")):
-        p = [check_clock.parse(v) for v in d[col]]
+        p = [r2.parse(v) for v in d[col]]
         p = [(np.nan, np.nan, np.nan) if t is None else t for t in p]
         d[k + "_s"] = [t[0] for t in p]; d[k + "_r"] = [t[1] for t in p]; d[k + "_d"] = [t[2] for t in p]
         d[k] = [np.nan if nan(t[0]) else (t[0] + (0 if nan(t[2]) else t[2] * 86400)) for t in p]
@@ -355,13 +355,13 @@ def own_class(d, i, reg):
 def quarter_ends(d, X):
     """R1a, the quarter ends (4-6-1): after a regulation snap whose play leaves PLAY_CLOCK game seconds or fewer on a running clock (stamped plays only: the
     clock after the play is the clock at the snap less the play's end stamp minus its start stamp), whether the offense snaps again before 0:00 and, if it does,
-    the game seconds that run first. A next snap counts when check_clock classes the stretch to it RUN with no row between; a quarter's last snap counts when its own
+    the game seconds that run first. A next snap counts when r2 classes the stretch to it RUN with no row between; a quarter's last snap counts when its own
     events leave the clock running (own_class) and no timeout, foul, kick or Try follows it in the quarter."""
     rows = []
     W, E = d["W"].to_numpy(float), d["E"].to_numpy(float)
     for _, gd in d.groupby("game_id", sort=False):
         reg = gd["season_type"].iloc[0] == "REG"
-        ivs = {iv["sa"]: iv for iv in check_clock.intervals(gd)}
+        ivs = {iv["sa"]: iv for iv in r2.intervals(gd)}
         idx = gd.index.to_numpy()
         for p, i in enumerate(idx):
             q = d.at[i, "qtr"]; qa = d.at[i, "quarter_seconds_remaining"]
@@ -390,7 +390,7 @@ def dur_whole(d, full, kind, pos, dn):
     where the row reached its line (the record cannot tell them apart: the engine plays it only where both readings give the same state); 'offsetting'
     (3-8-4, the down replayed); v18 c: 'stand', a foul on a play that stands (its side, penalty_yards, its award mark, its name) enforced by
     transition.stand() at the drawn play's end; 'unsupported: why' for a recorded foul the engine does not enforce (kept, at its own rate)."""
-    if "penalty_yards" not in d.columns: raise record.DataGap("engine: penalty_yards not joined to the record: the fouls on the play cannot be drawn whole")
+    if "penalty_yards" not in d.columns: raise record.GAP("e1: penalty_yards not joined to the record: the fouls on the play cannot be drawn whole")
     U = lambda why: ("unsupported: " + why, None, np.nan, None, None, False)
     rows = []
     for i in np.where(d["db"] & full)[0]:
@@ -409,11 +409,11 @@ def dur_whole(d, full, kind, pos, dn):
         pen = one(d.at[i, "penalty"]) and isinstance(ptype, str)
         if not wiped:
             if not pen: R_(("none", None, np.nan, None, None, False)); continue
-            fam = None if check_downs.flagged(pt, ptype, txt) else family(pt, off, ptype, False, True, txt)
+            fam = None if r4.flagged(pt, ptype, txt) else family(pt, off, ptype, False, True, txt)
             if fam: R_((fam, None, np.nan, None, None, False)); continue
             # v18 c: a foul on a play that stands, kept whole for transition.stand(): one accepted foul, its team and penalty_yards read, enforced at the play's end
-            acc_ = [c_ for c_ in check_downs.foul_clauses(txt) if c_[1]]; py_s = d.at[i, "penalty_yards"]; why_ = None
-            if check_downs.flagged(pt, ptype, txt): why_ = "the record's foul columns name none of the fouls its text accepts (check_downs v19)"
+            acc_ = [c_ for c_ in r4.foul_clauses(txt) if c_[1]]; py_s = d.at[i, "penalty_yards"]; why_ = None
+            if r4.flagged(pt, ptype, txt): why_ = "the record's foul columns name none of the fouls its text accepts (r4 v19)"
             elif len(acc_) != 1: why_ = f"{len(acc_)} accepted fouls on the play"
             elif not (isinstance(pt, str) and isinstance(off, str)) or nan(py_s): why_ = "the fouling team or penalty_yards empty"
             elif one(d.at[i, "interception"]) or one(d.at[i, "fumble_lost"]) or one(d.at[i, "touchdown"]) or one(d.at[i, "safety"]):
@@ -427,7 +427,7 @@ def dur_whole(d, full, kind, pos, dn):
         if nan(ob_i): R_(U(f"the wiped play's out_of_bounds mark empty: {ptype}")); continue
         if re.search(r"offsetting", str(txt), re.I): R_(("offsetting", None, 0.0, "cancelled", None, False)); continue
         if not pen: R_(U("a no-play foul the record does not name")); continue
-        if check_downs.flagged(pt, ptype, txt): R_(U("the record's foul columns name none of the fouls its text accepts (check_downs v19)")); continue
+        if r4.flagged(pt, ptype, txt): R_(U("the record's foul columns name none of the fouls its text accepts (r4 v19)")); continue
         py, tg = d.at[i, "penalty_yards"], d.at[i, "ydstogo"]
         if not (isinstance(pt, str) and isinstance(off, str)) or nan(py) or nan(tg): R_(U(f"the fouling team, penalty_yards or ydstogo empty: {ptype}")); continue
         fdp = one(d.at[i, "first_down_penalty"])
@@ -478,14 +478,14 @@ def prep(d):
     T["play"] = d[clean & ~lat & d["out_of_bounds"].notna()][["kind", "yards_gained", "complete_pass", "incomplete_pass", "interception", "fumble_lost", "out_of_bounds", "down", "dist", "field", "time", "score", "yl20", "yl5", "yl5in", "yl20in"]].copy()
     T["play"]["down"] = T["play"]["down"].astype(int)
     T["play"]["inc_k"] = T["play"]["incomplete_pass"].fillna(0).astype(int); T["play"]["ob_k"] = T["play"]["out_of_bounds"].fillna(0).astype(int)
-    _ds = d.loc[T["play"].index, "desc"].astype(str)   # the engine-vs-record stage v13 e, f: the drawn row carries its own review flag, decision and injury text (whole recorded plays)
+    _ds = d.loc[T["play"].index, "desc"].astype(str)   # E2b v13 e, f: the drawn row carries its own review flag, ruling and injury text (whole recorded plays)
     T["play"]["rv"] = (d.loc[T["play"].index, "replay_or_challenge"] == 1).astype(int)
     T["play"]["rv_rev"] = _ds.str.contains(r"play was REVERSED", case=False).astype(int)
     _ch = _ds.str.extract(r"\b([A-Z]{2,3}) challenged")[0]
     T["play"]["rv_chal"] = np.where(_ch.isna(), "", np.where(_ch == d.loc[T["play"].index, "posteam"], "offense", "defense"))
     T["play"]["inj"] = _ds.str.contains("injur", case=False).astype(int)
-    # the engine-vs-record stage v14 d: the injured player's team from the drawn row's own text (4-5-4 charges it), the side of an accepted foul on the row (4-5-4's exception),
-    # the on-field decision's own clock flags from the text before the review phrase (15-5-2 compares it with the decision that stands), the record row it came from
+    # E2b v14 d: the injured player's team from the drawn row's own text (4-5-4 charges it), the side of an accepted foul on the row (4-5-4's exception),
+    # the on-field ruling's own clock flags from the text before the review phrase (15-5-2 compares it with the ruling that stands), the record row it came from
     _pos = d.loc[T["play"].index, "posteam"].astype(str); _dfn = d.loc[T["play"].index, "defteam"].astype(str)
     _it = _ds.str.extract(r"\b([A-Z]{2,3})-\d+-[^ ]+ was injured")[0]
     T["play"]["inj_side"] = np.where(_it.isna(), "", np.where(_it == _pos, "offense", np.where(_it == _dfn, "defense", "")))
@@ -579,7 +579,7 @@ def prep(d):
         pen = one(d.at[i, "penalty"]) and isinstance(d.at[i, "penalty_type"], str)
         if k_ == "penalty":
             fam = family(d.at[i, "penalty_team"], off, d.at[i, "penalty_type"], True, d.at[i, "textplay"], d.at[i, "desc"]) if pen else None
-            if check_downs.flagged(d.at[i, "penalty_team"], d.at[i, "penalty_type"], d.at[i, "desc"]): fam = None
+            if r4.flagged(d.at[i, "penalty_team"], d.at[i, "penalty_type"], d.at[i, "desc"]): fam = None
             if not d.at[i, "textplay"]:
                 if fam: rows_pre.append(base + (fam,))
                 else: notp[f"before the snap: {d.at[i, 'penalty_type']} by the {'offense' if d.at[i, 'penalty_team'] == off else 'defense'}"] += 1
@@ -591,7 +591,7 @@ def prep(d):
         if k_ in CALL:
             if pen:
                 fam = family(d.at[i, "penalty_team"], off, d.at[i, "penalty_type"], False, True, d.at[i, "desc"])
-                if check_downs.flagged(d.at[i, "penalty_team"], d.at[i, "penalty_type"], d.at[i, "desc"]): fam = None
+                if r4.flagged(d.at[i, "penalty_team"], d.at[i, "penalty_type"], d.at[i, "desc"]): fam = None
                 if fam: rows_dur.append(base + (grp, fam))
                 else: notp[f"the play stands: {d.at[i, 'penalty_type']} by the {'offense' if d.at[i, 'penalty_team'] == off else 'defense'}"] += 1
             else:
@@ -677,7 +677,7 @@ def prep(d):
     rows_c, rows_w, rows_p, rows_c1, rows_pair = [], [], [], [], []
     by_seq = {(g_, int(s_)): k for k, (g_, s_) in enumerate(zip(d["game_id"], d["order_sequence"]))}
     for _, gd in d.groupby("game_id", sort=False):
-        for iv in check_clock.intervals(gd):
+        for iv in r2.intervals(gd):
             if nan(iv["x"]) or iv["x"] < 0: continue
             a = by_seq[(iv["game_id"], iv["sa"])]
             la = E[a] - W[a] if not (nan(E[a]) or nan(W[a])) else np.nan
@@ -788,7 +788,7 @@ class Game:
         X = x6[season]; self.x6 = x6
         self.tb_spot = int(X["touchback"]["value"])
         self.rb = _TBR(season, X)
-        self.chg = []   # c: where this engine plays a rule or a draw differently from engine.py's own code (the comparison reads it)
+        self.chg = []   # c: where this engine plays a rule or a draw differently from e1.py's own code (the comparison reads it)
         self.unsup = []   # rows from which the game is UNSUPPORTED (an unplayed stoppage drawn)
         self.ot_len = int(X["ot_reg_len" if self.reg else "ot_post_len"]["value"])
         self.ot_rule = X["ot_reg_rule" if self.reg else "ot_post_rule"]["value"]
@@ -911,7 +911,7 @@ class Game:
 
     def commit(self, st):
         """The transition's state becomes the game's: a kick to come is pending; else the offense, the down, the yard line and the line to gain."""
-        if st["unk"]: raise record.DataGap(f"engine: the transition left {'+'.join(st['unk'])} UNKNOWN ({st['how']})")
+        if st["unk"]: raise record.GAP(f"e1: the transition left {'+'.join(st['unk'])} UNKNOWN ({st['how']})")
         if st["kick"]:
             self.pending_kick = (self.other(st["off"]), st["kick_kind"] or "normal"); return
         if st["off"] != self.off: self.drive += 1
@@ -959,7 +959,7 @@ class Game:
         else:
             o = self.P["ko"].draw(self.rng, {})
             if int(o["touchback"]) == 1:
-                W, E, c0 = self.play("ko_tb", timed=False); yl = None   # the spot from the transition: the season rules, the in-the-air kind (engine plays no acceptance-zone touchback)
+                W, E, c0 = self.play("ko_tb", timed=False); yl = None   # the spot from the transition: X6, the in-the-air kind (e1 plays no landing-zone touchback)
                 self.row(**common, yardline_100=35, quarter_seconds_remaining=qs0, time_of_day=self.stamp(W), end_clock_time=self.stamp(E), touchback=1,
                          own_kickoff_recovery=0, desc=f"SIM-K kicks 65 yards from {kicker} 35 to end zone, Touchback.")
             else:
@@ -974,12 +974,12 @@ class Game:
     # ---- snaps
     def attempt(self):
         k = self.key()
-        if R1D and self.q <= 4:   # the engine-vs-record stage v13 d, p: pre-snap fouls are drawn only by the race (the pool 'pre' is not drawn in regulation)
+        if R1D and self.q <= 4:   # E2b v13 d, p: pre-snap fouls are drawn only by the race (the pool 'pre' is not drawn in regulation)
             pre = self.race_foul if self.race_foul else "none"; self.race_foul = None
         else:
             pre = "none" if self.foul_used else self.P["pre"].draw(self.rng, k)["fam"]
         kb = "foul" if pre != "none" else "snap"
-        if R1D and self.race_gap is not None:   # the engine-vs-record stage v12: the race drew this snap's second (a pre-snap foul the engine plays takes it)
+        if R1D and self.race_gap is not None:   # E2b v12: the race drew this snap's second (a pre-snap foul the engine plays takes it)
             g = self.race_gap; self.race_gap = None
         elif self.foul_gap is not None:   # v19 y1: after a restart drawn by foul_restart the snap (or a second foul before it) comes at its drawn second
             g = self.foul_gap; self.foul_gap = None
@@ -992,7 +992,7 @@ class Game:
             g = self.gap(self.prev_kind, kb, self.own_cls if (self.prev_kind == "snap" and kb == "snap") else None)
         res = self.advance(g)
         if res == "warning":
-            if R1D and self.q <= 4 and not self.over: self.race_moment()   # the engine-vs-record stage v12: the warning is a stopped-clock act (v10 b)
+            if R1D and self.q <= 4 and not self.over: self.race_moment()   # E2b v12: the warning is a stopped-clock act (v10 b)
             rest = None
             for _ in range(1000):
                 v = int(self.P["gwarn"].draw(self.rng, {})["sec"])
@@ -1111,7 +1111,7 @@ class Game:
                    rusher_player_id=f"SIM-{off}-QB" if kind in ("scramble", "kneel") else (f"SIM-{off}-RB" if kind == "run" else np.nan),
                    receiver_player_id=f"SIM-{off}-WR" if kind == "pass" else np.nan)
         if fam in ("wiped", "offsetting"):   # the play is wiped: a no-play that ran a play (3-8-4); the foul as the record's row has it, enforced by the transition
-            self.qa = qs0   # v18 d: this down's own snap clock: 4-3-2e's window is read at the engine's clock (engine left the previous snap's here)
+            self.qa = qs0   # v18 d: this down's own snap clock: 4-3-2e's window is read at the engine's clock (e1 left the previous snap's here)
             W, E, c0 = self.play("nopl")
             st_f = _TRANS(self.state0(), ev_f, self.rb)
             if fam == "offsetting":
@@ -1208,33 +1208,33 @@ class Game:
               ("out of bounds early 4-3-2a", ob == 1 and ow is False), ("foul outside windows 4-3-2e", pa and fw is False),
               ("out of bounds, window unread", ob == 1 and ow is None), ("foul, window unread", pa and fw is None)]
         runoff_ = False; inj_charge = None
-        if R1D and self.q <= 4:   # the engine-vs-record stage v13-v14 e, f, d: the review and the injury are attributes of the drawn recorded play; their clock from the book's articles
+        if R1D and self.q <= 4:   # E2b v13-v14 e, f, d: the review and the injury are attributes of the drawn recorded play; their clock from the book's articles
             rv_ = int(o.get("rv", 0) or 0) == 1; inj_ = int(o.get("inj", 0) or 0) == 1; bw_ = rules.before_warning(self.q, qs0, self.reg); bw_ = None if bw_ is None else bool(bw_)
             iside = str(o.get("inj_side", "") or "")
             if inj_ and iside not in ("offense", "defense"):   # 4-5-4 charges the injured player's team: a drawn injury whose team its text does not name is not played
                 inj_ = False; self.cnt["f: injury not played: the drawn row's text does not name the injured player's team"] += 1
-            decision_cls = clock_class(ev, beyond(self.q, self.reg))[0]
+            ruling_cls = clock_class(ev, beyond(self.q, self.reg))[0]
             ev = ev + [("replay review 15-5-1", rv_), ("injury, from play text 4-5-3", inj_ and bw_ is True), ("injury after the warning 4-5-4", inj_ and bw_ is False),
                        ("injury, warning placement unread", inj_ and bw_ is None)]
             self.last_rv, self.last_inj = float(rv_), float(inj_)
             r_ = self.rows[-1]; r_["src"] = str(o.get("src", "") or "")
             if rv_:
                 rev_ = int(o.get("rv_rev", 0) or 0) == 1
-                r_["replay_or_challenge"] = 1; r_["desc"] = r_["desc"] + f" The Replay Official reviewed the decision, and the play was {'REVERSED' if rev_ else 'Upheld'}."
+                r_["replay_or_challenge"] = 1; r_["desc"] = r_["desc"] + f" The Replay Official reviewed the ruling, and the play was {'REVERSED' if rev_ else 'Upheld'}."
                 self.cnt["e: reviewed plays (drawn)"] += 1
-                if rev_ and self.q in self.warned:   # 15-5-2: a play begun after the warning, its decision changed
+                if rev_ and self.q in self.warned:   # 15-5-2: a play begun after the warning, its ruling changed
                     ow_ = oob_window(self.q, qs0, self.reg); fo_ = lambda c_: int(o.get(c_, 0) or 0) == 1
                     of_cls = clock_class([("incomplete 4-4f", fo_("of_inc")), ("out of bounds late 4-3-2a", fo_("of_ob") and ow_ is True), ("score/touchback/try 4-4d", fo_("of_score")),
                                           ("change of possession 4-4i", fo_("of_poss")), ("out of bounds early 4-3-2a", fo_("of_ob") and ow_ is False),
                                           ("out of bounds, window unread", fo_("of_ob") and ow_ is None)], beyond(self.q, self.reg))[0]
-                    ok_std = decision_cls == "RUN" or (decision_cls == "PARTIAL" and RUNOFF_RESTART.get(self.season, False))
+                    ok_std = ruling_cls == "RUN" or (ruling_cls == "PARTIAL" and RUNOFF_RESTART.get(self.season, False))
                     if of_cls == "STOP" and ok_std: runoff_ = True
-                    else: self.cnt[f"e: 15-5-2 not applied after a reversal: on-field clock {of_cls}, standing {decision_cls}"] += 1
+                    else: self.cnt[f"e: 15-5-2 not applied after a reversal: on-field clock {of_cls}, standing {ruling_cls}"] += 1
                 side = str(o.get("rv_chal", "") or "")
                 if side in ("offense", "defense") and not rev_:   # 15-6-1: a lost challenge charges the challenger a timeout (counted once: no timeout row is written)
                     tm_ = off if side == "offense" else dfn
                     if self.to_left[tm_] > 0: self.to_left[tm_] -= 1; self.cnt["e: a lost challenge charged a timeout (no row)"] += 1
-                    else: raise record.DataGap("15-6-1: a lost challenge drawn for a team with no timeout left (excluded before the draw)")
+                    else: raise record.GAP("15-6-1: a lost challenge drawn for a team with no timeout left (excluded before the draw)")
             if inj_:
                 team_ = off if iside == "offense" else dfn
                 r_["desc"] = r_["desc"] + f" {team_}-00-SIM.P was injured during the play."; self.cnt["f: injury plays (drawn), unsupported: participation"] += 1
@@ -1252,7 +1252,7 @@ class Game:
             if rd is not None and rd[0] == "unplayed": self.unsup.append((len(self.rows), "15-5-2's avoiding draw")); self.cnt["unsupported: an unplayed stoppage drawn (15-5-2's avoiding draw)"] += 1
             if rd is not None and rd[0] in ("offense", "defense"):
                 tm_ = rd[1] if rd[0] == "offense" else rd[2]
-                if self.to_left[tm_] <= 0: raise record.DataGap("15-5-2: an avoiding timeout drawn for a team with none left (its probability was 0)")
+                if self.to_left[tm_] <= 0: raise record.GAP("15-5-2: an avoiding timeout drawn for a team with none left (its probability was 0)")
             if tm_ is not None:
                 self.write_timeout(tm_); self.own_cls = "STOP"; self.cnt["e: 15-5-2 avoided by a charged timeout (the clock starts on the snap)"] += 1
             else:
@@ -1352,7 +1352,7 @@ class Game:
             c = self.P["to"].draw(self.rng, k, ok=ok_)["caller"]
         if c == "none": return
         team = self.off if c == "offense" else self.other(self.off)
-        if self.to_left[team] <= 0: raise record.DataGap("a timeout drawn for a team with none left (its probability was 0)")
+        if self.to_left[team] <= 0: raise record.GAP("a timeout drawn for a team with none left (its probability was 0)")
         g = self.gap("snap", "timeout"); res = self.advance(g)
         if self.clock == 0 or res == "warning": return
         self.to_left[team] -= 1; n_ = (HALF_TIMEOUTS if not self.in_ot else self.ot_to) - self.to_left[team]
@@ -1362,12 +1362,12 @@ class Game:
         self.cnt["timeouts"] += 1
 
     def race_moment(self, start=False, before_try=False):
-        """the engine-vs-record stage v12: after a play that leaves the clock running (RUN), walk the race's seconds; at every stopped-clock act, the stopped part (v10 b)."""
+        """E2b v12: after a play that leaves the clock running (RUN), walk the race's seconds; at every stopped-clock act, the stopped part (v10 b)."""
         M = getattr(self.R, "RACE", None)
         if M is None or self.q > 4 or self.over or self.clock <= 0: return
         last = self.rows[-1] if self.rows else {}
         warned_now = str(last.get("desc", "")).startswith("Two-Minute")
-        to_now = int(last.get("timeout", 0) or 0) == 1   # the engine-vs-record stage v14 d: a timeout written when the play ended (4-5-4, or one that avoids 15-5-2's runoff)
+        to_now = int(last.get("timeout", 0) or 0) == 1   # E2b v14 d: a timeout written when the play ended (4-5-4, or one that avoids 15-5-2's runoff)
         if (not start and not before_try and not warned_now and not to_now and self.prev_kind == "snap" and self.own_cls == "RUN" and self.running
                 and self.pending_kick is None):
             self.race_walk(); return
@@ -1406,11 +1406,11 @@ class Game:
                     self.advance(t); self.write_unplayed("the race, a running clock"); self.race_log.append((self.q, ce, "unplayed", t)); return
                 if ev[k] == 3:
                     self.race_gap = t; self.race_log.append((self.q, ce, "snap", t)); self.cnt["race: snap drawn"] += 1; return
-                if ev[k] in (4, 5):   # the engine-vs-record stage v13 d, p: a pre-snap foul the engine plays, at this second; Game.presnap enforces it, the race restarts from that state
+                if ev[k] in (4, 5):   # E2b v13 d, p: a pre-snap foul the engine plays, at this second; Game.presnap enforces it, the race restarts from that state
                     fam_ = "F1" if ev[k] == 4 else "F2"
                     self.race_gap = t; self.race_foul = fam_; self.race_log.append((self.q, ce, fam_, t)); self.cnt[f"race: pre-snap foul {fam_} on a running clock"] += 1; return
                 team = off if ev[k] == 1 else dfn
-                if self.to_left[team] <= 0: raise record.DataGap("race: a timeout drawn for a team with none left (its probability was 0)")
+                if self.to_left[team] <= 0: raise record.GAP("race: a timeout drawn for a team with none left (its probability was 0)")
                 self.advance(t); self.write_timeout(team)
                 self.race_log.append((self.q, ce, "offense" if team == off else "defense", t)); self.cnt["race: timeout drawn on a running clock"] += 1
                 self.race_stopped("timeout", False); return
@@ -1466,10 +1466,10 @@ class Game:
             c, off, dfn = r_
             if c == "unplayed": self.write_unplayed(f"the stopped part, after {act}"); return   # the clock already stopped; its own effects are not played; UNSUPPORTED from here
             if c == "none": return
-            if c in ("F1", "F2"):   # the engine-vs-record stage v13 d, p: a pre-snap foul before the snap on a stopped clock; the floor's gap to it, then Game.presnap
+            if c in ("F1", "F2"):   # E2b v13 d, p: a pre-snap foul before the snap on a stopped clock; the floor's gap to it, then Game.presnap
                 self.race_foul = c; self.cnt[f"race (stopped): pre-snap foul {c}"] += 1; return
             team = off if c == "offense" else dfn
-            if self.to_left[team] <= 0: raise record.DataGap("race (stopped): a timeout drawn for a team with none left (its probability was 0)")
+            if self.to_left[team] <= 0: raise record.GAP("race (stopped): a timeout drawn for a team with none left (its probability was 0)")
             if self.foul_gap is not None:   # v19 y1: a timeout called in place of the snap after a foul's restart, at its drawn second (within the play clock)
                 g = self.foul_gap; self.foul_gap = None; self.cnt["y1: a timeout drawn at a foul restart's drawn second"] += 1
             else: g = int(self.gap(self.prev_kind, "timeout"))
@@ -1532,7 +1532,7 @@ def onside_allowed(rule, q, kick_diff):
     if rule == "any free kick": return True
     if rule == "4th period, kicking team trailing, declared": return q == 4 and kick_diff < 0
     if rule == "any period, kicking team trailing, declared": return kick_diff < 0
-    raise record.DataGap(f"engine: X6's onside rule {rule!r} is not one the engine plays")
+    raise record.GAP(f"e1: X6's onside rule {rule!r} is not one the engine plays")
 
 
 def x6_rows():
@@ -1572,9 +1572,9 @@ class OnSim:
         def raw_frame(name, columns, where):
             m = re.fullmatch(r"pbp_(\d{4})\.csv\.gz", name)
             if not m or int(m.group(1)) not in self.frames:
-                raise record.DataGap(f"{where}: the engine wrote no {name}")
+                raise record.GAP(f"{where}: the engine wrote no {name}")
             missing = [c for c in columns if c not in self.frames[int(m.group(1))].columns]
-            if missing: raise record.DataGap(f"{where}: columns absent from the engine's {name}: {missing}")
+            if missing: raise record.GAP(f"{where}: columns absent from the engine's {name}: {missing}")
             return self.frames[int(m.group(1))][list(columns)].copy()
         record.raw_frame = raw_frame
         return self
@@ -1586,9 +1586,9 @@ class OnSim:
 def check_r4(seasons):
     items = []
     for s in seasons:
-        D = check_downs.load(s)
+        D = r4.load(s)
         for _, gd in D.groupby("game_id", sort=False):
-            it, _ = check_downs.checks(gd); items += it
+            it, _ = r4.checks(gd); items += it
     I = pd.DataFrame(items)
     words = Counter(I["word"]) if len(I) else Counter()
     bad = I[I["word"].isin(["OTHER", "UNCHECKED"])] if len(I) else I
@@ -1596,10 +1596,10 @@ def check_r4(seasons):
 
 
 def check_r1(seasons):
-    D = pd.concat([check_possessions.load(s) for s in seasons], ignore_index=True).sort_values(["game_id", "order_sequence"]).reset_index(drop=True)
-    P = check_possessions.possessions(D)
+    D = pd.concat([r1.load(s) for s in seasons], ignore_index=True).sort_values(["game_id", "order_sequence"]).reset_index(drop=True)
+    P = r1.possessions(D)
     G = {g: d.sort_values("order_sequence").reset_index(drop=True) for g, d in D.groupby("game_id")}
-    b2b, oth, C = check_possessions.counts(P, G)
+    b2b, oth, C = r1.counts(P, G)
     left = oth[oth["word"].str.startswith(("UNEXPLAINED", "MULTIPLE"))] if len(oth) else oth
     return C, left, P
 
@@ -1613,18 +1613,18 @@ def stopping_rows(c, bt, q, qa, reg, posb):
 
 
 def check_clock(seasons):
-    """Section 4, the stopped clock, and check_clock's FASTER and classes."""
+    """Section 4, the stopped clock, and r2's FASTER and classes."""
     out = Counter(); fails = []
     for s in seasons:
-        d, _, _ = check_clock.load(s)
+        d, _, _ = r2.load(s)
         for _, g in d.groupby("game_id", sort=False):
             g = g.reset_index(drop=True); c = {k: g[k].tolist() for k in g.columns}
-            iv = check_clock.intervals(g)
+            iv = r2.intervals(g)
             idx = {int(v): k for k, v in enumerate(c["order_sequence"])}
             for x in iv:
-                out[f"check_clock class {x['cls']}"] += 1; out[f"check_clock L1 {x['l1']}"] += 1
+                out[f"r2 class {x['cls']}"] += 1; out[f"r2 L1 {x['l1']}"] += 1
                 if x["cls"] == "UNKNOWN":
-                    out[f"check_clock UNKNOWN: {x['why']}"] += 1; fails.append(("UNKNOWN", s, x["game_id"], x["sa"], x["sb"], x["q"], x["reg"], x["why"]))
+                    out[f"r2 UNKNOWN: {x['why']}"] += 1; fails.append(("UNKNOWN", s, x["game_id"], x["sa"], x["sb"], x["q"], x["reg"], x["why"]))
                 a, b = idx[x["sa"]], idx[x["sb"]]; bt = list(range(a + 1, b))
                 if x["cls"] == "PARTIAL":
                     ok = x["dG"] <= x["dW"]
@@ -1638,7 +1638,7 @@ def check_clock(seasons):
                 ln = 0.0; miss = False
                 for k in plays:
                     if nan(c["E_s"][k]) or nan(c["W_s"][k]): miss = True; break
-                    ln += check_clock.diff(c["E_s"][k], c["E_d"][k], c["W_s"][k], c["W_d"][k])[0]
+                    ln += r2.diff(c["E_s"][k], c["E_d"][k], c["W_s"][k], c["W_d"][k])[0]
                 if miss: out["STOP with a play unstamped (failed)"] += 1; fails.append(("STOP unstamped", x["game_id"], x["sa"], x["sb"])); continue
                 ow = oob_window(q, qa, reg); fwa = foul_window(q, qa, reg)
                 own = [("incomplete 4-4f", one(c["incomplete_pass"][a])), ("out of bounds late 4-3-2a", one(c["out_of_bounds"][a]) and ow is True),
@@ -1651,7 +1651,7 @@ def check_clock(seasons):
                     k = stopping_rows(c, bt, q, qa, reg, c["posteam"][b])
                     if k is None:
                         out["STOP with no stopping event found (failed)"] += 1; fails.append(("STOP no stop event", x["game_id"], x["sa"], x["sb"], x["why"])); continue
-                    run_before = check_clock.diff(c["W_s"][k], c["W_d"][k], c["E_s"][a], c["E_d"][a])[0]
+                    run_before = r2.diff(c["W_s"][k], c["W_d"][k], c["E_s"][a], c["E_d"][a])[0]
                 allowed = ln + run_before + 1
                 if x["dG"] > allowed:
                     out["STOP failed"] += 1; fails.append(("STOP", x["game_id"], x["sa"], x["sb"], x["dG"], round(allowed, 1), x["why"]))
@@ -1671,7 +1671,7 @@ def check_periods(frames, x6, seasons):
             else: h4, a4 = int(ends["total_home_score"].iloc[0]), int(ends["total_away_score"].iloc[0])
             has_ot = (q >= 5).any()
             tied4 = h4 == a4
-            if has_ot != tied4: ok = False   # 16-1-1: overtime exactly when tied after regulation; no playoff game ends tied (the rules level)
+            if has_ot != tied4: ok = False   # 16-1-1: overtime exactly when tied after regulation; no playoff game ends tied (L0)
             if has_ot:
                 mx = qs[q == 5].max()
                 if mx != int(x6[s]["ot_reg_len" if reg else "ot_post_len"]["value"]): ok = False
@@ -1682,10 +1682,10 @@ def check_periods(frames, x6, seasons):
 
 
 def season_rule_check(seasons, x6):
-    import measure_season_rules
+    import r7
     out = {}
     for s in seasons:
-        d, qf = measure_season_rules.season_frame(s); M = measure_season_rules.measures(d, qf)
+        d, qf = r7.season_frame(s); M = r7.measures(d, qf)
         out[s] = {m: M[m][0] for m in ("M1", "M2", "M3", "M4")}
     return out
 
@@ -1698,10 +1698,10 @@ if __name__ == "__main__":
     main()
 
 
-# ---------------- engine alone (the engine-vs-record stage v19 q, r3): the model files in out/engine/, each sha checked on load; the games played from them, nothing else read ----------------
-# out/engine/MANIFEST.json names every file with its sha (and the chain and engine.py that wrote them): conf.pkl (the caller-set values: PACE_SPLIT,
+# ---------------- e1 alone (E2b v19 q, r3): the model files in out/engine/, each sha checked on load; the games played from them, nothing else read ----------------
+# out/engine/MANIFEST.json names every file with its sha (and the chain and e1.py that wrote them): conf.pkl (the caller-set values: PACE_SPLIT,
 # RUNOFF_RESTART, SCRIM_TB, BOOKY, ENF_CLOCK; the race's flags R1A, R1B, R1D, QE_BAND; the play clock T_CAP; the seasons), tables.pkl (each season's pools' rows,
-# prep()), x6.pkl (each season's the season rules cells), sched.pkl (the games to play, in the order their generators are numbered), race_<season>.pkl (the race and the
+# prep()), x6.pkl (each season's X6 cells), sched.pkl (the games to play, in the order their generators are numbered), race_<season>.pkl (the race and the
 # stopped part fitted for that season: the race as its parts, the fitted logistic model, the numbers' means and spreads and the play clock, rebuilt here as
 # _LRRace, the chain's estimator's own design; the stopped part the fitted trees). A file missing, or not the sha its manifest names, stops the load.
 import pickle as _pk, threading as _th
@@ -1711,14 +1711,14 @@ ENGINE_DIR = "out/engine"
 def engine_load(d=ENGINE_DIR):
     """Every file the manifest names, its sha checked before it is read; the caller-set values set on this module. Returns what the games need."""
     mp = os.path.join(d, "MANIFEST.json")
-    if not os.path.exists(mp): raise record.DataGap(f"engine alone: {mp} missing: no model files to play from")
-    player = json.load(open(mp)); raw = {}
-    for f, want in sorted(player["files"].items()):
+    if not os.path.exists(mp): raise record.GAP(f"e1 alone: {mp} missing: no model files to play from")
+    man = json.load(open(mp)); raw = {}
+    for f, want in sorted(man["files"].items()):
         p = os.path.join(d, f)
-        if not os.path.exists(p): raise record.DataGap(f"engine alone: {p} missing (the manifest names it)")
+        if not os.path.exists(p): raise record.GAP(f"e1 alone: {p} missing (the manifest names it)")
         b = open(p, "rb").read(); got = hashlib.sha256(b).hexdigest()[:12]
-        print(f"engine alone: {f} {got} (manifest {want}) {'ok' if got == want else 'DIFFERS'}")
-        if got != want: raise record.DataGap(f"engine alone: {f} is {got}, not the manifest's {want}: nothing played")
+        print(f"e1 alone: {f} {got} (manifest {want}) {'ok' if got == want else 'DIFFERS'}")
+        if got != want: raise record.GAP(f"e1 alone: {f} is {got}, not the manifest's {want}: nothing played")
         raw[f] = b
     conf = _pk.loads(raw["conf.pkl"])
     for k, v in conf["module"].items(): globals()[k] = v
@@ -1730,7 +1730,7 @@ RACE_TBINS = ((0, 7), (8, 15), (16, 23), (24, 31), (32, 40))   # v19 w1: the sec
 
 
 def race_design(X, mu, sd, tcap):
-    """v19 w1: the race's inputs (the same text in engine.py): the numbers standardised; t (the seconds since the play ended, read up to the play clock) one
+    """v19 w1: the race's inputs (the same text in e1.py): the numbers standardised; t (the seconds since the play ended, read up to the play clock) one
     indicator a second; and the time left in the half crossed with t: the last two minutes of a half (quarters 2 and 4, the quarter's clock at the play's end
     less t at or under 120) and quarters 2 and 4 apart from 1 and 3, each times RACE_TBINS. X: q, the clock at the play's end, the score difference, down,
     distance, yard line, the timeouts each side has, review, injury, t."""
@@ -1803,7 +1803,7 @@ def play_alone(d=ENGINE_DIR, games=None):
         rows = [None] * len(todo); sk = [None] * len(todo)
         def work(j, k, g):
             try: rows[j] = Game(g, Rs, E["x6"], np.random.default_rng([SEED, s, k]), s).run()
-            except record.DataGap as ex_: sk[j] = str(ex_)[:120]
+            except record.GAP as ex_: sk[j] = str(ex_)[:120]
             finally: B.done()
         th = [_th.Thread(target=work, args=(j, k, g)) for j, (k, g) in enumerate(todo)]
         for t_ in th: t_.start()
@@ -1814,9 +1814,9 @@ def play_alone(d=ENGINE_DIR, games=None):
 
 
 def alone_main(argv):
-    """python3 -c 'import engine, sys; engine.alone_main(sys.argv[1:])' ENGINE_DIR OUT_DIR [GAMES.json]: each season's games written to OUT_DIR/alone_<season>.csv."""
+    """python3 -c 'import e1, sys; e1.alone_main(sys.argv[1:])' ENGINE_DIR OUT_DIR [GAMES.json]: each season's games written to OUT_DIR/alone_<season>.csv."""
     d, od = argv[0], argv[1]; games = set(json.load(open(argv[2]))) if len(argv) > 2 else None
     os.makedirs(od, exist_ok=True); out, sk = play_alone(d, games)
     for s, f in out.items():
         f.to_csv(os.path.join(od, f"alone_{s}.csv"), index=False)
-        print(f"engine alone: season {s}: games {f['game_id'].nunique()} | rows {len(f)} | not played {len(sk[s])} | sha {hashlib.sha256(f.to_csv(index=False).encode()).hexdigest()[:12]}")
+        print(f"e1 alone: season {s}: games {f['game_id'].nunique()} | rows {len(f)} | not played {len(sk[s])} | sha {hashlib.sha256(f.to_csv(index=False).encode()).hexdigest()[:12]}")

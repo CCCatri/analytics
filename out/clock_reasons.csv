@@ -1,4 +1,4 @@
-# the clock check.py 567e8946b4e0 | R2_TARGETS.md b23041601078 (v16) | record read (the rules level clause 1), not product
+# check_clock.py b0c45efc956d | clock-check.md 576bd140df3b (v16) | record read (rules-level clause 1), not product
 season,check,word,reason,count
 2019,CLASS,RUN,no stoppage on the stretch: the clock ran (4-3),17082
 2019,CLASS,STOP,change of possession 4-4i,2832
@@ -91,13 +91,13 @@ season,check,word,reason,count
 2019,TAG,foul outside windows 4-3-2e,foul outside windows 4-3-2e,1551
 2019,TAG,"injury, from play text 4-5-3","injury, from play text 4-5-3",499
 2019,TAG,replay review 15-5-1,replay review 15-5-1,141
-2019,the game level,WITHIN REAL TIME,the game clock fell no faster than real time,32907
-2019,the game level,WITHIN RESOLUTION,the game clock fell faster by no more than the stamps can tell apart (the revision stage stamp's resolution plus the game clock's whole second),2699
-2019,the game level,FASTER not licensed,"the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the record logging it (4-1-4), so a correction and a record error cannot be told apart",267
-2019,the game level,UNCHECKED,a revision stage-clock stamp or the game clock is missing on one of the two snaps,206
-2019,L1_V12,WITHIN REAL TIME,"v12 margin (the revision stage stamp's resolution only), kept for comparison: within real time",35410
-2019,L1_V12,FASTER not licensed,"v12 margin (the revision stage stamp's resolution only), kept for comparison: faster than real time",463
-2019,L1_V12,UNCHECKED,"v12 margin (the revision stage stamp's resolution only), kept for comparison: a stamp missing",206
+2019,L1,WITHIN REAL TIME,the game clock fell no faster than real time,32907
+2019,L1,WITHIN RESOLUTION,the game clock fell faster by no more than the stamps can tell apart (the wall stamp's resolution plus the game clock's whole second),2699
+2019,L1,FASTER not licensed,"the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the record logging it (4-1-4), so a correction and a record error cannot be told apart",267
+2019,L1,UNCHECKED,a wall-clock stamp or the game clock is missing on one of the two snaps,206
+2019,L1_V12,WITHIN REAL TIME,"v12 margin (the wall stamp's resolution only), kept for comparison: within real time",35410
+2019,L1_V12,FASTER not licensed,"v12 margin (the wall stamp's resolution only), kept for comparison: faster than real time",463
+2019,L1_V12,UNCHECKED,"v12 margin (the wall stamp's resolution only), kept for comparison: a stamp missing",206
 2019,D3,UNCHECKED,an end-of-play stamp is missing or the two-minute warning cannot be placed (the record carries end stamps from 2023),25778
 2019,D3,N/A (ADMIN),"an administrative stoppage (a change of possession, a timeout, the two-minute warning, a foul or a review) resets the play clock (4-6-2)",10204
 2019,D3,WITHIN 40,the next snap came within 40 seconds of real time after the play ended (4-6-1),86
@@ -187,13 +187,13 @@ season,check,word,reason,count
 2020,TAG,out of bounds early 4-3-2a,out of bounds early 4-3-2a,2870
 2020,TAG,"injury, from play text 4-5-3","injury, from play text 4-5-3",547
 2020,TAG,replay review 15-5-1,replay review 15-5-1,130
-2020,the game level,WITHIN REAL TIME,the game clock fell no faster than real time,33317
-2020,the game level,WITHIN RESOLUTION,the game clock fell faster by no more than the stamps can tell apart (the revision stage stamp's resolution plus the game clock's whole second),2885
-2020,the game level,FASTER not licensed,"the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the record logging it (4-1-4), so a correction and a record error cannot be told apart",238
-2020,the game level,UNCHECKED,a revision stage-clock stamp or the game clock is missing on one of the two snaps,110
-2020,L1_V12,WITHIN REAL TIME,"v12 margin (the revision stage stamp's resolution only), kept for comparison: within real time",36009
-2020,L1_V12,FASTER not licensed,"v12 margin (the revision stage stamp's resolution only), kept for comparison: faster than real time",431
-2020,L1_V12,UNCHECKED,"v12 margin (the revision stage stamp's resolution only), kept for comparison: a stamp missing",110
+2020,L1,WITHIN REAL TIME,the game clock fell no faster than real time,33317
+2020,L1,WITHIN RESOLUTION,the game clock fell faster by no more than the stamps can tell apart (the wall stamp's resolution plus the game clock's whole second),2885
+2020,L1,FASTER not licensed,"the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the record logging it (4-1-4), so a correction and a record error cannot be told apart",238
+2020,L1,UNCHECKED,a wall-clock stamp or the game clock is missing on one of the two snaps,110
+2020,L1_V12,WITHIN REAL TIME,"v12 margin (the wall stamp's resolution only), kept for comparison: within real time",36009
+2020,L1_V12,FASTER not licensed,"v12 margin (the wall stamp's resolution only), kept for comparison: faster than real time",431
+2020,L1_V12,UNCHECKED,"v12 margin (the wall stamp's resolution only), kept for comparison: a stamp missing",110
 2020,D3,N/A (ADMIN),"an administrative stoppage (a change of possession, a timeout, the two-minute warning, a foul or a review) resets the play clock (4-6-2)",9865
 2020,D3,UNCHECKED,an end-of-play stamp is missing or the two-minute warning cannot be placed (the record carries end stamps from 2023),26685
 2021,CLASS,RUN,no stoppage on the stretch: the clock ran (4-3),18524
@@ -294,11 +294,11 @@ season,check,word,reason,count
 2021,TAG,foul outside windows 4-3-2e,foul outside windows 4-3-2e,1462
 2021,TAG,"injury, from play text 4-5-3","injury, from play text 4-5-3",587
 2021,TAG,replay review 15-5-1,replay review 15-5-1,120
-2021,the game level,WITHIN REAL TIME,the game clock fell no faster than real time,34619
-2021,the game level,WITHIN RESOLUTION,the game clock fell faster by no more than the stamps can tell apart (the revision stage stamp's resolution plus the game clock's whole second),3313
-2021,the game level,FASTER not licensed,"the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the record logging it (4-1-4), so a correction and a record error cannot be told apart",258
-2021,L1_V12,WITHIN REAL TIME,"v12 margin (the revision stage stamp's resolution only), kept for comparison: within real time",37611
-2021,L1_V12,FASTER not licensed,"v12 margin (the revision stage stamp's resolution only), kept for comparison: faster than real time",579
+2021,L1,WITHIN REAL TIME,the game clock fell no faster than real time,34619
+2021,L1,WITHIN RESOLUTION,the game clock fell faster by no more than the stamps can tell apart (the wall stamp's resolution plus the game clock's whole second),3313
+2021,L1,FASTER not licensed,"the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the record logging it (4-1-4), so a correction and a record error cannot be told apart",258
+2021,L1_V12,WITHIN REAL TIME,"v12 margin (the wall stamp's resolution only), kept for comparison: within real time",37611
+2021,L1_V12,FASTER not licensed,"v12 margin (the wall stamp's resolution only), kept for comparison: faster than real time",579
 2021,D3,UNCHECKED,an end-of-play stamp is missing or the two-minute warning cannot be placed (the record carries end stamps from 2023),27709
 2021,D3,N/A (ADMIN),"an administrative stoppage (a change of possession, a timeout, the two-minute warning, a foul or a review) resets the play clock (4-6-2)",10481
 2023,CLASS,RUN,no stoppage on the stretch: the clock ran (4-3),18614
@@ -392,11 +392,11 @@ season,check,word,reason,count
 2023,TAG,foul outside windows 4-3-2e,foul outside windows 4-3-2e,1424
 2023,TAG,"injury, from play text 4-5-3","injury, from play text 4-5-3",656
 2023,TAG,replay review 15-5-1,replay review 15-5-1,119
-2023,the game level,WITHIN REAL TIME,the game clock fell no faster than real time,29505
-2023,the game level,WITHIN RESOLUTION,the game clock fell faster by no more than the stamps can tell apart (the revision stage stamp's resolution plus the game clock's whole second),8441
-2023,the game level,FASTER not licensed,"the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the record logging it (4-1-4), so a correction and a record error cannot be told apart",356
-2023,L1_V12,WITHIN REAL TIME,"v12 margin (the revision stage stamp's resolution only), kept for comparison: within real time",29955
-2023,L1_V12,FASTER not licensed,"v12 margin (the revision stage stamp's resolution only), kept for comparison: faster than real time",8347
+2023,L1,WITHIN REAL TIME,the game clock fell no faster than real time,29505
+2023,L1,WITHIN RESOLUTION,the game clock fell faster by no more than the stamps can tell apart (the wall stamp's resolution plus the game clock's whole second),8441
+2023,L1,FASTER not licensed,"the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the record logging it (4-1-4), so a correction and a record error cannot be told apart",356
+2023,L1_V12,WITHIN REAL TIME,"v12 margin (the wall stamp's resolution only), kept for comparison: within real time",29955
+2023,L1_V12,FASTER not licensed,"v12 margin (the wall stamp's resolution only), kept for comparison: faster than real time",8347
 2023,D3,WITHIN 40,the next snap came within 40 seconds of real time after the play ended (4-6-1),23659
 2023,D3,N/A (ADMIN),"an administrative stoppage (a change of possession, a timeout, the two-minute warning, a foul or a review) resets the play clock (4-6-2)",10516
 2023,D3,UNCHECKED,an end-of-play stamp is missing or the two-minute warning cannot be placed (the record carries end stamps from 2023),547
@@ -495,11 +495,11 @@ season,check,word,reason,count
 2024,TAG,foul outside windows 4-3-2e,foul outside windows 4-3-2e,1606
 2024,TAG,out of bounds early 4-3-2a,out of bounds early 4-3-2a,2775
 2024,TAG,replay review 15-5-1,replay review 15-5-1,130
-2024,the game level,WITHIN RESOLUTION,the game clock fell faster by no more than the stamps can tell apart (the revision stage stamp's resolution plus the game clock's whole second),8337
-2024,the game level,WITHIN REAL TIME,the game clock fell no faster than real time,28857
-2024,the game level,FASTER not licensed,"the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the record logging it (4-1-4), so a correction and a record error cannot be told apart",349
-2024,L1_V12,FASTER not licensed,"v12 margin (the revision stage stamp's resolution only), kept for comparison: faster than real time",8277
-2024,L1_V12,WITHIN REAL TIME,"v12 margin (the revision stage stamp's resolution only), kept for comparison: within real time",29266
+2024,L1,WITHIN RESOLUTION,the game clock fell faster by no more than the stamps can tell apart (the wall stamp's resolution plus the game clock's whole second),8337
+2024,L1,WITHIN REAL TIME,the game clock fell no faster than real time,28857
+2024,L1,FASTER not licensed,"the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the record logging it (4-1-4), so a correction and a record error cannot be told apart",349
+2024,L1_V12,FASTER not licensed,"v12 margin (the wall stamp's resolution only), kept for comparison: faster than real time",8277
+2024,L1_V12,WITHIN REAL TIME,"v12 margin (the wall stamp's resolution only), kept for comparison: within real time",29266
 2024,D3,WITHIN 40,the next snap came within 40 seconds of real time after the play ended (4-6-1),22837
 2024,D3,OVER 40,the next snap came more than 40 seconds of real time after the play ended; the play clock stops for interruptions the record does not log (4-6-3),3670
 2024,D3,N/A (ADMIN),"an administrative stoppage (a change of possession, a timeout, the two-minute warning, a foul or a review) resets the play clock (4-6-2)",10578
@@ -601,11 +601,11 @@ season,check,word,reason,count
 2025,TAG,foul outside windows 4-3-2e,foul outside windows 4-3-2e,1508
 2025,TAG,"injury, from play text 4-5-3","injury, from play text 4-5-3",938
 2025,TAG,replay review 15-5-1,replay review 15-5-1,128
-2025,the game level,WITHIN RESOLUTION,the game clock fell faster by no more than the stamps can tell apart (the revision stage stamp's resolution plus the game clock's whole second),8130
-2025,the game level,WITHIN REAL TIME,the game clock fell no faster than real time,28609
-2025,the game level,FASTER not licensed,"the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the record logging it (4-1-4), so a correction and a record error cannot be told apart",321
-2025,L1_V12,FASTER not licensed,"v12 margin (the revision stage stamp's resolution only), kept for comparison: faster than real time",7861
-2025,L1_V12,WITHIN REAL TIME,"v12 margin (the revision stage stamp's resolution only), kept for comparison: within real time",29199
+2025,L1,WITHIN RESOLUTION,the game clock fell faster by no more than the stamps can tell apart (the wall stamp's resolution plus the game clock's whole second),8130
+2025,L1,WITHIN REAL TIME,the game clock fell no faster than real time,28609
+2025,L1,FASTER not licensed,"the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the record logging it (4-1-4), so a correction and a record error cannot be told apart",321
+2025,L1_V12,FASTER not licensed,"v12 margin (the wall stamp's resolution only), kept for comparison: faster than real time",7861
+2025,L1_V12,WITHIN REAL TIME,"v12 margin (the wall stamp's resolution only), kept for comparison: within real time",29199
 2025,D3,WITHIN 40,the next snap came within 40 seconds of real time after the play ended (4-6-1),21717
 2025,D3,N/A (ADMIN),"an administrative stoppage (a change of possession, a timeout, the two-minute warning, a foul or a review) resets the play clock (4-6-2)",10363
 2025,D3,UNCHECKED,an end-of-play stamp is missing or the two-minute warning cannot be placed (the record carries end stamps from 2023),923

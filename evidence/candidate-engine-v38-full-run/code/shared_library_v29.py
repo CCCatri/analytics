@@ -1,11 +1,11 @@
-"""the engine-vs-record stage v19 aa's shared code (module e2b_v29_lib): one module for this process and every worker process, written out by the chain and imported by both: the counting function,
+"""E2b v19 aa's shared code (module e2b_v29_lib): one module for this process and every worker process, written out by the chain and imported by both: the counting function,
 the estimators and the workers; the one transition (transition.py) and section 4's check (clock_check.py) are the product files it imports."""
 import os, re, sys, io, time, json, pickle, hashlib, tempfile, shutil, threading, importlib.util
 from collections import Counter, defaultdict
 import numpy as np, pandas as pd
-import record, policy, rules, check_possessions, check_clock, check_downs, engine
+import record, contract, rules, r1, r2, r4, e1
 from rules import next_down, next_possession
-S = list(engine.SIM_SEASONS)
+S = list(e1.SIM_SEASONS)
 WARN_SEC = {}
 RUNOFF_RESTART = {}
 T_CAP = 40   # the pinned play clock (4-6-1), configured by the chain from rules/play_clock_pins.tsv
@@ -28,7 +28,7 @@ def one_(x):
 
 
 class SharedParse:
-    """Inside the block, engine.load, check_possessions.load, check_clock.load and check_downs.load each parse a season once per record.raw_frame and hand out copies."""
+    """Inside the block, e1.load, r1.load, r2.load and r4.load each parse a season once per record.raw_frame and hand out copies."""
     def __enter__(self):
         self.saved = {}; self.memo = {}
         for mod, nm in ((e1, "load"), (r1, "load"), (r2, "load"), (r4, "load")):
@@ -63,19 +63,19 @@ def per(k, n, unit):
     return f"NOT MEASURED (0 {unit})" if not n else f"{k / n:.3f} a {unit[:-1] if unit.endswith('s') else unit} ({int(k)} over {int(n)} {unit})"
 
 
-def injected_fault_verdict(n_targets, failed):
-    """d: a injected_fault with nothing to injected_fault into is INEFFECTIVE_CHECK, never 'did not fail'."""
-    return "INEFFECTIVE_CHECK (nothing to injected_fault into)" if not n_targets else ("FAILS as it must" if failed else "DID NOT FAIL")
+def plant_verdict(n_targets, failed):
+    """d: a plant with nothing to plant into is VACUOUS, never 'did not fail'."""
+    return "VACUOUS (nothing to plant into)" if not n_targets else ("FAILS as it must" if failed else "DID NOT FAIL")
 
 
 
 
 
 # ---------------- the product files: the one transition (transition.py) and section 4's check (clock_check.py), imported from the project folder ----------------
-# The library no longer carries its own copies: the record's rebuild, the engine (every worker) and section 4 call the accepted files; their shas are in LIBSHA.
+# The library no longer carries its own copies: the record's rebuild, the engine (every worker) and section 4 call the landed files; their shas are in LIBSHA.
 import transition as T, clock_check as CC
-from transition import (TPARTS, series, kick_to_come, unknown, same, int_end, punt_end, kick_end, second, after, after_one, FIXTURES, run_fixtures, injected,
-                        PLANTS, STAND_PLANTS, injected_fault_stand, enforced_at, STAND_PREFIX, foul_yards, spot_foul_yards,
+from transition import (TPARTS, series, kick_to_come, unknown, same, int_end, punt_end, kick_end, second, after, after_one, FIXTURES, run_fixtures, planted,
+                        PLANTS, STAND_PLANTS, planted_stand, enforced_at, STAND_PREFIX, foul_yards, spot_foul_yards,
                         run_yard_cases, YARD_PLANTS, goal_half)
 from clock_check import injury_text, _InjRead, down_row, STOP_AT_PLAY, warn_place, RUNOFF_RX, INJ_RX, INJ_UPD_RX
 
@@ -135,13 +135,13 @@ def score_state(d):
 
 
 def count_side(seasons):
-    """Per game and per possession tables for one side, every number from check_possessions.possessions, check_clock.intervals and engine.load (record.raw_frame decides the side)."""
+    """Per game and per possession tables for one side, every number from r1.possessions, r2.intervals and e1.load (record.raw_frame decides the side)."""
     G, PO, ST = [], [], []
     for s in seasons:
-        d = engine.load(s)
-        d2, _, _ = check_clock.load(s)
-        d1 = check_possessions.load(s).sort_values(["game_id", "order_sequence"]).reset_index(drop=True)
-        P = check_possessions.possessions(d1)
+        d = e1.load(s)
+        d2, _, _ = r2.load(s)
+        d1 = r1.load(s).sort_values(["game_id", "order_sequence"]).reset_index(drop=True)
+        P = r1.possessions(d1)
         th = d.groupby("game_id")["total_home_score"].transform(lambda v: v.ffill().shift().fillna(0))
         ta = d.groupby("game_id")["total_away_score"].transform(lambda v: v.ffill().shift().fillna(0))
         d["h0"], d["a0"] = th, ta
@@ -195,7 +195,7 @@ def count_side(seasons):
                                start_yl=float(x.at[a, "yardline_100"]) if not nanv(x.at[a, "yardline_100"]) else np.nan, r40=reached(40), r20=reached(20),
                                fg_made=r["play_type"] == "field_goal" and r["field_goal_result"] == "made",
                                score=score_state((r["h0"] - r["a0"]) * (1 if p_.team == x.at[a, "home_team"] else -1))))
-            iv = check_clock.intervals(gd)
+            iv = r2.intervals(gd)
             for t in iv:
                 if t["q"] > 4: continue
                 ka, kb = seqi[t["sa"]], seqi[t["sb"]]
@@ -203,11 +203,11 @@ def count_side(seasons):
                 if not (nanv(x.at[ka, "E"]) or nanv(x.at[ka, "W"])): la = float(x.at[ka, "E"] - x.at[ka, "W"])
                 dG = float(t["dG"]); on_play = np.nan if nanv(la) else min(max(la, 0.0), dG)
                 sc = score_state((x.at[ka, "h0"] - x.at[ka, "a0"]) * (1 if pos[ka] == x.at[ka, "home_team"] else -1))
-                ST.append(dict(season=s, game_id=g, reg=reg, sa=t["sa"], sb=t["sb"], half=1 if t["q"] <= 2 else 2, q=t["q"], tb=engine.time_bin(t["q"], t["qa"]), cls=t["cls"], dG=dG,
+                ST.append(dict(season=s, game_id=g, reg=reg, sa=t["sa"], sb=t["sb"], half=1 if t["q"] <= 2 else 2, q=t["q"], tb=e1.time_bin(t["q"], t["qa"]), cls=t["cls"], dG=dG,
                                on_play=on_play, between=bool(t["poss"]), score=sc, qa=float(t["qa"]), x=float(t["x"]) if not nanv(t["x"]) else np.nan, d3=t["d3"],
                                inc=bool(t["inc"]), ob=one_(t["ob"]), tmo=bool(t["tmo"]), tmw=t["tmw"] is True,
                                nopl=any(pt[k] == "no_play" and one_(x.at[k, "penalty"]) for k in range(ka + 1, kb)),
-                               tb2="last 2:00 of the game" if t["q"] == 4 and t["qa"] <= 120 else engine.time_bin(t["q"], t["qa"]),
+                               tb2="last 2:00 of the game" if t["q"] == 4 and t["qa"] <= 120 else e1.time_bin(t["q"], t["qa"]),
                                lsf=sc if (t["q"] in (2, 4) and t["qa"] <= 120) else "-"))
             pre = post = 0.0; n_snaps_reg = 0
             for qq in (1, 2, 3, 4):
@@ -319,11 +319,11 @@ def moments(d):
     out = []
     for g, x in d.groupby("game_id", sort=False):
         x = x.reset_index(drop=True); n = len(x)
-        rk = [engine.row_kind(p, k, t) for p, k, t in zip(x["play_type"], x["kind"], x["two_point_attempt"])]
+        rk = [e1.row_kind(p, k, t) for p, k, t in zip(x["play_type"], x["kind"], x["two_point_attempt"])]
         desc = x["desc"].astype(str).tolist(); q = x["qtr"].tolist(); qs = x["quarter_seconds_remaining"].tolist(); pos = x["posteam"].tolist()
         W = x["W"].tolist(); E = x["E"].tolist()
         for i in range(n):
-            if not engine.one(x.at[i, "timeout"]) or q[i] > 4: continue
+            if not e1.one(x.at[i, "timeout"]) or q[i] > 4: continue
             m = TO_N.search(desc[i])
             j = i - 1; warn = False
             while j >= 0 and q[j] == q[i] and rk[j] == "other":
@@ -333,17 +333,17 @@ def moments(d):
             elif warn: mom = "after the two-minute warning"
             elif rk[j] == "snap":
                 nx = next((k for k in range(i + 1, n) if rk[k] == "snap" and q[k] == q[i]), None)
-                same = nx is not None and pos[nx] == pos[j] and not (engine.one(x.at[j, "touchdown"]) or x.at[j, "field_goal_result"] == "made" or engine.one(x.at[j, "safety"]))
+                same = nx is not None and pos[nx] == pos[j] and not (e1.one(x.at[j, "touchdown"]) or x.at[j, "field_goal_result"] == "made" or e1.one(x.at[j, "safety"]))
                 mom = "after a snap, the same team snaps next" if same else "after a snap that ended the possession or scored"
             else: mom = {"kickoff": "after a kickoff", "try": "after a Try", "foul": "after a foul", "timeout": "right after another timeout"}.get(rk[j], f"after a row of kind {rk[j]}")
             ns = next((k for k in range(i + 1, n) if rk[k] == "snap"), None)
             caller = "not charged by its text" if not m else ("no next snap" if ns is None else ("offense" if m.group(2) == pos[ns] else "defense"))
-            st = E[j] if (j >= 0 and not engine.nan(E[j])) else (W[j] if j >= 0 else np.nan)
-            rs = W[i] - st if not (engine.nan(W[i]) or engine.nan(st)) else np.nan
-            after = (qs[j] - (E[j] - W[j])) if (j >= 0 and rk[j] in ("snap", "kickoff") and not (engine.nan(E[j]) or engine.nan(W[j]))) else (qs[j] if j >= 0 and rk[j] not in ("snap", "kickoff") else np.nan)
-            gr = max(after - qs[i], 0.0) if not engine.nan(after) else np.nan
-            sc = engine.score_bin(x.at[ns, "diff"]) if (ns is not None and "diff" in x.columns) else "-"
-            out.append(dict(game_id=g, season=x.at[i, "season"], q=q[i], qs=qs[i], tb2="last 2:00 of the game" if q[i] == 4 and qs[i] <= 120 else engine.time_bin(q[i], qs[i]),
+            st = E[j] if (j >= 0 and not e1.nan(E[j])) else (W[j] if j >= 0 else np.nan)
+            rs = W[i] - st if not (e1.nan(W[i]) or e1.nan(st)) else np.nan
+            after = (qs[j] - (E[j] - W[j])) if (j >= 0 and rk[j] in ("snap", "kickoff") and not (e1.nan(E[j]) or e1.nan(W[j]))) else (qs[j] if j >= 0 and rk[j] not in ("snap", "kickoff") else np.nan)
+            gr = max(after - qs[i], 0.0) if not e1.nan(after) else np.nan
+            sc = e1.score_bin(x.at[ns, "diff"]) if (ns is not None and "diff" in x.columns) else "-"
+            out.append(dict(game_id=g, season=x.at[i, "season"], q=q[i], qs=qs[i], tb2="last 2:00 of the game" if q[i] == 4 and qs[i] <= 120 else e1.time_bin(q[i], qs[i]),
                             moment=mom, caller=caller, team=m.group(2) if m else None, num=int(m.group(1)) if m else -1, charged=bool(m), real_since=rs, game_run=gr, score=sc))
     return pd.DataFrame(out)
 
@@ -371,19 +371,19 @@ def left_at_half(TMx, games):
 
 
 # ---------------- the estimators (fixed as v12 ran them) ----------------
-TREE = dict(learning_rate=0.1, max_leaf_nodes=15, min_samples_leaf=engine.MIN_BIN, l2_regularization=0.0, early_stopping=False, random_state=0)
+TREE = dict(learning_rate=0.1, max_leaf_nodes=15, min_samples_leaf=e1.MIN_BIN, l2_regularization=0.0, early_stopping=False, random_state=0)
 CAP = {"run": 500, "stop": 500}
 
 
 def fit_part(X, y, seasons, cap, inner_model=None):
     from sklearn.ensemble import HistGradientBoostingClassifier as HGB
     inner = max(set(seasons.tolist())); tr = seasons != inner; te = ~tr
-    if tr.sum() == 0 or te.sum() == 0 or len(np.unique(y[tr])) < 2: raise record.DataGap("refused: no inner held-out season with two or more classes to choose rounds on")
+    if tr.sum() == 0 or te.sum() == 0 or len(np.unique(y[tr])) < 2: raise record.GAP("refused: no inner held-out season with two or more classes to choose rounds on")
     m = inner_model if inner_model is not None else HGB(**dict(TREE, max_iter=cap)).fit(X[tr], y[tr])
     idx = {c: k for k, c in enumerate(m.classes_)}; keep = np.array([v in idx for v in y[te]]); yi = np.array([idx[v] for v in y[te][keep]], dtype=int)
     ll = [float(-np.mean(np.log(np.clip(p[np.arange(len(yi)), yi], 1e-300, None)))) for p in m.staged_predict_proba(X[te][keep])]
     best = int(np.argmin(ll)) + 1
-    if best >= cap: raise record.DataGap(f"refused: the lowest inner log loss is at the ceiling ({cap} rounds)")
+    if best >= cap: raise record.GAP(f"refused: the lowest inner log loss is at the ceiling ({cap} rounds)")
     final = HGB(**dict(TREE, max_iter=best)).fit(X, y)
     return final, dict(inner=int(inner), best=best, cap=cap, ll_best=ll[best - 1], ll_first=ll[0], ll_cap=ll[-1], unseen=int((~keep).sum()), n=len(y))
 
@@ -392,7 +392,7 @@ RACE_TBINS = ((0, 7), (8, 15), (16, 23), (24, 31), (32, 40))   # v19 w1: the sec
 
 
 def race_design(X, mu, sd, tcap):
-    """v19 w1: the race's inputs (the same text in engine.py): the numbers standardised; t (the seconds since the play ended, read up to the play clock) one
+    """v19 w1: the race's inputs (the same text in e1.py): the numbers standardised; t (the seconds since the play ended, read up to the play clock) one
     indicator a second; and the time left in the half crossed with t: the last two minutes of a half (quarters 2 and 4, the quarter's clock at the play's end
     less t at or under 120) and quarters 2 and 4 apart from 1 and 3, each times RACE_TBINS. X: q, the clock at the play's end, the score difference, down,
     distance, yard line, the timeouts each side has, review, injury, t."""
@@ -405,7 +405,7 @@ def race_design(X, mu, sd, tcap):
 
 class LRRace:
     """The race's estimator: a multinomial logistic race (v12's: no penalty; lbfgs, at most 1,000 iterations) on race_design's inputs (v19 w1: the time left
-    in the half crossed with the play clock's seconds added). shuffle: w1's injected_fault only, the time-left columns permuted across moments before the fit."""
+    in the half crossed with the play clock's seconds added). shuffle: w1's plant only, the time-left columns permuted across moments before the fit."""
     def __init__(self, X, y, shuffle=None):
         from sklearn.linear_model import LogisticRegression
         self.tcap = T_CAP
@@ -477,7 +477,7 @@ def play_threaded(m, s, sched_s, Rs, X6):
             G = m.Game(g, Rs, X6, np.random.default_rng([m.SEED, s, k]), s)
             rows[k] = G.run(); logs[k] = [(g["game_id"], s) + x for x in getattr(G, "race_log", [])]; cnts[k] = G.cnt; decs[k] = G.declared
             chg[k] = list(getattr(G, "chg", [])); uns[k] = list(getattr(G, "unsup", []))
-        except record.DataGap as ex_:
+        except record.GAP as ex_:
             sk[k] = str(ex_)[:120]
         finally:
             B.done()
@@ -537,7 +537,7 @@ def _engine(text):
     k = shs(text)
     if _W.get(("e1n", k)) is None:
         m_ = load_mod(text, "e1_v29aa_" + k)
-        for k_, v_ in ENGINE_CONF.items(): setattr(m_, k_, v_)   # v19 part 2: the engine's caller-set values (its accepted form reads them)
+        for k_, v_ in ENGINE_CONF.items(): setattr(m_, k_, v_)   # v19 part 2: the engine's caller-set values (its landed form reads them)
         _W[("e1n", k)] = m_
     return _W[("e1n", k)]
 
@@ -563,12 +563,12 @@ def eval_season(s, F, x6, shared=True, checks=True):
     """One season's engine games: E2a's counts, the timeout moments and section 4's checks, from one parse (shared) or from separate parses."""
     SIDE[0] = "engine"; FAILP.clear(); BACK.clear()
     ctx = SharedParse() if shared else _Null()
-    with engine.OnSim({s: F}), ctx:
+    with e1.OnSim({s: F}), ctx:
         G_, PO_, ST_ = count_side([s])
-        dM = with_diff(engine.load(s)); TM = moments(dM)
+        dM = with_diff(e1.load(s)); TM = moments(dM)
         sec4 = None
         if checks:
-            w4, bad4 = engine.check_r4([s]); C1, left1, _ = engine.check_r1([s]); CK, FL, COST, _ = check_clock2([s]); PO, PB = engine.check_periods({s: F}, x6, [s]); SR = engine.season_rule_check([s], x6)
+            w4, bad4 = e1.check_r4([s]); C1, left1, _ = e1.check_r1([s]); CK, FL, COST, _ = check_clock2([s]); PO, PB = e1.check_periods({s: F}, x6, [s]); SR = e1.season_rule_check([s], x6)
             sec4 = dict(w4=w4, bad4=bad4, C1=C1, left1=left1, CK=CK, FL=FL, COST=COST, PO=PO, PB=PB, SR=SR)
     return dict(G=G_, PO=PO_, ST=ST_, dM=dM, TM=TM, sec4=sec4, failp=list(FAILP), back=list(BACK))
 
@@ -586,7 +586,7 @@ def w_fit_stop(npz, s_out, cap):
     z = np.load(npz, allow_pickle=True); X, y, ss = z["X"], z["y"], z["s"]; tr = ss != s_out
     t0 = time.time()
     try: m, inf = fit_part(X[tr], y[tr], ss[tr], cap)
-    except record.DataGap as ex_: return s_out, None, str(ex_), time.time() - t0
+    except record.GAP as ex_: return s_out, None, str(ex_), time.time() - t0
     return s_out, pickle.dumps(m), inf, time.time() - t0
 
 
@@ -598,12 +598,12 @@ def w_fit_race(npz, fs, key, shuffle=None):
 
 def w_fit_call4(npz, s_out, cap, shuffle=None):
     """aa1: the fourth-down choice (go, field_goal, punt) fitted on every season but s_out (look-back; the rounds by fit_part's inner season, the trees as the
-    stopped part's). shuffle: the injected_fault only, the yard line (column 0) permuted across the fitted rows before the fit (seed shuffle)."""
+    stopped part's). shuffle: the plant only, the yard line (column 0) permuted across the fitted rows before the fit (seed shuffle)."""
     z = np.load(npz, allow_pickle=True); X, y, ss = z["X"].copy(), z["y"], z["s"]; tr = ss != s_out
     if shuffle is not None: X[tr, 0] = X[tr, 0][np.random.default_rng(shuffle).permutation(int(tr.sum()))]
     t0 = time.time()
     try: m, inf = fit_part(X[tr], y[tr], ss[tr], cap)
-    except record.DataGap as ex_: return s_out, None, str(ex_), time.time() - t0
+    except record.GAP as ex_: return s_out, None, str(ex_), time.time() - t0
     return s_out, pickle.dumps(m), inf, time.time() - t0
 
 
@@ -613,7 +613,7 @@ def w_plant(name, text, s4, sched_s, tab_path, models_bytes, x6, seasons):
     Rp = m.Rates(s4, [TAB[x][0] for x in seasons if x != s4]); mb = pickle.loads(models_bytes); Rp.RACE_MODELS = mb["race"]; Rp.CALL4 = mb["call4"]; Rp.CALL4_SHARE = mb.get("call4_share")
     out_ = play_threaded(m, s4, sched_s, Rp, x6)
     F = {s4: m.text_frame(out_[0])}   # every game (none removed for what it drew)
-    if not len(F[s4]): return name, None, "no game to injected_fault into", "the injected_fault"
+    if not len(F[s4]): return name, None, "no game to plant into", "the plant"
     with m.OnSim(F):
         if name == "P1": _, lp, _ = m.check_r1([s4]); v = len(lp); ok = v > 0; what = "r1 unexplained"
         elif name == "P2": w, _ = m.check_r4([s4]); v = w["OTHER"]; ok = v > 0; what = "r4 OTHER"

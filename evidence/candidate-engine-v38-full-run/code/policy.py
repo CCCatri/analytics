@@ -1,4 +1,4 @@
-"""version 4 contract: RUBRIC.md section 9 as code. One name per quantity (M7, A15). Nothing here is read from version 3."""
+"""nfl4 contract: RUBRIC.md section 9 as code. One name per quantity (M7, A15). Nothing here is read from nfl3."""
 import os
 
 RAW_DIR = "/Users/cameroncatri/LocalWork/nfl/data/raw"
@@ -7,28 +7,28 @@ RAW_FILE_COUNT = 45
 # data_version := sha256 over the sorted "name:sha\n" lines of the 45 pins, full hex (RUBRIC section 9).
 DATA_VERSION = "8d9f37846c0cc3bcdac6ea2f3082c1297cfe076306f4cffc34b8f20eb3e36107"
 SEASONS = (2019, 2020, 2021, 2022, 2023, 2024, 2025)
-HOLD = 2022                   # R10: held_out
+HOLD = 2022                   # R10: sealed
 assert HOLD == 2022
 
 
 POLICY = {
-    "holdout_season": 2022,   # R10: which season is held_out (identity)
+    "holdout_season": 2022,   # R10: which season is sealed (identity)
     "k_se": 2.0,              # the one reading convention; printed beside every interval
-    "unseal": None,           # X7: the event, executed once by the reviewer when its line prints
+    "unseal": None,           # X7: the event, executed once by the owner when its line prints
 }
 OWNER_KEYS = ("unseal",)
 
 class INSUFFICIENT(Exception):
-    """A quality_gate whose POLICY key is None (RUBRIC section 7), or a run that needs a number the files do not hold. Never caught and turned into PASS."""
+    """A gate whose POLICY key is None (RUBRIC section 7), or a run that needs a number the files do not hold. Never caught and turned into PASS."""
 
 def policy(key):
     if key not in POLICY:
         raise KeyError(f"POLICY has no key {key!r}")
     if key in OWNER_KEYS and POLICY[key] is None:
-        raise INSUFFICIENT(f"POLICY {key} is None: reviewer event required (RUBRIC section 7)")
+        raise INSUFFICIENT(f"POLICY {key} is None: owner event required (RUBRIC section 7)")
     return POLICY[key]
 
-# "no price: <reason>" enum (section 0, Order 3). Fixed; a reason outside it is a DataGap.
+# "no price: <reason>" enum (section 0, Order 3). Fixed; a reason outside it is a GAP.
 NO_PRICE = ("not_forecastable", "not_pregame_knowable", "dependent", "unconserved_team_game",
             "below_baseline", "insufficient_ruling", "no_prior_finished_game", "population")
 
@@ -59,7 +59,7 @@ OFFICIAL_BASE = ("player_id", "position", "position_group", "season", "week", "s
 OFFICIAL_BASE_TYPES = {"player_id": ("str", False), "position": ("str", True), "position_group": ("str", True),
                        "season": ("int", False), "week": ("int", False), "season_type": ("str", False),
                        "game_id": ("str", False), "team": ("str", False), "opponent_team": ("str", True)}
-# a contradiction in the record raises DataGap (R2): (lesser, greater)
+# a contradiction in the record raises GAP (R2): (lesser, greater)
 # (rec_td, receptions) is not an identity: a lateral TD credits the scorer a receiving TD and no reception
 # (2024_03_DET_ARI 00-0039139, 2024_13_SF_BUF 00-0034857; ruled 2026-10-25 from the pbp lateral read).
 OFFICIAL_CONTRADICTIONS = (("completions", "attempts"), ("interceptions", "attempts"), ("pass_td", "completions"),

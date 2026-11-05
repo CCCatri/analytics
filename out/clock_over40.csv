@@ -1,4 +1,4 @@
-# r2.py 567e8946b4e0 | R2_TARGETS.md b23041601078 (v16) | record read (L0 clause 1), not product
+# check_clock.py b0c45efc956d | clock-check.md 576bd140df3b (v16) | record read (rules-level clause 1), not product
 season,game_id,sa,sb,q,pt,cls,why,runoff,dG,dW,rW,res,x,rx,size,l1,l1_v12,d3
 2019,2019_15_CLE_ARI,532,572,1,pass,PARTIAL,out of bounds early 4-3-2a,False,25.0,57.022999999986496,0.001,1.001,52.44999999999709,0.001,12.44999999999709,WITHIN REAL TIME,WITHIN REAL TIME,OVER 40
 2019,2019_15_CLE_ARI,766,787,1,run,RUN,,False,54.0,75.50999999999476,0.001,1.001,67.87399999999616,0.001,27.87399999999616,WITHIN REAL TIME,WITHIN REAL TIME,OVER 40

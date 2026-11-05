@@ -1,13 +1,13 @@
-"""version 4 record, identity layer (S0): what is true of the raw files. No fit, no simulation, no fill (R2).
-Every function prints what it excluded (section 8). HOLD-OUT 2022 is held_out here (R10)."""
+"""nfl4 record, identity layer (S0): what is true of the raw files. No fit, no simulation, no fill (R2).
+Every function prints what it excluded (section 8). HOLD-OUT 2022 is sealed here (R10)."""
 import os, re, json, hashlib
 import pandas as pd
-import policy
+import contract
 
-assert policy.HOLD == 2022
+assert contract.HOLD == 2022
 
 
-class DataGap(Exception):
+class GAP(Exception):
     """A contradiction, an untyped arrival, a missing or altered file. Stops the run; never a value."""
 
 
@@ -20,13 +20,13 @@ def sha(path):
 
 
 def raw_pins():
-    if not os.path.exists(policy.PINS_FILE):
-        raise DataGap(f"pins file missing: {policy.PINS_FILE}")
-    pins = json.load(open(policy.PINS_FILE))
-    if pins.get("raw_dir") != policy.RAW_DIR:
-        raise DataGap(f"pins raw_dir {pins.get('raw_dir')!r} != policy.RAW_DIR {policy.RAW_DIR!r}")
-    if len(pins["pins"]) != policy.RAW_FILE_COUNT:
-        raise DataGap(f"pins count {len(pins['pins'])} != policy.RAW_FILE_COUNT {policy.RAW_FILE_COUNT}")
+    if not os.path.exists(contract.PINS_FILE):
+        raise GAP(f"pins file missing: {contract.PINS_FILE}")
+    pins = json.load(open(contract.PINS_FILE))
+    if pins.get("raw_dir") != contract.RAW_DIR:
+        raise GAP(f"pins raw_dir {pins.get('raw_dir')!r} != contract.RAW_DIR {contract.RAW_DIR!r}")
+    if len(pins["pins"]) != contract.RAW_FILE_COUNT:
+        raise GAP(f"pins count {len(pins['pins'])} != contract.RAW_FILE_COUNT {contract.RAW_FILE_COUNT}")
     return pins
 
 
@@ -37,21 +37,21 @@ def data_version(pins=None):
 
 
 def seasons_on_disk():
-    found = sorted(int(m.group(1)) for n in os.listdir(policy.RAW_DIR)
+    found = sorted(int(m.group(1)) for n in os.listdir(contract.RAW_DIR)
                    for m in [re.fullmatch(r"pbp_(\d{4})\.csv\.gz", n)] if m)
     print(f"seasons_on_disk {found}")
     return tuple(found)
 
 
 def disk_shas(pins):
-    return {n: sha(os.path.join(policy.RAW_DIR, n)) for n in sorted(pins["pins"])
-            if os.path.exists(os.path.join(policy.RAW_DIR, n))}
+    return {n: sha(os.path.join(contract.RAW_DIR, n)) for n in sorted(pins["pins"])
+            if os.path.exists(os.path.join(contract.RAW_DIR, n))}
 
 
 def deficiencies(pins=None, shas=None):
     """Every way the raw directory differs from the pins. Empty list = none."""
     pins = raw_pins() if pins is None else pins
-    on_disk = set(os.listdir(policy.RAW_DIR))
+    on_disk = set(os.listdir(contract.RAW_DIR))
     missing = sorted(set(pins["pins"]) - on_disk)
     unpinned = sorted(on_disk - set(pins["pins"]))
     shas = disk_shas(pins) if shas is None else shas
@@ -63,19 +63,19 @@ def deficiencies(pins=None, shas=None):
 
 
 def identity(pins=None, shas=None):
-    """R1 DATA IDENTITY. Prints PASS or raises DataGap. FAILS WHEN any deficiency exists or the derived
-    data_version != policy.DATA_VERSION. REPLAY is declared UNBUILT until the credits chain lands."""
+    """R1 DATA IDENTITY. Prints PASS or raises GAP. FAILS WHEN any deficiency exists or the derived
+    data_version != contract.DATA_VERSION. REPLAY is declared UNBUILT until the credits chain lands."""
     pins = raw_pins() if pins is None else pins
     defs, shas = deficiencies(pins, shas)
     dv = data_version(pins)
     matched = sum(1 for n in pins["pins"] if shas.get(n) == pins["pins"][n])
     line = (f"R1 DATA IDENTITY pins matched {matched}/{len(pins['pins'])} data_version {dv} "
-            f"contract {policy.DATA_VERSION} pinned {pins['data_version']}")
-    if defs or dv != policy.DATA_VERSION or pins["data_version"] != policy.DATA_VERSION:
+            f"contract {contract.DATA_VERSION} pinned {pins['data_version']}")
+    if defs or dv != contract.DATA_VERSION or pins["data_version"] != contract.DATA_VERSION:
         print(line + " FAIL")
-        raise DataGap("R1 FAIL: " + "; ".join(defs or [f"data_version {dv} pinned {pins['data_version']} contract {policy.DATA_VERSION}"]))
+        raise GAP("R1 FAIL: " + "; ".join(defs or [f"data_version {dv} pinned {pins['data_version']} contract {contract.DATA_VERSION}"]))
     print(line + " PASS")
-    print("R1 REPLAY per stat: UNBUILT (credits chain not accepted); no read runs before it prints")
+    print("R1 REPLAY per stat: UNBUILT (credits chain not landed); no read runs before it prints")
     return {"data_version": dv, "shas": shas}
 
 
@@ -89,36 +89,36 @@ def typed(df, types, where):
     a non-nullable column has an empty cell, or an int column holds a non-integer."""
     untyped = [c for c in df.columns if c not in types]
     if untyped:
-        raise DataGap(f"{where}: untyped arrival {untyped}")
+        raise GAP(f"{where}: untyped arrival {untyped}")
     absent = [c for c in types if c not in df.columns]
     if absent:
-        raise DataGap(f"{where}: typed column absent {absent}")
+        raise GAP(f"{where}: typed column absent {absent}")
     out = {}
     for c, (kind, nullable) in types.items():
         s = df[c].astype(str).str.strip()
         empty = s.isin(EMPTY)
         if empty.any() and not nullable:
-            raise DataGap(f"{where}: {c} empty in {int(empty.sum())} rows, not nullable")
+            raise GAP(f"{where}: {c} empty in {int(empty.sum())} rows, not nullable")
         if kind == "int":
             bad = ~empty & ~s.str.match(INT_RE)
             if bad.any():
-                raise DataGap(f"{where}: {c} non-integer in {int(bad.sum())} rows e.g. {s[bad].iloc[0]!r}")
+                raise GAP(f"{where}: {c} non-integer in {int(bad.sum())} rows e.g. {s[bad].iloc[0]!r}")
             out[c] = pd.array([None if e else int(float(v)) for v, e in zip(s, empty)], dtype="Int64")
         elif kind == "float":
             num = pd.to_numeric(s.mask(empty), errors="coerce")
             bad = ~empty & num.isna()
             if bad.any():
-                raise DataGap(f"{where}: {c} non-numeric in {int(bad.sum())} rows e.g. {s[bad].iloc[0]!r}")
+                raise GAP(f"{where}: {c} non-numeric in {int(bad.sum())} rows e.g. {s[bad].iloc[0]!r}")
             out[c] = num.astype(float)
         elif kind == "str":
             out[c] = pd.Series([None if e else v for v, e in zip(s, empty)], dtype=object, index=s.index)
         else:
-            raise DataGap(f"{where}: unknown kind {kind!r} for {c}")
+            raise GAP(f"{where}: unknown kind {kind!r} for {c}")
     return pd.DataFrame(out)
 
 
 def header(name):
-    path = os.path.join(policy.RAW_DIR, name)
+    path = os.path.join(contract.RAW_DIR, name)
     opener = __import__("gzip").open if name.endswith(".gz") else open
     with opener(path, "rt") as f:
         return f.readline().rstrip("\n").split(",")
@@ -126,15 +126,15 @@ def header(name):
 
 def opened(name):
     """The record's one reader: every file opened is fingerprinted against its pin before a byte is read."""
-    path = os.path.join(policy.RAW_DIR, name)
+    path = os.path.join(contract.RAW_DIR, name)
     pins = raw_pins()["pins"]
     if name not in pins:
-        raise DataGap(f"unpinned raw file {name}")
+        raise GAP(f"unpinned raw file {name}")
     if not os.path.exists(path):
-        raise DataGap(f"missing raw file {name}")
+        raise GAP(f"missing raw file {name}")
     got = sha(path)
     if got != pins[name]:
-        raise DataGap(f"fingerprint mismatch {name}: disk {got[:12]} pin {pins[name][:12]}")
+        raise GAP(f"fingerprint mismatch {name}: disk {got[:12]} pin {pins[name][:12]}")
     return path
 
 
@@ -144,10 +144,10 @@ def raw_frame(name, columns, where):
     cols = header(name)
     missing = [c for c in columns if c not in cols]
     if missing:
-        raise DataGap(f"{where}: columns absent from {name}: {missing}")
-    present_betting = [c for c in policy.BETTING_EXCLUDED if c in columns]
+        raise GAP(f"{where}: columns absent from {name}: {missing}")
+    present_betting = [c for c in contract.BETTING_EXCLUDED if c in columns]
     if present_betting:
-        raise DataGap(f"{where}: betting inputs requested {present_betting}")
+        raise GAP(f"{where}: betting inputs requested {present_betting}")
     print(f"raw_frame {name} columns {len(columns)} absent {len(missing)} betting {len(present_betting)}")
     return pd.read_csv(path, usecols=list(columns), dtype=str, keep_default_na=False)
 
@@ -156,17 +156,17 @@ def read(name, columns, types, where):
     return typed(raw_frame(name, columns, where), types, where)
 
 
-def held_out(season, where):
+def sealed(season, where):
     """R10. FAILS WHEN a dev run reads the hold-out season while POLICY unseal is None."""
-    if season == policy.HOLD and policy.POLICY["unseal"] is None:
-        raise DataGap(f"{where}: HOLD-OUT {policy.HOLD} held_out; POLICY unseal is None (R10, X7)")
+    if season == contract.HOLD and contract.POLICY["unseal"] is None:
+        raise GAP(f"{where}: HOLD-OUT {contract.HOLD} sealed; POLICY unseal is None (R10, X7)")
 
 
 def schedule():
     """All seasons' games, hold-out rows excluded and counted. Betting columns are never loaded."""
-    df = read(policy.SCHEDULE_FILE, policy.SCHEDULE_COLUMNS, policy.SCHEDULE_TYPES, "schedule")
-    off = ~df["season"].isin(policy.SEASONS)
-    hold = df["season"].eq(policy.HOLD)
+    df = read(contract.SCHEDULE_FILE, contract.SCHEDULE_COLUMNS, contract.SCHEDULE_TYPES, "schedule")
+    off = ~df["season"].isin(contract.SEASONS)
+    hold = df["season"].eq(contract.HOLD)
     out = df[~off & ~hold].reset_index(drop=True)
     unplayed = int(out["home_score"].isna().sum())
     print(f"schedule rows {len(out)} excluded outside SEASONS {int(off.sum())} "
@@ -176,12 +176,12 @@ def schedule():
 
 
 def games(season):
-    held_out(season, "games")
+    sealed(season, "games")
     df = schedule()
     out = df[df["season"].eq(season)].reset_index(drop=True)
     print(f"games season {season} rows {len(out)}")
     if len(out) == 0:
-        raise DataGap(f"games: no rows for season {season}")
+        raise GAP(f"games: no rows for season {season}")
     return out
 
 
@@ -196,7 +196,7 @@ def resolve_code(code, codes):
     """Itself when a season identity, its alias when the alias is one and it is not, else None."""
     if code in codes:
         return code
-    alias = policy.TEAM_ALIASES.get(code)
+    alias = contract.TEAM_ALIASES.get(code)
     if alias is not None and alias in codes:
         return alias
     return None
@@ -204,13 +204,13 @@ def resolve_code(code, codes):
 
 def contradictions(df, where):
     """R2 on the official record. FAILS WHEN any (lesser, greater) pair is violated in any row."""
-    for lesser, greater in policy.OFFICIAL_CONTRADICTIONS:
+    for lesser, greater in contract.OFFICIAL_CONTRADICTIONS:
         bad = df[lesser] > df[greater]
         if bad.any():
             r = df[bad].iloc[0]
-            raise DataGap(f"{where}: contradiction {lesser} > {greater} in {int(bad.sum())} rows "
+            raise GAP(f"{where}: contradiction {lesser} > {greater} in {int(bad.sum())} rows "
                       f"e.g. {r.get('player_id')} {r.get('game_id')} {lesser}={r[lesser]} {greater}={r[greater]}")
-    print(f"{where} contradictions 0 over {len(policy.OFFICIAL_CONTRADICTIONS)} pairs rows {len(df)}")
+    print(f"{where} contradictions 0 over {len(contract.OFFICIAL_CONTRADICTIONS)} pairs rows {len(df)}")
 
 
 def no_id_rows(raw, stat_cols, where):
@@ -219,10 +219,10 @@ def no_id_rows(raw, stat_cols, where):
     noid = raw["player_id"].str.strip().isin(EMPTY)
     num = raw.loc[noid, stat_cols].apply(pd.to_numeric, errors="coerce")
     if num.isna().any().any():
-        raise DataGap(f"{where}: {int(num.isna().any(axis=1).sum())} rows with no player_id carry a non-numeric stat")
+        raise GAP(f"{where}: {int(num.isna().any(axis=1).sum())} rows with no player_id carry a non-numeric stat")
     nonzero = num.ne(0).any(axis=1)
     if nonzero.any():
-        raise DataGap(f"{where}: {int(nonzero.sum())} rows with no player_id carry a nonzero stat (credited to no one)")
+        raise GAP(f"{where}: {int(nonzero.sum())} rows with no player_id carry a nonzero stat (credited to no one)")
     print(f"{where} excluded rows with no player_id {int(noid.sum())} over weeks {raw.loc[noid, 'week'].nunique()} "
           f"no-id rows with nonzero stat {int(nonzero.sum())}")
     return noid
@@ -230,40 +230,40 @@ def no_id_rows(raw, stat_cols, where):
 
 def official(season):
     """The nflverse weekly record for one season, STATS-named, with every exclusion counted."""
-    held_out(season, "official")
-    name = policy.STATS_FILE.format(season=season)
+    sealed(season, "official")
+    name = contract.STATS_FILE.format(season=season)
     cols = header(name)
     chosen = {}
-    for stat, alts in policy.OFFICIAL_COLUMNS.items():
+    for stat, alts in contract.OFFICIAL_COLUMNS.items():
         present = [a for a in alts if a in cols]
         if len(present) != 1:
-            raise DataGap(f"official {season}: {stat} maps to {present} of {alts}; exactly one required")
+            raise GAP(f"official {season}: {stat} maps to {present} of {alts}; exactly one required")
         chosen[stat] = present[0]
-    types = dict(policy.OFFICIAL_BASE_TYPES)
+    types = dict(contract.OFFICIAL_BASE_TYPES)
     types.update({chosen[s]: ("int", False) for s in chosen})
-    raw = raw_frame(name, policy.OFFICIAL_BASE + tuple(chosen.values()), f"official {season}")
+    raw = raw_frame(name, contract.OFFICIAL_BASE + tuple(chosen.values()), f"official {season}")
     noid = no_id_rows(raw, list(chosen.values()), f"official {season}")
     df = typed(raw[~noid].reset_index(drop=True), types, f"official {season}")
     df = df.rename(columns={v: k for k, v in chosen.items()})
     df["tds"] = df["rec_td"] + df["rush_td"]
     bad_season = df["season"].ne(season)
     if bad_season.any():
-        raise DataGap(f"official {season}: {int(bad_season.sum())} rows carry another season")
+        raise GAP(f"official {season}: {int(bad_season.sum())} rows carry another season")
     dup = df.duplicated(["player_id", "game_id"]).sum()
     if dup:
-        raise DataGap(f"official {season}: {int(dup)} duplicate (player, game) keys (R4)")
+        raise GAP(f"official {season}: {int(dup)} duplicate (player, game) keys (R4)")
     print(f"official {season} R4 duplicate (player, game) keys {int(dup)} other-season rows {int(bad_season.sum())}")
     contradictions(df, f"official {season}")
-    in_pos = df["position"].isin(policy.POSITIONS)
+    in_pos = df["position"].isin(contract.POSITIONS)
     print(f"official {season} rows {len(df)} players {df['player_id'].nunique()} games {df['game_id'].nunique()} "
           f"season_type {df['season_type'].value_counts().to_dict()} position null {int(df['position'].isna().sum())} "
-          f"rows outside {policy.POSITIONS} {int((~in_pos).sum())} (kept; population(name) excludes at S1)")
+          f"rows outside {contract.POSITIONS} {int((~in_pos).sum())} (kept; population(name) excludes at S1)")
     return df
 
 
 def scoring_view(season):
-    """The only path to realized outcomes for scoring. Refuses the hold-out season outside an unseal decision."""
-    held_out(season, "scoring_view")
+    """The only path to realized outcomes for scoring. Refuses the hold-out season outside an unseal ruling."""
+    sealed(season, "scoring_view")
     return official(season)
 
 
@@ -276,7 +276,7 @@ EVENT_COLUMNS = ("game_id", "season", "week", "posteam", "play_id", "play_type",
                  "interception", "fumble_lost", "yards_gained", "pass_touchdown", "rush_touchdown", "touchdown", "td_team",
                  "yardline_100", "down", "ydstogo", "qtr", "game_seconds_remaining", "fixed_drive", "penalty",
                  "lateral_receiver_player_id", "lateral_rusher_player_id", "lateral_receiving_yards", "lateral_rushing_yards",
-                 # scores, the scoring side and try results: the possession author reads who scored and how (11-5-1(b), 11-5-2, 11-3)
+                 # scores, the scoring side and try results: the possession builder reads who scored and how (11-5-1(b), 11-5-2, 11-3)
                  "home_team", "away_team", "defteam", "home_score", "away_score", "total_home_score", "total_away_score", "extra_point_result", "two_point_conv_result", "field_goal_result", "safety", "defensive_two_point_conv", "defensive_extra_point_conv")
 EVENT_TYPES = {"game_id": ("str", False), "season": ("int", False), "week": ("int", False), "posteam": ("str", True),
                "play_id": ("int", False), "play_type": ("str", True), "timeout": ("int", True), "two_point_attempt": ("int", True), "pass": ("int", True),
@@ -326,14 +326,14 @@ def timeout_rows(pt, timeout_flag, snap):
 def events(season):
     """One row per play with its kind (section 9 event kinds). FAILS WHEN a play_type is outside the contract, a flag is null
     on a scrimmage row, yards are null on a scrimmage row, or a kind lacks the id it needs (KIND_NEEDS)."""
-    held_out(season, "events")
+    sealed(season, "events")
     t0 = time.time()
-    df = read(policy.PBP_FILE.format(season=season), EVENT_COLUMNS + ("desc",), {**EVENT_TYPES, "desc": ("str", True)}, f"events {season}")   # desc read only for the snap test (15-1); dropped before return
+    df = read(contract.PBP_FILE.format(season=season), EVENT_COLUMNS + ("desc",), {**EVENT_TYPES, "desc": ("str", True)}, f"events {season}")   # desc read only for the snap test (15-1); dropped before return
     pt = df["play_type"].where(df["play_type"].notna(), "").to_numpy(dtype=object)
     unknown = sorted(set(pt) - set(PLAY_TYPE_KIND))
     print(f"events {season} play_type values outside the contract {len(unknown)} {unknown}")
     if unknown:
-        raise DataGap(f"events {season}: play_type outside the contract {unknown}")
+        raise GAP(f"events {season}: play_type outside the contract {unknown}")
     kind = np.array([PLAY_TYPE_KIND[p] for p in pt], dtype=object)
     kind[(pt == "pass") & flag(df, "sack")] = "sack"
     kind[(pt == "run") & flag(df, "qb_scramble")] = "scramble"
@@ -347,16 +347,16 @@ def events(season):
     kind[fake] = "pass"   # Rule 3-24-6: a kick play that becomes a passing play in the same down is a pass (fake kick)
     df["kind"] = kind
     print(f"events {season} fake-kick passes (kick formation, passer named, pass outcome) {int(fake.sum())}")
-    sc = df["kind"].isin(policy.CALL_KINDS).to_numpy()
+    sc = df["kind"].isin(contract.CALL_KINDS).to_numpy()
     null_sc = {c: int((df[c].isna().to_numpy() & sc).sum()) for c in FLAGS}
     print(f"events {season} null flags on scrimmage rows {sum(null_sc.values())}")
     if any(null_sc.values()):
-        raise DataGap(f"events {season}: null flags on scrimmage rows {dict((k, v) for k, v in null_sc.items() if v)}")
+        raise GAP(f"events {season}: null flags on scrimmage rows {dict((k, v) for k, v in null_sc.items() if v)}")
     null_flags = {c: int(df[c].isna().sum()) for c in FLAGS if df[c].isna().any()}
     ny = int((sc & df["yards_gained"].isna().to_numpy()).sum())
     print(f"events {season} yards_gained null on scrimmage rows {ny}")
     if ny:
-        raise DataGap(f"events {season}: yards_gained null on {ny} scrimmage rows")
+        raise GAP(f"events {season}: yards_gained null on {ny} scrimmage rows")
     for col, kinds in KIND_NEEDS_ID.items():
         m = df["kind"].isin(kinds).to_numpy() & df[col].isna().to_numpy()
         n = int(m.sum())
@@ -364,9 +364,9 @@ def events(season):
         if n:
             for _, r in df[m].iterrows():
                 print(f"  {r['game_id']} play {r['play_id']} kind {r['kind']} play_type {r['play_type']} yards {r['yards_gained']} down {r['down']} penalty {r['penalty']}")
-            raise DataGap(f"events {season}: {col} missing on {n} rows (section 9 KIND_NEEDS)")
+            raise GAP(f"events {season}: {col} missing on {n} rows (section 9 KIND_NEEDS)")
     print(f"events {season} rows {len(df)} kinds {df['kind'].value_counts().to_dict()} scrimmage {int(sc.sum())} "
-          f"null flags on non-scrimmage rows (read as not set) {null_flags} revision_stage {time.time() - t0:.1f}s")
+          f"null flags on non-scrimmage rows (read as not set) {null_flags} wall {time.time() - t0:.1f}s")
     df = df.drop(columns=["desc"])   # read only for the snap test; events returns EVENT_COLUMNS + kind
     return df
 
@@ -377,8 +377,8 @@ def time_order(ev):
 
 
 def rulebook_checks(ev, where):
-    """Section 9 rulebook identities as counts, in time order. Violating rows print. A injected_fault must raise its count."""
-    sc = ev["kind"].isin(policy.CALL_KINDS).to_numpy()
+    """Section 9 rulebook identities as counts, in time order. Violating rows print. A plant must raise its count."""
+    sc = ev["kind"].isin(contract.CALL_KINDS).to_numpy()
     off_td = sc & (flag(ev, "pass_touchdown") | flag(ev, "rush_touchdown")) & (ev["td_team"] == ev["posteam"]).to_numpy(dtype=bool)
     sub = ev[off_td]
     out = {}
@@ -404,7 +404,7 @@ def rulebook_checks(ev, where):
         print(f"  CLOCK {where}: {gid} qtr {qq} first clock {v}")
     ot = srt[srt["qtr"] >= 5]["game_seconds_remaining"]
     out["CLOCK OT rows"] = int(len(ot)); out["CLOCK OT max seconds"] = int(ot.max()) if len(ot) else 0
-    scs = srt[srt["kind"].isin(policy.CALL_KINDS)]
+    scs = srt[srt["kind"].isin(contract.CALL_KINDS)]
     last_t = scs.groupby(["game_id", "posteam", "fixed_drive"])["t"].max().rename("last_t")
     j = srt[srt["off_td"]].join(last_t, on=["game_id", "posteam", "fixed_drive"])
     bad = j[j["t"] != j["last_t"]]
@@ -421,10 +421,10 @@ def credits(ev):
     """Per (player, game, stat) from events, by section 9 Credits. Laterals split yards at the lateral; a try credits nothing;
     a penalty no-play credits nothing; a sack is no passing stat; a kneel is a carry; a spike is an attempt."""
     k = ev["kind"].to_numpy(dtype=object)
-    is_pass = k == "pass"; is_spike = k == "spike"; carry = np.isin(k, policy.CARRY_KINDS)
+    is_pass = k == "pass"; is_spike = k == "spike"; carry = np.isin(k, contract.CARRY_KINDS)
     has_lr = ev["lateral_receiver_player_id"].notna().to_numpy(); has_lu = ev["lateral_rusher_player_id"].notna().to_numpy()
     if (has_lr & ev["lateral_receiving_yards"].isna().to_numpy()).any() or (has_lu & ev["lateral_rushing_yards"].isna().to_numpy()).any():
-        raise DataGap("credits: a lateral with no lateral yards")
+        raise GAP("credits: a lateral with no lateral yards")
     yg = ev["yards_gained"].to_numpy(dtype=float, na_value=np.nan)
     lry = ev["lateral_receiving_yards"].to_numpy(dtype=float, na_value=0.0); lry[~has_lr] = 0.0   # no lateral: no yards after it
     lru = ev["lateral_rushing_yards"].to_numpy(dtype=float, na_value=0.0); lru[~has_lu] = 0.0
@@ -452,7 +452,7 @@ def credits(ev):
     long = pd.concat(rows, ignore_index=True)
     pairs = pd.MultiIndex.from_frame(long[["player_id", "game_id"]].drop_duplicates()).set_names(["player_id", "game_id"])
     wide = pd.DataFrame(index=pairs)
-    for stat in policy.STATS:
+    for stat in contract.STATS:
         if stat != "tds":
             wide[stat] = zero_sum(long[long["stat"] == stat].groupby(["player_id", "game_id"])["value"].sum(), pairs)
     wide["tds"] = wide["rec_td"] + wide["rush_td"]
@@ -468,10 +468,10 @@ def replay_vs_official(season, ev, built):
     penalty         - named on a no_play row (a foul after the ball is dead does not nullify the play; the official file counts it).
     FAILS WHEN any disagreement has no rule."""
     off = official(season)
-    offw = off.set_index(["player_id", "game_id"])[list(policy.STATS)].astype(float)
+    offw = off.set_index(["player_id", "game_id"])[list(contract.STATS)].astype(float)
     idx = built.index.union(offw.index)
-    B = pd.DataFrame({s: zero_sum(built[s], idx) for s in policy.STATS}, index=idx)
-    O = pd.DataFrame({s: zero_sum(offw[s], idx) for s in policy.STATS}, index=idx)
+    B = pd.DataFrame({s: zero_sum(built[s], idx) for s in contract.STATS}, index=idx)
+    O = pd.DataFrame({s: zero_sum(offw[s], idx) for s in contract.STATS}, index=idx)
     in_b = idx.isin(built.index); in_o = idx.isin(offw.index)
     k = ev["kind"].to_numpy(dtype=object)
     lat = (ev["lateral_receiver_player_id"].notna() | ev["lateral_rusher_player_id"].notna()).to_numpy()
@@ -495,12 +495,12 @@ def replay_vs_official(season, ev, built):
         if not pairs:
             continue
         sub = D.loc[pairs]
-        nonyard = bool(diff.loc[pairs, [s for s in policy.STATS if s not in yards]].any().any())
+        nonyard = bool(diff.loc[pairs, [s for s in contract.STATS if s not in yards]].any().any())
         conserved = (not nonyard) and sub["rec_yards"].sum() == sub["pass_yards"].sum() and sub["rush_yards"].sum() == 0
         print(f"  lateral game {g}: disagreeing pairs {len(pairs)} rec sum {int(sub['rec_yards'].sum())} pass sum {int(sub['pass_yards'].sum())} rush sum {int(sub['rush_yards'].sum())} non-yard stat differs {nonyard} -> {'lateral_chain' if conserved else 'NOT CONSERVED'}")
         if conserved:
             chain_games.add(g)
-    per_stat = {s: int(diff[s].sum()) for s in policy.STATS}
+    per_stat = {s: int(diff[s].sum()) for s in contract.STATS}
     print(f"AGREE {season} pairs compared {len(idx)} (events only {int((in_b & ~in_o).sum())}, official only {int((~in_b & in_o).sum())}) disagreeing pairs {int(rows.sum())} per stat {per_stat}")
     rules = ("lateral_penalty", "lateral_chain", "penalty")
     counts = {"lateral_penalty": 0, "lateral_chain": 0, "penalty": 0, "UNEXPLAINED": 0}
@@ -516,7 +516,7 @@ def replay_vs_official(season, ev, built):
             t.add("UNEXPLAINED"); counts["UNEXPLAINED"] += 1
         else:
             counts[explained[0]] += 1
-        stats = [s for s, d in zip(policy.STATS, r) if d]
+        stats = [s for s, d in zip(contract.STATS, r) if d]
         print(f"  {g} {p} " + " ".join(f"{s} built {B.at[(p, g), s]:.0f} official {O.at[(p, g), s]:.0f}" for s in stats) + " | " + ",".join(sorted(t)))
     print(f"AGREE {season} disagreeing pairs by rule {counts}")
     return counts["UNEXPLAINED"]
@@ -527,12 +527,12 @@ PART_TYPES = {"nflverse_game_id": ("str", False), "play_id": ("int", False), "po
 
 
 def participation(season):
-    held_out(season, "participation")
-    df = read(policy.PARTICIPATION_FILE.format(season=season), PART_COLUMNS, PART_TYPES, f"participation {season}")
+    sealed(season, "participation")
+    df = read(contract.PARTICIPATION_FILE.format(season=season), PART_COLUMNS, PART_TYPES, f"participation {season}")
     dup = int(df.duplicated(["nflverse_game_id", "play_id"]).sum())
     print(f"participation {season} duplicate (game, play) keys {dup}")
     if dup:
-        raise DataGap(f"participation {season}: {dup} duplicate (game, play) keys")
+        raise GAP(f"participation {season}: {dup} duplicate (game, play) keys")
     print(f"participation {season} rows {len(df)} offense_players empty {int(df['offense_players'].isna().sum())} "
           f"n_offense {dict((int(k), int(v)) for k, v in df['n_offense'].value_counts().items())}")
     return df
@@ -562,9 +562,9 @@ ROSTER_TYPES = {"season": ("int", False), "week": ("int", False), "gsis_id": ("s
 
 
 def positions(season):
-    """gsis_id -> position for the season; a player with two positions in one week is excluded and counted."""
-    held_out(season, "positions")
-    df = read(policy.ROSTER_FILE.format(season=season), ROSTER_COLUMNS, ROSTER_TYPES, f"positions {season}")
+    """gsis_id -> position for the season; a man with two positions in one week is excluded and counted."""
+    sealed(season, "positions")
+    df = read(contract.ROSTER_FILE.format(season=season), ROSTER_COLUMNS, ROSTER_TYPES, f"positions {season}")
     noid = int(df["gsis_id"].isna().sum()); nopos = int(df["position"].isna().sum())
     d = df[df["gsis_id"].notna() & df["position"].notna()]
     wk = d.groupby(["gsis_id", "week"])["position"].nunique()
@@ -572,7 +572,7 @@ def positions(season):
     se = d.groupby("gsis_id")["position"].nunique()
     multi = set(se[se > 1].index) | two_in_week
     pos = {g: p for g, p in d.drop_duplicates("gsis_id")[["gsis_id", "position"]].itertuples(index=False) if g not in multi}
-    print(f"positions {season} roster rows {len(df)} no gsis_id {noid} no position {nopos} players {d['gsis_id'].nunique()} "
+    print(f"positions {season} roster rows {len(df)} no gsis_id {noid} no position {nopos} men {d['gsis_id'].nunique()} "
           f"two positions in a week {len(two_in_week)} excluded (any ambiguity) {len(multi)} mapped {len(pos)}")
     return pos
 
@@ -581,27 +581,27 @@ def finished_pairs(season, ev, sets, pos):
     """FINISH per (game, player) over the participation pairs; the counts finished() prints are taken from this dict.
     TRUE: on a known snap of the team's final offensive drive. FALSE: every snap of that drive known and he is on none.
     UNKNOWN: otherwise. A penalty no-play is a snap when its known set shows a QB and no K or P; unknown position = unknown snap."""
-    sc = ev[ev["kind"].isin(policy.CALL_KINDS) & ev["posteam"].notna()]
+    sc = ev[ev["kind"].isin(contract.CALL_KINDS) & ev["posteam"].notna()]
     final = sc.groupby(["game_id", "posteam"])["fixed_drive"].max()
     team_games = ev[ev["posteam"].notna()].groupby(["game_id", "posteam"]).size()
     no_drive = [k for k in team_games.index if k not in final.index]
     print(f"finished {season} team-games with no scrimmage snap {len(no_drive)}")
     if no_drive:
-        raise DataGap(f"finished {season}: team-games with no scrimmage snap {no_drive}")
+        raise GAP(f"finished {season}: team-games with no scrimmage snap {no_drive}")
     status = {}; tg_unknown = 0; snaps_final = 0; unknown_final = 0
     ev_team = ev[ev["posteam"].notna()]
     for (g, team), fd in final.items():
         rows = ev_team[(ev_team["game_id"] == g) & (ev_team["posteam"] == team)]
-        players = set()
+        men = set()
         for p in rows["play_id"]:
             s = sets.get((g, p))
             if s:
-                players |= s
+                men |= s
         drive = rows[rows["fixed_drive"] == fd]
         known = []; unknown = 0
         for p, k in zip(drive["play_id"], drive["kind"]):
             s = sets.get((g, p))
-            if k in policy.CALL_KINDS:
+            if k in contract.CALL_KINDS:
                 if s: known.append(s)
                 else: unknown += 1
             elif k == "penalty":
@@ -616,13 +616,13 @@ def finished_pairs(season, ev, sets, pos):
         snaps_final += len(known); unknown_final += unknown
         if unknown: tg_unknown += 1
         on = set().union(*known) if known else set()
-        for m in players:
+        for m in men:
             status[(g, m)] = "TRUE" if m in on else ("FALSE" if unknown == 0 else "UNKNOWN")
     return status, len(final), snaps_final, unknown_final, tg_unknown
 
 
 def finished(season, ev, sets, pos):
-    """The S2 counts, taken from finished_pairs; byte-identical to the accepted printout."""
+    """The S2 counts, taken from finished_pairs; byte-identical to the landed printout."""
     status, n_tg, snaps_final, unknown_final, tg_unknown = finished_pairs(season, ev, sets, pos)
     counts = {"TRUE": 0, "FALSE": 0, "UNKNOWN": 0}
     for v in status.values():

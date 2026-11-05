@@ -1,5 +1,5 @@
-"""rules_level.py - the rules level, the rules sentence, built from measurement. Product.
-No word or number in out/L0_rules.csv is typed here: the template's words are read from PROGRESS.md (the line starting 'the rules level Rules'), and every label,
+"""l0.py - L0, the rules sentence, built from measurement. Product.
+No word or number in out/L0_rules.csv is typed here: the template's words are read from PROGRESS.md (the line starting 'L0 Rules'), and every label,
 article, book and count is read from the three record reads' own files: out/r2_reasons.csv (clock), out/r1_classes.csv (possessions), out/r4_reasons.csv (downs).
 This file fixes only which part each source row belongs to (template, total, as rule, exception, unsettled, not judged, diagnostic) and which count a share
 is taken of. Writes out/L0_rules.csv stamped on line 1 with this file's sha, the sha of the template line's own text (not PROGRESS.md's file sha, which
@@ -10,10 +10,10 @@ import pandas as pd
 
 SELF = hashlib.sha256(open(os.path.abspath(__file__), "rb").read()).hexdigest()[:12]
 OUT = "out/L0_rules.csv"
-TEMPLATE_FILE, TEMPLATE_KEY = "acceptance-criteria/PROGRESS.md", "the rules level Rules"
+TEMPLATE_FILE, TEMPLATE_KEY = "PROGRESS.md", "L0 Rules"
 SRC = {"clock": "out/r2_reasons.csv", "possessions": "out/r1_classes.csv", "downs": "out/r4_reasons.csv"}
-FITS = "fits one of the rules the record cannot tell apart"   # check_downs.py's FITS reason: the record does not say which rule applied
-NOT_APART = "not told apart"   # check_downs.py v17 4: a reason naming two readings the record does not tell apart
+FITS = "fits one of the rules the record cannot tell apart"   # r4.py's FITS reason: the record does not say which rule applied
+NOT_APART = "not told apart"   # r4.py v17 4: a reason naming two readings the record does not tell apart
 COLS = ["clause", "part", "source", "season", "season_type", "check", "word", "label", "articles", "book", "count", "of", "share", "share_exact"]
 
 
@@ -87,8 +87,8 @@ def rows():
 
 def write():
     R = rows()
-    tag = (f"rules_level.py {SELF} | template '{TEMPLATE_KEY}' line {template_sha()} | " + " | ".join(f"{p} {sha(p)}" for p in SRC.values())
-           + " | product: the rules level, the rules sentence, built from measurement")
+    tag = (f"l0.py {SELF} | template '{TEMPLATE_KEY}' line {template_sha()} | " + " | ".join(f"{p} {sha(p)}" for p in SRC.values())
+           + " | product: L0, the rules sentence, built from measurement")
     with open(OUT, "w") as f:
         f.write(f"# {tag}\n"); R.to_csv(f, index=False)
     return R, tag

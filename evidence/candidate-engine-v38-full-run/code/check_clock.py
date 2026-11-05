@@ -1,4 +1,4 @@
-"""check_clock.py - rules-level clause 1, the clock, to R2_TARGETS.md v16 (b23041601078). A record read, not product.
+"""r2.py - L0 clause 1, the clock, to R2_TARGETS.md v16 (b23041601078). A record read, not product.
 Reads through record.raw_frame + record.typed (pinned file, betting refused, every column typed; empties counted, never filled).
 Plants and negatives run first, row by row; any FAIL stops the run before a count is read or a file is written.
 Writes out/r2_counts.csv, out/r2_faster.csv, out/r2_over40.csv and out/r2_reasons.csv, each stamped on line 1 with this file's sha and the targets sha.
@@ -13,13 +13,13 @@ Choices the targets do not fix, declared and printed:
  - postseason overtime: quarter 5 is its first period (all 7 postseason overtimes, 2019-2025); any interval past quarter 5 reads UNKNOWN, no quarter number assumed (Retired list).
  - the record logs no two-minute warning row (Retired list): the warning is placed by the quarter clock only; v5's text search (any mention) is kept only for the frozen 2023 reproduction (tmw_row_v5).
  - every 'line N' printed is looked up in the targets file at run time by the line's opening words, so it cannot go stale.
- - L1 margin = coarser W stamp + G's 1 s (Instruments, v13); D3 compares revision_stage stamps only (W, E), so its margin carries no G second.
+ - L1 margin = coarser W stamp + G's 1 s (Instruments, v13); D3 compares wall stamps only (W, E), so its margin carries no G second.
  - v12's L1 word (margin without G's second) is computed beside v13's in the same run and written to out/r2_counts.csv as L1_V12.
- - the rules-module stage: the snap kinds, the pre-snap foul list, the clock windows, the clock class, the administrative stoppage and the play clock are read from rules.py (E0_TARGETS.md X1, X2, X4)."""
+ - E0: the snap kinds, the pre-snap foul list, the clock windows, the clock class, the administrative stoppage and the play clock are read from rules.py (E0_TARGETS.md X1, X2, X4)."""
 import hashlib, os, re, sys, datetime
 from collections import Counter
 import numpy as np, pandas as pd
-import record, policy
+import record, contract
 from rules import SNAP_KINDS, PRESNAP_OFFENSE, beyond, oob_window, foul_window, warning, before_warning, clock_class, play_clock, admin as admin_rule
 
 SELF = hashlib.sha256(open(os.path.abspath(__file__), "rb").read()).hexdigest()[:12]
@@ -41,14 +41,14 @@ OUT_OVER40 = "out/r2_over40.csv"
 OUT_REASONS = "out/r2_reasons.csv"
 CLASS_EMPTY = {"RUN": "no stoppage on the stretch: the clock ran (4-3)"}   # a RUN stretch carries no stop or partial reason of its own
 L1_REASON = {"WITHIN REAL TIME": "the game clock fell no faster than real time",
-             "WITHIN RESOLUTION": "the game clock fell faster by no more than the stamps can tell apart (the revision_stage stamp's resolution plus the game clock's whole second)",
+             "WITHIN RESOLUTION": "the game clock fell faster by no more than the stamps can tell apart (the wall stamp's resolution plus the game clock's whole second)",
              "FASTER not licensed": "the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the record logging it (4-1-4), so a correction and a record error cannot be told apart",
              "FASTER licensed (runoff)": "a 10-second runoff removed game time with no play (4-7-1, 4-7-4)",
-             "UNCHECKED": "a revision_stage-clock stamp or the game clock is missing on one of the two snaps"}
-L1V12_REASON = {"WITHIN REAL TIME": "v12 margin (the revision_stage stamp's resolution only), kept for comparison: within real time",
-                "FASTER not licensed": "v12 margin (the revision_stage stamp's resolution only), kept for comparison: faster than real time",
-                "FASTER licensed (runoff)": "v12 margin (the revision_stage stamp's resolution only), kept for comparison: a runoff (4-7-1, 4-7-4)",
-                "UNCHECKED": "v12 margin (the revision_stage stamp's resolution only), kept for comparison: a stamp missing"}
+             "UNCHECKED": "a wall-clock stamp or the game clock is missing on one of the two snaps"}
+L1V12_REASON = {"WITHIN REAL TIME": "v12 margin (the wall stamp's resolution only), kept for comparison: within real time",
+                "FASTER not licensed": "v12 margin (the wall stamp's resolution only), kept for comparison: faster than real time",
+                "FASTER licensed (runoff)": "v12 margin (the wall stamp's resolution only), kept for comparison: a runoff (4-7-1, 4-7-4)",
+                "UNCHECKED": "v12 margin (the wall stamp's resolution only), kept for comparison: a stamp missing"}
 D3_REASON = {"WITHIN 40": "the next snap came within 40 seconds of real time after the play ended (4-6-1)",
              "OVER 40": "the next snap came more than 40 seconds of real time after the play ended; the play clock stops for interruptions the record does not log (4-6-3)",
              "N/A (ADMIN)": "an administrative stoppage (a change of possession, a timeout, the two-minute warning, a foul or a review) resets the play clock (4-6-2)",
@@ -64,7 +64,7 @@ TMW = re.compile(r"two.minute warning", re.I)                      # v5 text mat
 INJ = re.compile(r"injur", re.I)
 REFTO = re.compile(r"(referee|official)'?s? time", re.I)
 RX = re.compile(r"(?:(\d{4}-\d{2}-\d{2})[T ])?(\d{1,2}):(\d{2}):(\d{2})(?:\.(\d+))?")
-FROZEN_2023 = {"WITHIN 40": 23659, "OVER 40": 4060, "UNCHECKED": 564, "N/A (ADMIN)": 10019}   # targets: Seen before the injected_faults passed
+FROZEN_2023 = {"WITHIN 40": 23659, "OVER 40": 4060, "UNCHECKED": 564, "N/A (ADMIN)": 10019}   # targets: Seen before the plants passed
 
 
 def sha(p):
@@ -101,9 +101,9 @@ def diff(s2, d2, s1, d1):
 
 
 def load(season):
-    record.held_out(season, "check_clock")
-    name = policy.PBP_FILE.format(season=season)
-    d = record.typed(record.raw_frame(name, list(TYPES), f"check_clock {season}"), TYPES, f"check_clock {season}")
+    record.sealed(season, "r2")
+    name = contract.PBP_FILE.format(season=season)
+    d = record.typed(record.raw_frame(name, list(TYPES), f"r2 {season}"), TYPES, f"r2 {season}")
     empt = {c: int(d[c].isna().sum()) for c in TYPES if d[c].isna().any()}
     for c, (k, _) in TYPES.items():
         if k == "int":
@@ -153,15 +153,15 @@ def intervals(g, gres=G_RES):
                   ("postseason overtime past quarter 5: NOT TESTABLE (Retired list)", beyond(q, reg)), ("out of bounds unread", nan(ob)), ("out of bounds, window unread", one(ob) and ow is None),
                               ("foul, window unread", pen and fw is None), ("warning placement unread", tmw is None),
                               ("injury, warning placement unread", inj and bw is None)]
-        cls, why = clock_class(events, beyond(q, reg))   # the rules module X4
-        admin = admin_rule(poss, tmo, tmw, pen, rep)      # ADMIN (4-6-2, the rules module X4)
+        cls, why = clock_class(events, beyond(q, reg))   # E0 X4
+        admin = admin_rule(poss, tmo, tmw, pen, rep)      # ADMIN (4-6-2, E0 X4)
         admin_v5 = bool(poss or tmo or tmw_row_v5 or pen or rep)                      # v5: warning from row text (any mention)
         dW, w1 = diff(c["W_s"][b], c["W_d"][b], c["W_s"][a], c["W_d"][a])
         rW = np.nan if nan(c["W_r"][a]) or nan(c["W_r"][b]) else max(c["W_r"][a], c["W_r"][b])
         dG = c["game_seconds_remaining"][a] - c["game_seconds_remaining"][b]
         res = np.nan if nan(rW) else rW + gres                                          # Instruments (v13)
         fast = "FASTER licensed (runoff)" if runoff else "FASTER not licensed"
-        l1 = "UNCHECKED" if nan(dW) or nan(dG) or nan(res) else ("WITHIN REAL TIME" if dG <= dW else ("WITHIN RESOLUTION" if dG - dW <= res else fast))   # Laws: the game level
+        l1 = "UNCHECKED" if nan(dW) or nan(dG) or nan(res) else ("WITHIN REAL TIME" if dG <= dW else ("WITHIN RESOLUTION" if dG - dW <= res else fast))   # Laws: L1
         l1_v12 = "UNCHECKED" if nan(dW) or nan(dG) or nan(rW) else ("WITHIN REAL TIME" if dG <= dW + rW else fast)
         x, w2 = diff(c["W_s"][b], c["W_d"][b], c["E_s"][a], c["E_d"][a])
         rx = np.nan if nan(c["W_r"][b]) or nan(c["E_r"][a]) else max(c["W_r"][b], c["E_r"][a])
@@ -178,9 +178,9 @@ def main():
     t = sha(TARGETS)
     if t != TSHA:
         sys.exit(f"STOPPED: {TARGETS} is {t}, not the frozen {TSHA}")
-    seasons = [s for s in policy.SEASONS if s != policy.HOLD]
-    tag = f"check_clock.py {SELF} | R2_TARGETS.md {TSHA} (v16) | record read (rules-level clause 1), not product"
-    print(f"{tag} | seasons {seasons} (hold-out {policy.HOLD} held_out)")
+    seasons = [s for s in contract.SEASONS if s != contract.HOLD]
+    tag = f"r2.py {SELF} | R2_TARGETS.md {TSHA} (v16) | record read (L0 clause 1), not product"
+    print(f"{tag} | seasons {seasons} (hold-out {contract.HOLD} sealed)")
     refs = {k: L(k) for k in ("PL1 ", "PL1b ", "PL2 ", "PL3 ", "PL4 ", "PL5 ", "PL6 ", "PL7 ", "PL8 ", "PL9 ", "PL10 ", "NEG9 ", "EXPECTED before", "2023 L2")}
     print(f"targets lines found by their opening words: {refs}")
     if "?" in refs.values():
@@ -204,7 +204,7 @@ def main():
     print("\n=== 2. PLANTS and NEGATIVES, row by row (negatives print changes only; any FAIL stops the run) ===")
     res = []
 
-    def injected_fault(name, cond):
+    def plant(name, cond):
         res.append((name, bool(cond))); print(f"  {name} -> {'PASS' if cond else 'FAIL'}")
 
     def rows(g, s0, s1):
@@ -224,64 +224,64 @@ def main():
     T, F_ = (True,), (False,)
     G19 = game(2019, "2019_01_IND_LAC"); I19 = again(G19)
     print(f"  PL1 2019_01_IND_LAC 3209 -> 3230 (line {L('PL1 ')}):"); rows(G19, 3209, 3230); r = find(I19, "2019_01_IND_LAC", 3209, 3230)
-    injected_fault(f"PL1 RUN, no ADMIN, dG = dW = 26 (got {None if r is None else (r['cls'], r['admin'], r['dG'], r['dW'], r['rW'])})",
+    plant(f"PL1 RUN, no ADMIN, dG = dW = 26 (got {None if r is None else (r['cls'], r['admin'], r['dG'], r['dW'], r['rW'])})",
           r is not None and r["cls"] == "RUN" and r["admin"] in F_ and r["dG"] == 26 and abs(r["dW"] - 26) <= r["rW"])
     pl = I19[(I19["q"] == 4) & (I19["tmw"] == True)]
     r1b = pl.iloc[0] if len(pl) == 1 else None
     print(f"  PL1b intervals the quarter clock places the warning in, 2019_01_IND_LAC q4: {len(pl)}")
     if r1b is not None:
         rows(G19, r1b["sa"], r1b["sb"])
-    injected_fault(f"PL1b STOP, ADMIN, ending at seq 3209 (got {None if r1b is None else (r1b['sa'], r1b['sb'], r1b['cls'], r1b['admin'], r1b['qa'], r1b['qb'])})",
+    plant(f"PL1b STOP, ADMIN, ending at seq 3209 (got {None if r1b is None else (r1b['sa'], r1b['sb'], r1b['cls'], r1b['admin'], r1b['qa'], r1b['qb'])})",
           r1b is not None and r1b["sb"] == 3209 and r1b["cls"] == "STOP" and r1b["admin"] in T)
     print(f"  PL2 2019_01_IND_LAC 3230 -> 3251 (line {L('PL2 ')}):"); rows(G19, 3230, 3251); r2 = find(I19, "2019_01_IND_LAC", 3230, 3251)
-    injected_fault(f"PL2 RUN, no ADMIN, dG 24 (got {None if r2 is None else (r2['cls'], r2['admin'], r2['dG'])})", r2 is not None and r2["cls"] == "RUN" and r2["admin"] in F_ and r2["dG"] == 24)
+    plant(f"PL2 RUN, no ADMIN, dG 24 (got {None if r2 is None else (r2['cls'], r2['admin'], r2['dG'])})", r2 is not None and r2["cls"] == "RUN" and r2["admin"] in F_ and r2["dG"] == 24)
     print(f"  PL3 2019_01_IND_LAC 3297 -> 3340 (line {L('PL3 ')}):"); rows(G19, 3297, 3340); r = find(I19, "2019_01_IND_LAC", 3297, 3340)
-    injected_fault(f"PL3 STOP, ADMIN (got {None if r is None else (r['cls'], r['admin'], r['why'])})", r is not None and r["cls"] == "STOP" and r["admin"] in T)
+    plant(f"PL3 STOP, ADMIN (got {None if r is None else (r['cls'], r['admin'], r['why'])})", r is not None and r["cls"] == "STOP" and r["admin"] in T)
     I = IV[2019]
     c4 = I[(I["pt"] == "run") & (I["ob"] == 1) & (I["q"] == 2) & (I["qa"] > 120) & (I["nb"] == 0) & I["same"] & ~I["pen"] & ~I["inj"] & ~I["ref"] & ~I["rep"] & ~I["score"] & ~I["poss"]]
     r4 = c4.iloc[0] if len(c4) else None
     if r4 is not None:
         print(f"  PL4 found and pinned: 2019 {r4['game_id']} seq {r4['sa']} -> {r4['sb']} (line {L('PL4 ')}):"); rows(game(2019, r4["game_id"]), r4["sa"], r4["sb"])
-    injected_fault(f"PL4 PARTIAL (got {None if r4 is None else (r4['cls'], r4['why'])})", r4 is not None and r4["cls"] == "PARTIAL")
+    plant(f"PL4 PARTIAL (got {None if r4 is None else (r4['cls'], r4['why'])})", r4 is not None and r4["cls"] == "PARTIAL")
     I = IV[2023]
     c5 = I[(I["pt"] == "pass") & I["inc"] & (I["nb"] == 0) & I["same"] & ~I["pen"] & ~I["rep"] & I["x"].notna() & (I["admin"] == False)]
     r5 = c5.iloc[0] if len(c5) else None
     if r5 is not None:
         print(f"  PL5 found and pinned: 2023 {r5['game_id']} seq {r5['sa']} -> {r5['sb']} (line {L('PL5 ')}):"); rows(game(2023, r5["game_id"]), r5["sa"], r5["sb"])
-    injected_fault(f"PL5 STOP, no ADMIN; W(i+1) - E(i) = {None if r5 is None else round(r5['x'], 3)} (got {None if r5 is None else (r5['cls'], r5['admin'], r5['d3'])})",
+    plant(f"PL5 STOP, no ADMIN; W(i+1) - E(i) = {None if r5 is None else round(r5['x'], 3)} (got {None if r5 is None else (r5['cls'], r5['admin'], r5['d3'])})",
           r5 is not None and r5["cls"] == "STOP" and r5["admin"] in F_)
     ro = pd.concat([IV[s].assign(season=s) for s in seasons]); ro = ro[ro["runoff"]]
     print(f"  PL6 intervals whose play text names a runoff: {len(ro)} (the v10 run counted 16) | L1 {dict(Counter(ro['l1']))} (line {L('PL6 ')}):")
     for _, r in ro.iterrows():
         print(f"    {r['season']} {r['game_id']} seq {r['sa']} -> {r['sb']} q{r['q']} {r['cls']} dG {r['dG']} dW {round(r['dW'], 3) if not nan(r['dW']) else r['dW']} -> {r['l1']}")
         rows(game(int(r["season"]), r["game_id"]), r["sa"], r["sb"])
-    injected_fault(f"PL6 16 runoff intervals, all WITHIN REAL TIME (got {len(ro)}, FASTER {int(ro['l1'].str.startswith('FASTER').sum())}, UNCHECKED {int((ro['l1'] == 'UNCHECKED').sum())})",
+    plant(f"PL6 16 runoff intervals, all WITHIN REAL TIME (got {len(ro)}, FASTER {int(ro['l1'].str.startswith('FASTER').sum())}, UNCHECKED {int((ro['l1'] == 'UNCHECKED').sum())})",
           len(ro) == 16 and bool((ro["l1"] == "WITHIN REAL TIME").all()))
     I = IV[2023]
     c7 = I[(I["pt"] == "run") & (I["q"] == 1) & (I["ob"] == 0) & I["accepted"] & (I["nb"] == 0) & I["same"] & ~I["inc"] & ~I["score"] & ~I["poss"] & ~I["inj"] & ~I["ref"] & ~I["rep"]]
     r7 = c7.iloc[0] if len(c7) else None
     if r7 is not None:
         print(f"  PL7 found and pinned: 2023 {r7['game_id']} seq {r7['sa']} -> {r7['sb']} (line {L('PL7 ')}):"); rows(game(2023, r7["game_id"]), r7["sa"], r7["sb"])
-    injected_fault(f"PL7 PARTIAL (4-3-2e) (got {None if r7 is None else (r7['cls'], r7['why'])})", r7 is not None and r7["cls"] == "PARTIAL")
+    plant(f"PL7 PARTIAL (4-3-2e) (got {None if r7 is None else (r7['cls'], r7['why'])})", r7 is not None and r7["cls"] == "PARTIAL")
     # negatives: changes only
     F = G19.copy(); F.loc[F["order_sequence"] == 3251, "W_s"] -= 30; r = find(again(F), "2019_01_IND_LAC", 3230, 3251)
-    injected_fault(f"NEG1 PL2 W moved 30 s earlier: L1 {None if r2 is None else r2['l1']} -> {None if r is None else r['l1']}", r is not None and r["l1"] == "FASTER not licensed")
+    plant(f"NEG1 PL2 W moved 30 s earlier: L1 {None if r2 is None else r2['l1']} -> {None if r is None else r['l1']}", r is not None and r["l1"] == "FASTER not licensed")
     F = G19.copy(); F.loc[F["order_sequence"] == 3230, "incomplete_pass"] = 1.0; r = find(again(F), "2019_01_IND_LAC", 3230, 3251)
-    injected_fault(f"NEG2 PL2 relabeled incomplete: {None if r2 is None else r2['cls']} -> {None if r is None else r['cls']}", r is not None and r["cls"] == "STOP")
+    plant(f"NEG2 PL2 relabeled incomplete: {None if r2 is None else r2['cls']} -> {None if r is None else r['cls']}", r is not None and r["cls"] == "STOP")
     if r5 is not None:
         G23 = game(2023, r5["game_id"])
         F = G23.copy(); F.loc[F["order_sequence"] == r5["sa"], "E_s"] -= 30; r = find(again(F), r5["game_id"], r5["sa"], r5["sb"])
-        injected_fault(f"NEG3 PL5 E moved 30 s earlier: D3 {r5['d3']} -> {None if r is None else r['d3']}", r is not None and r["d3"] == "OVER 40")
+        plant(f"NEG3 PL5 E moved 30 s earlier: D3 {r5['d3']} -> {None if r is None else r['d3']}", r is not None and r["d3"] == "OVER 40")
         og = Counter(again(G23)["d3"]); F = G23.copy(); F.loc[F["order_sequence"] == r5["sa"], ["E_s", "E_r", "E_d"]] = np.nan; ng = Counter(again(F)["d3"])
         ch = {k: ng[k] - og[k] for k in ("WITHIN 40", "OVER 40", "UNCHECKED")}
-        injected_fault(f"NEG4 PL5 E deleted: D3 changes {ch}", ch["UNCHECKED"] == 1 and ch["WITHIN 40"] + ch["OVER 40"] == -1)
+        plant(f"NEG4 PL5 E deleted: D3 changes {ch}", ch["UNCHECKED"] == 1 and ch["WITHIN 40"] + ch["OVER 40"] == -1)
     else:
-        injected_fault("NEG3 (no PL5 to injected_fault on)", False); injected_fault("NEG4 (no PL5 to injected_fault on)", False)
+        plant("NEG3 (no PL5 to plant on)", False); plant("NEG4 (no PL5 to plant on)", False)
     if r1b is not None:
         F = G19.copy(); F.loc[F["order_sequence"] == r1b["sb"], "quarter_seconds_remaining"] = 121.0; r = find(again(F), "2019_01_IND_LAC", r1b["sa"], r1b["sb"])
-        injected_fault(f"NEG5 PL1b next snap at 2:01: warning True -> {None if r is None else r['tmw']}", r is not None and r["tmw"] in F_)
+        plant(f"NEG5 PL1b next snap at 2:01: warning True -> {None if r is None else r['tmw']}", r is not None and r["tmw"] in F_)
     else:
-        injected_fault("NEG5 (no PL1b to injected_fault on)", False)
+        plant("NEG5 (no PL1b to plant on)", False)
     if len(ro):
         r6 = ro.iloc[0]; s6 = int(r6["season"]); F = game(s6, r6["game_id"]).copy()
         wa = F.loc[F["order_sequence"] == r6["sa"], "W_s"].iloc[0]; wd = F.loc[F["order_sequence"] == r6["sa"], "W_d"].iloc[0]
@@ -289,44 +289,44 @@ def main():
         ra = find(again(F), r6["game_id"], r6["sa"], r6["sb"])
         m = (F["order_sequence"] >= r6["sa"]) & (F["order_sequence"] < r6["sb"])
         F.loc[m, "desc"] = F.loc[m, "desc"].map(lambda v: RUNOFF.sub("", v) if isinstance(v, str) else v); rb = find(again(F), r6["game_id"], r6["sa"], r6["sb"])
-        injected_fault(f"NEG6 {r6['game_id']} {r6['sa']} -> {r6['sb']} real time shortened to dG - 5: {r6['l1']} -> {None if ra is None else ra['l1']}; runoff text removed -> {None if rb is None else rb['l1']}",
+        plant(f"NEG6 {r6['game_id']} {r6['sa']} -> {r6['sb']} real time shortened to dG - 5: {r6['l1']} -> {None if ra is None else ra['l1']}; runoff text removed -> {None if rb is None else rb['l1']}",
               ra is not None and rb is not None and ra["l1"] == "FASTER licensed (runoff)" and rb["l1"] == "FASTER not licensed")
     else:
-        injected_fault("NEG6 (no PL6 to injected_fault on)", False)
+        plant("NEG6 (no PL6 to plant on)", False)
     if r7 is not None:
         F = game(2023, r7["game_id"]).copy(); m = F["order_sequence"].isin([r7["sa"], r7["sb"]])
         F.loc[m, "qtr"] = 4.0; F.loc[F["order_sequence"] == r7["sa"], "quarter_seconds_remaining"] = 200.0; F.loc[F["order_sequence"] == r7["sb"], "quarter_seconds_remaining"] = 180.0
         r = find(again(F), r7["game_id"], r7["sa"], r7["sb"])
-        injected_fault(f"NEG7 PL7 moved to q4 at 3:20: {r7['cls']} -> {None if r is None else (r['cls'], r['why'])}", r is not None and r["cls"] == "STOP")
+        plant(f"NEG7 PL7 moved to q4 at 3:20: {r7['cls']} -> {None if r is None else (r['cls'], r['why'])}", r is not None and r["cls"] == "STOP")
     else:
-        injected_fault("NEG7 (no PL7 to injected_fault on)", False)
+        plant("NEG7 (no PL7 to plant on)", False)
     c8 = pd.concat([IV[s].assign(season=s) for s in seasons])
     c8 = c8[c8["inj"] & (c8["bw"] == False) & ~c8["inc"] & ~c8["score"] & ~c8["poss"] & ~c8["tmo"] & ~c8["pen"] & ~c8["rep"] & ~c8["ref"] & (c8["ob"] == 0) & (c8["tmw"] == False) & (c8["presnap"] == "")]
     r8 = c8.iloc[0] if len(c8) else None
     print(f"  PL8 candidates (injury in play text after the warning, no other stoppage event): {len(c8)}")
     if r8 is not None:
         print(f"  PL8 found and pinned: {r8['season']} {r8['game_id']} seq {r8['sa']} -> {r8['sb']} (line {L('PL8 ')}):"); rows(game(int(r8["season"]), r8["game_id"]), r8["sa"], r8["sb"])
-    injected_fault(f"PL8 STOP (4-5-4) (got {None if r8 is None else (r8['cls'], r8['why'])})", r8 is not None and r8["cls"] == "STOP")
+    plant(f"PL8 STOP (4-5-4) (got {None if r8 is None else (r8['cls'], r8['why'])})", r8 is not None and r8["cls"] == "STOP")
     if r8 is not None:
         F = game(int(r8["season"]), r8["game_id"]).copy()
         F.loc[F["order_sequence"] == r8["sa"], "quarter_seconds_remaining"] = 300.0; F.loc[F["order_sequence"] == r8["sb"], "quarter_seconds_remaining"] = 280.0
         r = find(again(F), r8["game_id"], r8["sa"], r8["sb"])
-        injected_fault(f"NEG8 PL8 snap clocks moved to 5:00 and 4:40: {r8['cls']} -> {None if r is None else (r['cls'], r['why'])}", r is not None and r["cls"] == "PARTIAL")
+        plant(f"NEG8 PL8 snap clocks moved to 5:00 and 4:40: {r8['cls']} -> {None if r is None else (r['cls'], r['why'])}", r is not None and r["cls"] == "PARTIAL")
     else:
-        injected_fault("NEG8 (no PL8 to injected_fault on)", False)
+        plant("NEG8 (no PL8 to plant on)", False)
     G9 = game(2019, "2019_18_BUF_HOU"); r9 = find(again(G9), "2019_18_BUF_HOU", 4363, 4392)
     print(f"  PL9 2019_18_BUF_HOU 4363 -> 4392 (line {L('PL9 ')}):"); rows(G9, 4363, 4392)
-    injected_fault(f"PL9 PARTIAL (4-3-2a; 16-1-4(h) no window in period 1) (got {None if r9 is None else (r9['q'], r9['pt'], r9['cls'], r9['why'])})", r9 is not None and r9["cls"] == "PARTIAL")
+    plant(f"PL9 PARTIAL (4-3-2a; 16-1-4(h) no window in period 1) (got {None if r9 is None else (r9['q'], r9['pt'], r9['cls'], r9['why'])})", r9 is not None and r9["cls"] == "PARTIAL")
     F = G9.copy(); F.loc[F["order_sequence"].isin([4363, 4392]), "qtr"] = 6.0; r = find(again(F), "2019_18_BUF_HOU", 4363, 4392)
-    injected_fault(f"NEG9 PL9 quarter set to 6: {None if r9 is None else r9['cls']} -> {None if r is None else (r['cls'], r['why'])}", r is not None and r["cls"] == "UNKNOWN")
+    plant(f"NEG9 PL9 quarter set to 6: {None if r9 is None else r9['cls']} -> {None if r is None else (r['cls'], r['why'])}", r is not None and r["cls"] == "UNKNOWN")
     G10 = game(2023, "2023_01_ARI_WAS"); r10 = find(again(G10), "2023_01_ARI_WAS", 77, 102)
     print(f"  PL10 2023_01_ARI_WAS seq 77 -> 102 (line {L('PL10 ')}; FASTER by +0.330 s in the v12 run):"); rows(G10, 77, 102)
-    injected_fault(f"PL10 WITHIN RESOLUTION (got {None if r10 is None else (r10['l1'], round(r10['dG'] - r10['dW'], 3), r10['res'])})", r10 is not None and r10["l1"] == "WITHIN RESOLUTION")
+    plant(f"PL10 WITHIN RESOLUTION (got {None if r10 is None else (r10['l1'], round(r10['dG'] - r10['dW'], 3), r10['res'])})", r10 is not None and r10["l1"] == "WITHIN RESOLUTION")
     r = find(again(G10, 0.0), "2023_01_ARI_WAS", 77, 102)
-    injected_fault(f"NEG10 G's 1 s removed from the margin: PL10 {None if r10 is None else r10['l1']} -> {None if r is None else r['l1']}", r is not None and r["l1"].startswith("FASTER"))
+    plant(f"NEG10 G's 1 s removed from the margin: PL10 {None if r10 is None else r10['l1']} -> {None if r is None else r['l1']}", r is not None and r["l1"].startswith("FASTER"))
     npass = sum(ok for _, ok in res)
     if npass != len(res) or len(res) != 21:
-        print(f"\nR2 SUMMARY injected_faults {npass}/{len(res)} FAILED: {[n.split(' ')[0] for n, ok in res if not ok]} | no count read, no file written")
+        print(f"\nR2 SUMMARY plants {npass}/{len(res)} FAILED: {[n.split(' ')[0] for n, ok in res if not ok]} | no count read, no file written")
         sys.exit(1)
 
     print(f"\n=== 3. FROZEN 2023 D3 COUNTS (line {L('2023 L2')}) ===")
@@ -341,10 +341,10 @@ def main():
     got = {s: int(IV[s]["l1"].str.startswith("FASTER").sum()) for s in seasons}
     print(f"\n=== FASTER against line {L('EXPECTED before')} (expected before the run): got {got} | expected {EXPECTED_FASTER} -> {'AGREE' if got == EXPECTED_FASTER else 'DISAGREE'}")
     if got != EXPECTED_FASTER:
-        print(f"R2 SUMMARY injected_faults {npass}/{len(res)} | FASTER {got} DISAGREES with line {L('EXPECTED before')} {EXPECTED_FASTER}: code and text disagree | no file written")
+        print(f"R2 SUMMARY plants {npass}/{len(res)} | FASTER {got} DISAGREES with line {L('EXPECTED before')} {EXPECTED_FASTER}: code and text disagree | no file written")
         sys.exit(1)
 
-    print("\n=== 4. PER SEASON: classes, L1 (four counts, v13 margin) beside L1_V12, D3 as three counts (no decision word) ===")
+    print("\n=== 4. PER SEASON: classes, L1 (four counts, v13 margin) beside L1_V12, D3 as three counts (no verdict word) ===")
     crow, fa, ov = [], [], []
     for s in seasons:
         iv = IV[s]
@@ -375,7 +375,7 @@ def main():
     back_ = RR.groupby(["season", "check", "word"])["count"].sum().to_dict(); ct_ = {(a, b, c_): n for a, b, c_, n in crow}
     print(f"\nN7 reasons: rows {len(RR)} | rows with no reason {len(nore)} | the split sums back to the counts: {back_ == ct_}")
     if len(nore) or back_ != ct_:
-        print(f"R2 SUMMARY injected_faults {npass}/{len(res)} | the reason split is incomplete or does not sum to the counts | no file written"); sys.exit(1)
+        print(f"R2 SUMMARY plants {npass}/{len(res)} | the reason split is incomplete or does not sum to the counts | no file written"); sys.exit(1)
     KEEP = ["season", "game_id", "sa", "sb", "q", "pt", "cls", "why", "runoff", "dG", "dW", "rW", "res", "x", "rx", "size", "l1", "l1_v12", "d3"]
     with open(OUT_COUNTS, "w") as f:
         f.write(f"# {tag}\n"); pd.DataFrame(crow, columns=["season", "check", "word", "count"]).to_csv(f, index=False)
@@ -402,7 +402,7 @@ def main():
                for q, qa in zip(iv["q"], iv["qa"])]
         for (cl, w), v in iv.assign(win=win).groupby(["cls", "win"])["dG"]:
             print(f"  D2 {s} {cl:7s} {w:28s} n {len(v)} median game seconds per snap {v.median():.1f}")
-    print(f"\nR2 SUMMARY injected_faults {npass}/{len(res)} | FASTER {got} = line {L('EXPECTED before')} | 2023 D3 frozen under v5: {'reproduced' if repro else 'NOT reproduced'}; moved by edit {dict(by_edit)} | "
+    print(f"\nR2 SUMMARY plants {npass}/{len(res)} | FASTER {got} = line {L('EXPECTED before')} | 2023 D3 frozen under v5: {'reproduced' if repro else 'NOT reproduced'}; moved by edit {dict(by_edit)} | "
           f"{OUT_COUNTS} {sha(OUT_COUNTS)} | {OUT_FASTER} {nf} rows {sha(OUT_FASTER)} | {OUT_OVER40} {no} rows {sha(OUT_OVER40)}")
 
 

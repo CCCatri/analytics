@@ -1,6 +1,6 @@
-"""rules.py - the rules-module stage, one rules module, to E0_TARGETS.md. The rules the record reads (check_possessions.py, check_clock.py, check_downs.py) and the engine (the engine stage) play by, each with its article.
+"""rules.py - E0, one rules module, to E0_TARGETS.md. The rules the record reads (r1.py, r2.py, r4.py) and the engine (E1) play by, each with its article.
 The book is rules/nfl_rulebook_2026.pdf (sha 144cec5bffd2). X1 snap kinds; X2 foul families; X3 next_down; X4 the clock (windows, clock_class, the play clock);
-X5 next_possession; X6 season_rules, read from out/r7_seasons.csv (written by measure_season_rules.py from the record; 2022 is held_out and stays UNKNOWN). No record is read here."""
+X5 next_possession; X6 season_rules, read from out/r7_seasons.csv (written by r7.py from the record; 2022 is sealed and stays UNKNOWN). No record is read here."""
 import csv, hashlib, io, re, sys
 
 _ITEM5 = {}
@@ -206,7 +206,7 @@ def next_possession(ending, scorer=None, scored_on=None, team=None, other=None):
     return {"scored upon": scored_on, "scoring team": scorer, "other team": other, "kicking team": team}.get(who), why
 
 
-# the season rules season rules, 2019-2025: measured by measure_season_rules.py into out/r7_seasons.csv; 2022 is the held_out season, its values from rule text only, UNKNOWN until read
+# X6 season rules, 2019-2025: measured by r7.py into out/r7_seasons.csv; 2022 is the sealed season, its values from rule text only, UNKNOWN until read
 R7_FILE = "out/r7_seasons.csv"
 
 
@@ -214,7 +214,7 @@ def season_rules(season):
     """{measure: (value, source)} for a season; a value is written where its prediction held, or where there was nothing to count ('no games', 'no kicks');
     a broken prediction reads UNKNOWN until its plays are read."""
     if season == 2022:
-        return {"all": ("UNKNOWN", "rule text, not read; the held_out season's record is never read")}
+        return {"all": ("UNKNOWN", "rule text, not read; the sealed season's record is never read")}
     L = open(R7_FILE).read().split("\n")
     out = {}
     SRC = {"True": "measured (R7)", "not judged": "measured (R7): nothing to count, no prediction judged"}   # R7 v2 a
@@ -225,7 +225,7 @@ def season_rules(season):
     return out
 
 
-# the season rules rules (E1_TARGETS.md E1a v4): each season's rule quoted from that season's book in rules/ (pinned in rules/RULE_PINS.json), the quote found inside its
+# X6 rules (E1_TARGETS.md E1a v4): each season's rule quoted from that season's book in rules/ (pinned in rules/RULE_PINS.json), the quote found inside its
 # article by the heading finder; R7's measured value sits beside it (season_rules above). A measured value supports a rule; it never stands in for one (v3 a).
 RULE_PINS_FILE = "rules/RULE_PINS.json"
 RULE_BOOK_OF = {2019: ("2020", "the 2020 book; 2019 book not read"), 2020: ("2020", ""), 2021: ("2021", ""), 2023: ("2023", ""), 2024: ("2024", ""),

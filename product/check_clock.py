@@ -1,4 +1,4 @@
-"""check_clock.py - rules-level clause 1, the clock, to clock-check.md v16 (b23041601078). A record read, not product.
+"""check_clock.py - rules-level clause 1, the clock, to clock-check.md v16 (576bd140df3b). A record read, not product.
 Reads through record.raw_frame + record.typed (pinned file, betting refused, every column typed; empties counted, never filled).
 Plants and negatives run first, row by row; any FAIL stops the run before a count is read or a file is written.
 Writes out/clock_counts.csv, out/clock_faster.csv, out/clock_over40.csv and out/clock_reasons.csv, each stamped on line 1 with this file's sha and the targets sha.
@@ -13,7 +13,7 @@ Choices the targets do not fix, declared and printed:
  - postseason overtime: quarter 5 is its first period (all 7 postseason overtimes, 2019-2025); any interval past quarter 5 reads UNKNOWN, no quarter number assumed (Retired list).
  - the record logs no two-minute warning row (Retired list): the warning is placed by the quarter clock only; v5's text search (any mention) is kept only for the frozen 2023 reproduction (tmw_row_v5).
  - every 'line N' printed is looked up in the targets file at run time by the line's opening words, so it cannot go stale.
- - L1 margin = coarser W stamp + G's 1 s (Instruments, v13); D3 compares revision_stage stamps only (W, E), so its margin carries no G second.
+ - L1 margin = coarser W stamp + G's 1 s (Instruments, v13); D3 compares wall stamps only (W, E), so its margin carries no G second.
  - v12's L1 word (margin without G's second) is computed beside v13's in the same run and written to out/clock_counts.csv as L1_V12.
  - the rules-module stage: the snap kinds, the pre-snap foul list, the clock windows, the clock class, the administrative stoppage and the play clock are read from rules.py (rules-module.md X1, X2, X4)."""
 import hashlib, os, re, sys, datetime
@@ -23,7 +23,7 @@ import record, policy
 from rules import SNAP_KINDS, PRESNAP_OFFENSE, beyond, oob_window, foul_window, warning, before_warning, clock_class, play_clock, admin as admin_rule
 
 SELF = hashlib.sha256(open(os.path.abspath(__file__), "rb").read()).hexdigest()[:12]
-TARGETS, TSHA = "acceptance-criteria/clock-check.md", "b23041601078"
+TARGETS, TSHA = "acceptance-criteria/clock-check.md", "576bd140df3b"
 TLINES = open(TARGETS).read().split("\n")
 
 
@@ -41,14 +41,14 @@ OUT_OVER40 = "out/clock_over40.csv"
 OUT_REASONS = "out/clock_reasons.csv"
 CLASS_EMPTY = {"RUN": "no stoppage on the stretch: the clock ran (4-3)"}   # a RUN stretch carries no stop or partial reason of its own
 L1_REASON = {"WITHIN REAL TIME": "the game clock fell no faster than real time",
-             "WITHIN RESOLUTION": "the game clock fell faster by no more than the stamps can tell apart (the revision_stage stamp's resolution plus the game clock's whole second)",
+             "WITHIN RESOLUTION": "the game clock fell faster by no more than the stamps can tell apart (the wall stamp's resolution plus the game clock's whole second)",
              "FASTER not licensed": "the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the record logging it (4-1-4), so a correction and a record error cannot be told apart",
              "FASTER licensed (runoff)": "a 10-second runoff removed game time with no play (4-7-1, 4-7-4)",
-             "UNCHECKED": "a revision_stage-clock stamp or the game clock is missing on one of the two snaps"}
-L1V12_REASON = {"WITHIN REAL TIME": "v12 margin (the revision_stage stamp's resolution only), kept for comparison: within real time",
-                "FASTER not licensed": "v12 margin (the revision_stage stamp's resolution only), kept for comparison: faster than real time",
-                "FASTER licensed (runoff)": "v12 margin (the revision_stage stamp's resolution only), kept for comparison: a runoff (4-7-1, 4-7-4)",
-                "UNCHECKED": "v12 margin (the revision_stage stamp's resolution only), kept for comparison: a stamp missing"}
+             "UNCHECKED": "a wall-clock stamp or the game clock is missing on one of the two snaps"}
+L1V12_REASON = {"WITHIN REAL TIME": "v12 margin (the wall stamp's resolution only), kept for comparison: within real time",
+                "FASTER not licensed": "v12 margin (the wall stamp's resolution only), kept for comparison: faster than real time",
+                "FASTER licensed (runoff)": "v12 margin (the wall stamp's resolution only), kept for comparison: a runoff (4-7-1, 4-7-4)",
+                "UNCHECKED": "v12 margin (the wall stamp's resolution only), kept for comparison: a stamp missing"}
 D3_REASON = {"WITHIN 40": "the next snap came within 40 seconds of real time after the play ended (4-6-1)",
              "OVER 40": "the next snap came more than 40 seconds of real time after the play ended; the play clock stops for interruptions the record does not log (4-6-3)",
              "N/A (ADMIN)": "an administrative stoppage (a change of possession, a timeout, the two-minute warning, a foul or a review) resets the play clock (4-6-2)",
@@ -181,7 +181,7 @@ def main():
     seasons = [s for s in policy.SEASONS if s != policy.HOLD]
     tag = f"check_clock.py {SELF} | clock-check.md {TSHA} (v16) | record read (rules-level clause 1), not product"
     print(f"{tag} | seasons {seasons} (hold-out {policy.HOLD} held_out)")
-    refs = {k: L(k) for k in ("PL1 ", "PL1b ", "PL2 ", "PL3 ", "PL4 ", "PL5 ", "PL6 ", "PL7 ", "PL8 ", "PL9 ", "PL10 ", "NEG9 ", "EXPECTED before", "2023 L2")}
+    refs = {k: L(k) for k in ("PL1 ", "PL1b ", "PL2 ", "PL3 ", "PL4 ", "PL5 ", "PL6 ", "PL7 ", "PL8 ", "PL9 ", "PL10 ", "NEG9 ", "EXPECTED before", "2023 the team level")}
     print(f"targets lines found by their opening words: {refs}")
     if "?" in refs.values():
         sys.exit("STOPPED: a targets line is missing or not unique; code and text cannot be matched")
@@ -329,7 +329,7 @@ def main():
         print(f"\nR2 SUMMARY injected_faults {npass}/{len(res)} FAILED: {[n.split(' ')[0] for n, ok in res if not ok]} | no count read, no file written")
         sys.exit(1)
 
-    print(f"\n=== 3. FROZEN 2023 D3 COUNTS (line {L('2023 L2')}) ===")
+    print(f"\n=== 3. FROZEN 2023 D3 COUNTS (line {L('2023 the team level')}) ===")
     v5 = Counter(IV[2023]["d3_v5"]); v16 = Counter(IV[2023]["d3"]); repro = all(v5[k] == FROZEN_2023[k] for k in FROZEN_2023)
     for k in FROZEN_2023:
         print(f"  {k:12s} frozen {FROZEN_2023[k]} | v5 definition (warning from rows) {v5[k]} {'REPRODUCED' if v5[k] == FROZEN_2023[k] else 'NOT REPRODUCED'} | v16 {v16[k]} change {v16[k] - v5[k]:+d}")

@@ -3,4 +3,5 @@ out_revision12.log
 out_revision16.log
 .DS_Store
 data/raw/
-run_full.log
+out/engine/
+out/engine_alone/

@@ -1,5 +1,4 @@
 {
- "raw_dir": "/Users/cameroncatri/LocalWork/nfl/data/raw",
  "data_version": "8d9f37846c0cc3bcdac6ea2f3082c1297cfe076306f4cffc34b8f20eb3e36107",
  "pins": {
   "db_playerids.csv": "9bc031b09ccb2fc72e173856dcc80fc7e5e19f3e0fedef47850ee8aee2585b2d",
@@ -47,5 +46,6 @@
   "stats_2023.csv.gz": "6c2258cf5d90cb918dfca093b20dba2e062b1eca54f5d2d348f15a0045d86113",
   "stats_2024.csv.gz": "61fc9a44706522218a4448001706e3fec65ebbb97c1d9c5746ceef364989125d",
   "stats_2025.csv.gz": "c7401e321bdb369443f3280b9acd74ba6e16d82e710383bf1c01acabfebeac0b"
- }
+ },
+ "raw_dir": "/Users/cameroncatri/LocalWork/analytics/data/raw"
 }

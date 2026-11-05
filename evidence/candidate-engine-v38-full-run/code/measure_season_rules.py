@@ -1,5 +1,5 @@
-"""measure_season_rules.py - R7 v2 inside the rules-module stage (E0_TARGETS.md section 2, R7 v2): each season's rule values read from the record before the engine uses them. A record read, not product.
-For every season but 2022 (held_out: its values come from rule text only, never its record), each prediction prints before its number, and every measure prints
+"""r7.py - R7 v2 inside E0 (E0_TARGETS.md section 2, R7 v2): each season's rule values read from the record before the engine uses them. A record read, not product.
+For every season but 2022 (sealed: its values come from rule text only, never its record), each prediction prints before its number, and every measure prints
 what it counted (games or kicks) beside its value; a measure with nothing to count reads 'no games' or 'no kicks' and no prediction is judged there (v2 a):
   M1 the most common drive-start spot after a kickoff touchback (the next snap's own yard line), counted over touchback kickoffs with a next snap;
   M2 the longest regular-season overtime in game seconds (the quarter clock at the period's first row), counted over regular-season overtime games;
@@ -13,9 +13,9 @@ rule_change_page; prediction_held is True, False or 'not judged'. rules.season_r
 import hashlib, os, sys
 from collections import Counter
 import pandas as pd
-import policy
+import contract
 from rules import SNAP_KINDS
-import check_possessions, check_clock, check_downs
+import r1, r2, r4
 
 SELF = hashlib.sha256(open(os.path.abspath(__file__), "rb").read()).hexdigest()[:12]
 TARGETS = "E0_TARGETS.md"
@@ -51,12 +51,12 @@ def breaking(s, K):
 
 
 def season_frame(s):
-    a = check_possessions.load(s)
-    b = check_downs.load(s)[["game_id", "play_id", "yardline_100", "desc", "touchdown"]]
+    a = r1.load(s)
+    b = r4.load(s)[["game_id", "play_id", "yardline_100", "desc", "touchdown"]]
     d = a.merge(b, on=["game_id", "play_id"], how="inner", validate="one_to_one")
     if len(d) != len(a):
-        sys.exit(f"STOPPED: measure_season_rules {s}: check_possessions rows {len(a)} and check_downs rows {len(b)} do not join one-to-one")
-    q, _, _ = check_clock.load(s)
+        sys.exit(f"STOPPED: r7 {s}: r1 rows {len(a)} and r4 rows {len(b)} do not join one-to-one")
+    q, _, _ = r2.load(s)
     return d.sort_values(["game_id", "order_sequence"]).reset_index(drop=True), q
 
 
@@ -111,9 +111,9 @@ def grid(K):
 
 
 def main():
-    seasons = [s for s in policy.SEASONS if s != policy.HOLD]
-    tag = f"measure_season_rules.py {SELF} | {TARGETS} {sha(TARGETS)} | record read (the rules-module stage R7 v2), not product"
-    print(f"{tag} | seasons {seasons}; {SEALED} held_out: rule text only, UNKNOWN until read")
+    seasons = [s for s in contract.SEASONS if s != contract.HOLD]
+    tag = f"r7.py {SELF} | {TARGETS} {sha(TARGETS)} | record read (E0 R7 v2), not product"
+    print(f"{tag} | seasons {seasons}; {SEALED} sealed: rule text only, UNKNOWN until read")
     rows, BR = [], {}
     for s in seasons:
         print(f"\n=== {s}: predictions, before the numbers ===")
@@ -147,7 +147,7 @@ def main():
         print(f"  {s}: {len(BR[s])} kicks")
         for k in BR[s]:
             print(f"    {k['game_id']} play {k['play_id']} q{k['qtr']} ({k['period']}) | kicking {k['kick']} {k['ks']}-{k['rs']} {k['score']} | {k['desc']}")
-    rows += [(SEALED, m, "UNKNOWN", "not read", "rule text only (held_out season)", "") for m in ("M1", "M2", "M3", "M4", "M5")]
+    rows += [(SEALED, m, "UNKNOWN", "not read", "rule text only (sealed season)", "") for m in ("M1", "M2", "M3", "M4", "M5")]
     R = pd.DataFrame(sorted(rows, key=lambda z: (z[0], z[1])), columns=["season", "measure", "value", "counted", "prediction", "prediction_held"])
     R["rule_change_page"] = "UNCHECKED"
     with open(OUT, "w") as f:

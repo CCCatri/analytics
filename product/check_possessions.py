@@ -19,7 +19,7 @@ import record, policy
 from rules import SNAP_KINDS, next_possession
 
 SELF = hashlib.sha256(open(os.path.abspath(__file__), "rb").read()).hexdigest()[:12]
-RULES, RSHA = "acceptance-criteria/rules-level.md", "72ae1dc9b61f"
+RULES, RSHA = "acceptance-criteria/rules-level.md", "9f848410c606"
 OUT = "out/possessions_possessions.csv"
 OUT_CLASSES = "out/possessions_classes.csv"
 EXTRA = {"game_id": ("str", False), "play_id": ("int", False), "order_sequence": ("int", False), "season_type": ("str", False), "return_touchdown": ("int", True),
@@ -106,8 +106,8 @@ def classes(r, full):
     sc = [s for s in w["td_team"].dropna() if s != t] + (["the other side"] if (w["return_touchdown"] == 1).any() else [])
     if any(next_possession("try_or_field_goal", scorer=s, scored_on=t)[0] == t for s in sc): found.add("A8 other side scored")   # the rules module X5
     mine = w["posteam"] == t; r1 = w["fumble_recovery_1_team"]; r2 = w["fumble_recovery_2_team"]
-    lost = mine & ((w["interception"] == 1) | (check_possessions.notna() & (r1 != t)))
-    back = mine & ((check_possessions.notna() & (r1 != t) & (r2 == t)) | ((w["interception"] == 1) & (r1 == t)))
+    lost = mine & ((w["interception"] == 1) | (r1.notna() & (r1 != t)))
+    back = mine & ((r1.notna() & (r1 != t) & (r2 == t)) | ((w["interception"] == 1) & (r1 == t)))
     if back.any() or (lost & (w["touchback"] == 1)).any(): found.add("A10 two changes in one down")
     kick = w["play_type"].isin(["kickoff", "punt"])
     if (w["own_kickoff_recovery"] == 1).any() or (kick & (r1 == t)).any(): found.add("A9 kicking team recovered")

@@ -1,4 +1,4 @@
-"""check_possessions.py - rules-level clause 2, possessions: the R1 read of RUBRIC run_log line 322, saved as a script. A record read, not product.
+"""r1.py - L0 clause 2, possessions: the R1 read of RUBRIC ledger line 322, saved as a script. A record read, not product.
 Possession = the offensive plays (pass, run, kneel, spike, punt, field goal; Tries excluded, 11-3-1) one team runs, broken at a kickoff, a punt,
 a change of offensive team, halftime or overtime start, an interception, or a fumble first recovered by the other side (a fumble kept ends nothing, 3-35-3).
 Back-to-back possessions (one team twice in a row) are classed by the rule that hands the ball back:
@@ -6,16 +6,16 @@ Back-to-back possessions (one team twice in a row) are classed by the rule that 
   A9 the kicking team recovered; A7 a safety before the receiving side's own snap, the scored-on side read from the score change (11-5-1(b), 11-5-2).
 Reads record.events (the columns it carries) joined one-to-one on (game_id, play_id) to record.raw_frame + record.typed for the rest:
 order_sequence, season_type, return_touchdown, touchback, own_kickoff_recovery, fumble_recovery_1_team, fumble_recovery_2_team.
-Plants run first, row by row; any FAIL, or any count off run_log line 322, stops the run before the file is written.
+Plants run first, row by row; any FAIL, or any count off ledger line 322, stops the run before the file is written.
 Writes out/r1_possessions.csv and out/r1_classes.csv, stamped on line 1 with this file's sha and RULES_L0.md's sha.
 out/r1_classes.csv (N7): possessions and back-to-back possessions per season and class, each class with the articles RULES_L0.md cites on its line
 (A7-A11; halftime and overtime start are A11), read verbatim, and in a book column RULES_L0.md's Book line, read verbatim, on every row that carries articles;
 the run stops if the classes do not sum back to the counts.
-the rules-module stage: the snap kinds and the possession rules after a score and a safety (A8, A7) are read from rules.py (E0_TARGETS.md X1, X5)."""
+E0: the snap kinds and the possession rules after a score and a safety (A8, A7) are read from rules.py (E0_TARGETS.md X1, X5)."""
 import hashlib, os, re, sys
 from collections import Counter
 import numpy as np, pandas as pd
-import record, policy
+import record, contract
 from rules import SNAP_KINDS, next_possession
 
 SELF = hashlib.sha256(open(os.path.abspath(__file__), "rb").read()).hexdigest()[:12]
@@ -54,14 +54,14 @@ def sha(p):
 
 def load(season):
     ev = record.events(season)[FROM_EVENTS]
-    ex = record.typed(record.raw_frame(policy.PBP_FILE.format(season=season), list(EXTRA), f"check_possessions {season}"), EXTRA, f"check_possessions {season}")
+    ex = record.typed(record.raw_frame(contract.PBP_FILE.format(season=season), list(EXTRA), f"r1 {season}"), EXTRA, f"r1 {season}")
     d = ev.merge(ex, on=["game_id", "play_id"], how="inner", validate="one_to_one")
     if len(d) != len(ev) or len(d) != len(ex):
-        raise record.DataGap(f"check_possessions {season}: events {len(ev)} and raw extras {len(ex)} do not join one-to-one ({len(d)})")
+        raise record.GAP(f"r1 {season}: events {len(ev)} and raw extras {len(ex)} do not join one-to-one ({len(d)})")
     for c in d.columns:
         if str(d[c].dtype) == "Int64":
             d[c] = d[c].to_numpy(dtype=float, na_value=np.nan)
-    print(f"check_possessions {season}: rows {len(d)} joined one-to-one (events {len(ev)}, raw extras {len(ex)})")
+    print(f"r1 {season}: rows {len(d)} joined one-to-one (events {len(ev)}, raw extras {len(ex)})")
     return d
 
 
@@ -104,16 +104,16 @@ def scored_on(full, seq):
 def classes(r, full):
     w = full[(full["order_sequence"] >= r["prev_s1"]) & (full["order_sequence"] < r["s0"])].sort_values("order_sequence"); t = r["team"]; found = set()
     sc = [s for s in w["td_team"].dropna() if s != t] + (["the other side"] if (w["return_touchdown"] == 1).any() else [])
-    if any(next_possession("try_or_field_goal", scorer=s, scored_on=t)[0] == t for s in sc): found.add("A8 other side scored")   # the rules module X5
+    if any(next_possession("try_or_field_goal", scorer=s, scored_on=t)[0] == t for s in sc): found.add("A8 other side scored")   # E0 X5
     mine = w["posteam"] == t; r1 = w["fumble_recovery_1_team"]; r2 = w["fumble_recovery_2_team"]
-    lost = mine & ((w["interception"] == 1) | (check_possessions.notna() & (r1 != t)))
-    back = mine & ((check_possessions.notna() & (r1 != t) & (r2 == t)) | ((w["interception"] == 1) & (r1 == t)))
+    lost = mine & ((w["interception"] == 1) | (r1.notna() & (r1 != t)))
+    back = mine & ((r1.notna() & (r1 != t) & (r2 == t)) | ((w["interception"] == 1) & (r1 == t)))
     if back.any() or (lost & (w["touchback"] == 1)).any(): found.add("A10 two changes in one down")
     kick = w["play_type"].isin(["kickoff", "punt"])
     if (w["own_kickoff_recovery"] == 1).any() or (kick & (r1 == t)).any(): found.add("A9 kicking team recovered")
     for sseq in w.loc[w["safety"] == 1, "order_sequence"]:
         so = scored_on(full.sort_values("order_sequence").reset_index(drop=True), sseq)
-        if so is None or next_possession("safety", scorer=(t if so != t else None), scored_on=so)[0] != t: continue   # the rules module X5
+        if so is None or next_possession("safety", scorer=(t if so != t else None), scored_on=so)[0] != t: continue   # E0 X5
         ran = w[(w["order_sequence"] < sseq) & (w["posteam"] == so) & w["play_type"].isin(["pass", "run"]) & (w["two_point_attempt"] != 1)]
         if ran.empty: found.add("A7 safety before the receiving side's own snap")
     return found
@@ -136,9 +136,9 @@ def counts(P, G):
 def main():
     if sha(RULES) != RSHA:
         sys.exit(f"STOPPED: {RULES} is {sha(RULES)}, not {RSHA} (the version R1 ran against); the definition and the text cannot be matched")
-    seasons = [s for s in policy.SEASONS if s != policy.HOLD]
-    tag = f"check_possessions.py {SELF} | {RULES} {RSHA} | record read (rules-level clause 2), not product"
-    print(f"{tag} | seasons {seasons} (hold-out {policy.HOLD} held_out)")
+    seasons = [s for s in contract.SEASONS if s != contract.HOLD]
+    tag = f"r1.py {SELF} | {RULES} {RSHA} | record read (L0 clause 2), not product"
+    print(f"{tag} | seasons {seasons} (hold-out {contract.HOLD} sealed)")
     D = pd.concat([load(s) for s in seasons], ignore_index=True).sort_values(["game_id", "order_sequence"]).reset_index(drop=True)
     P = possessions(D)
     G = {g: d.sort_values("order_sequence").reset_index(drop=True) for g, d in D.groupby("game_id")}
@@ -147,7 +147,7 @@ def main():
     print("\n=== PLANTS, row by row (any FAIL stops the run) ===")
     res = []
 
-    def injected_fault(name, cond):
+    def plant(name, cond):
         res.append(bool(cond)); print(f"  PLANT {name} -> {'PASS' if cond else 'FAIL'}")
 
     def cl(r, frame=None):
@@ -157,53 +157,53 @@ def main():
     def around(g, t, seq): return b2b[(b2b["game_id"] == g) & (b2b["team"] == t) & (b2b["prev_s1"] <= seq) & (b2b["s0"] > seq)]
     def sel(g, t, q): x = b2b[(b2b["game_id"] == g) & (b2b["team"] == t) & (b2b["kind"] == "other")]; return x[x["q"] == q]
     def show(x): return [word(cl(r)) for _, r in x.iterrows()]
-    x = sel("2019_01_BUF_NYJ", "BUF", 1); injected_fault(f"A8 BUF-NYJ BUF q1 ({len(x)}): {show(x)}", len(x) > 0 and all(word(cl(r)) == "A8 other side scored" for _, r in x.iterrows()))
+    x = sel("2019_01_BUF_NYJ", "BUF", 1); plant(f"A8 BUF-NYJ BUF q1 ({len(x)}): {show(x)}", len(x) > 0 and all(word(cl(r)) == "A8 other side scored" for _, r in x.iterrows()))
     F = G["2019_01_BUF_NYJ"].copy(); F["td_team"] = F["td_team"].where(F["td_team"].isna(), "BUF"); F["return_touchdown"] = 0.0
-    injected_fault("A8 negative: BUF-NYJ touchdown relabeled to BUF", len(x) > 0 and "A8 other side scored" not in cl(x.iloc[0], F))
-    x = after("2019_12_OAK_NYJ", "LV", 2660); injected_fault(f"A8 OAK-NYJ after 2660 ({len(x)}): {show(x)}", len(x) == 1 and word(cl(x.iloc[0])) == "A8 other side scored")
+    plant("A8 negative: BUF-NYJ touchdown relabeled to BUF", len(x) > 0 and "A8 other side scored" not in cl(x.iloc[0], F))
+    x = after("2019_12_OAK_NYJ", "LV", 2660); plant(f"A8 OAK-NYJ after 2660 ({len(x)}): {show(x)}", len(x) == 1 and word(cl(x.iloc[0])) == "A8 other side scored")
     for g, t, q in (("2019_01_SF_TB", "TB", 4), ("2019_04_TB_LA", "TB", 4)):
-        x = sel(g, t, q); injected_fault(f"A8 {g} {t} q{q} ({len(x)}): {show(x)}", len(x) > 0 and all(word(cl(r)) == "A8 other side scored" for _, r in x.iterrows()))
-    x = after("2019_12_OAK_NYJ", "LV", 2994); injected_fault(f"A10 OAK-NYJ after 2994 ({len(x)}): {show(x)}", len(x) == 1 and word(cl(x.iloc[0])) == "A10 two changes in one down")
+        x = sel(g, t, q); plant(f"A8 {g} {t} q{q} ({len(x)}): {show(x)}", len(x) > 0 and all(word(cl(r)) == "A8 other side scored" for _, r in x.iterrows()))
+    x = after("2019_12_OAK_NYJ", "LV", 2994); plant(f"A10 OAK-NYJ after 2994 ({len(x)}): {show(x)}", len(x) == 1 and word(cl(x.iloc[0])) == "A10 two changes in one down")
     F = G["2019_12_OAK_NYJ"].copy(); F["fumble_recovery_2_team"] = F["fumble_recovery_2_team"].where(F["fumble_recovery_2_team"].isna(), "NYJ")
-    injected_fault("A10 negative: OAK-NYJ second recovery relabeled to NYJ", len(x) == 1 and "A10 two changes in one down" not in cl(x.iloc[0], F))
-    x = after("2024_15_CIN_TEN", "TEN", 3191); injected_fault(f"A10 award CIN-TEN after 3191 ({len(x)}): {show(x)}", len(x) == 1 and word(cl(x.iloc[0])) == "A10 two changes in one down")
+    plant("A10 negative: OAK-NYJ second recovery relabeled to NYJ", len(x) == 1 and "A10 two changes in one down" not in cl(x.iloc[0], F))
+    x = after("2024_15_CIN_TEN", "TEN", 3191); plant(f"A10 award CIN-TEN after 3191 ({len(x)}): {show(x)}", len(x) == 1 and word(cl(x.iloc[0])) == "A10 two changes in one down")
     F = G["2024_15_CIN_TEN"].copy(); F["touchback"] = 0.0
-    injected_fault("A10 award negative: CIN-TEN with the touchback column cleared", len(x) == 1 and "A10 two changes in one down" not in cl(x.iloc[0], F))
+    plant("A10 award negative: CIN-TEN with the touchback column cleared", len(x) == 1 and "A10 two changes in one down" not in cl(x.iloc[0], F))
     for g, t, seq in (("2019_09_IND_PIT", "PIT", 2734), ("2025_08_CLE_NE", "CLE", 3742), ("2025_18_KC_LV", "KC", 3537)):
-        x = around(g, t, seq); injected_fault(f"A9 exact {g} {t} around {seq} ({len(x)}): {show(x)}", len(x) == 1 and word(cl(x.iloc[0])) == "A9 kicking team recovered")
+        x = around(g, t, seq); plant(f"A9 exact {g} {t} around {seq} ({len(x)}): {show(x)}", len(x) == 1 and word(cl(x.iloc[0])) == "A9 kicking team recovered")
     x = around("2025_08_CLE_NE", "CLE", 3742); F = G["2025_08_CLE_NE"].copy(); F["own_kickoff_recovery"] = 0.0; F["fumble_recovery_1_team"] = None
-    injected_fault("A9 negative: CLE-NE with the recovery cleared", len(x) == 1 and "A9 kicking team recovered" not in cl(x.iloc[0], F))
+    plant("A9 negative: CLE-NE with the recovery cleared", len(x) == 1 and "A9 kicking team recovered" not in cl(x.iloc[0], F))
     for g, t, seq in (("2021_17_ATL_BUF", "ATL", 203), ("2024_01_DEN_SEA", "DEN", 1354), ("2025_06_DEN_NYJ", "NYJ", 2604)):
-        x = after(g, t, seq); injected_fault(f"A7 {g} {t} after {seq} ({len(x)}): {show(x)}", len(x) == 1 and word(cl(x.iloc[0])) == "A7 safety before the receiving side's own snap")
+        x = after(g, t, seq); plant(f"A7 {g} {t} after {seq} ({len(x)}): {show(x)}", len(x) == 1 and word(cl(x.iloc[0])) == "A7 safety before the receiving side's own snap")
     x = after("2024_01_DEN_SEA", "DEN", 1354)
     row = {c: None for c in G["2024_01_DEN_SEA"].columns}; row.update({"game_id": "2024_01_DEN_SEA", "order_sequence": 1370.0, "posteam": "SEA", "qtr": 2.0, "play_type": "run", "two_point_attempt": 0.0})
     F = pd.concat([G["2024_01_DEN_SEA"], pd.DataFrame([row])], ignore_index=True).sort_values("order_sequence").reset_index(drop=True)
     F[["total_home_score", "total_away_score"]] = F[["total_home_score", "total_away_score"]].astype(float).ffill()
-    injected_fault("A7 negative: DEN-SEA with a SEA run inserted at seq 1370", len(x) == 1 and "A7 safety before the receiving side's own snap" not in cl(x.iloc[0], F))
+    plant("A7 negative: DEN-SEA with a SEA run inserted at seq 1370", len(x) == 1 and "A7 safety before the receiving side's own snap" not in cl(x.iloc[0], F))
     h = b2b[b2b["kind"] == "halftime"]; r = h.iloc[0] if len(h) else None
-    injected_fault(f"A11 halftime: {len(h)} found", r is not None and kind(r["prev_q"], r["q"]) == "halftime")
-    injected_fault("A11 halftime negative: the later possession moved to q2", r is not None and kind(r["prev_q"], 2) != "halftime")
+    plant(f"A11 halftime: {len(h)} found", r is not None and kind(r["prev_q"], r["q"]) == "halftime")
+    plant("A11 halftime negative: the later possession moved to q2", r is not None and kind(r["prev_q"], 2) != "halftime")
     o = b2b[b2b["kind"] == "overtime start"]; r = o.iloc[0] if len(o) else None
-    injected_fault(f"A11 overtime start: {len(o)} found, first {r['game_id'] if r is not None else None}", r is not None and kind(r["prev_q"], r["q"]) == "overtime start")
-    injected_fault("A11 overtime negative: the later possession moved to q4", r is not None and kind(r["prev_q"], 4) != "overtime start")
+    plant(f"A11 overtime start: {len(o)} found, first {r['game_id'] if r is not None else None}", r is not None and kind(r["prev_q"], r["q"]) == "overtime start")
+    plant("A11 overtime negative: the later possession moved to q4", r is not None and kind(r["prev_q"], 4) != "overtime start")
     oak = P[P["game_id"] == "2019_12_OAK_NYJ"]
-    injected_fault(f"no break at OAK-NYJ seq 3062 (ending there {int((oak['s1'] == 3062).sum())}, containing it {int(((oak['s0'] < 3062) & (oak['s1'] > 3062)).sum())})",
+    plant(f"no break at OAK-NYJ seq 3062 (ending there {int((oak['s1'] == 3062).sum())}, containing it {int(((oak['s0'] < 3062) & (oak['s1'] > 3062)).sum())})",
           int((oak["s1"] == 3062).sum()) == 0 and int(((oak["s0"] < 3062) & (oak["s1"] > 3062)).sum()) == 1)
-    injected_fault("A3: no SF back-to-back in SF-TB q4", sel("2019_01_SF_TB", "SF", 4).empty)
-    injected_fault("no CAR back-to-back in TB-CAR q1", sel("2019_02_TB_CAR", "CAR", 1).empty)
+    plant("A3: no SF back-to-back in SF-TB q4", sel("2019_01_SF_TB", "SF", 4).empty)
+    plant("no CAR back-to-back in TB-CAR q1", sel("2019_02_TB_CAR", "CAR", 1).empty)
     npass = sum(res)
     if npass != len(res) or len(res) != 24:
-        print(f"\nR1 SUMMARY injected_faults {npass}/{len(res)} FAILED | no count read, no file written"); sys.exit(1)
+        print(f"\nR1 SUMMARY plants {npass}/{len(res)} FAILED | no count read, no file written"); sys.exit(1)
 
-    print("\n=== COUNTS against run_log line 322 (written before this script existed) ===")
+    print("\n=== COUNTS against ledger line 322 (written before this script existed) ===")
     agree = {k: C[k] == LEDGER_322[k] for k in LEDGER_322}
     for k in LEDGER_322:
-        print(f"  {k}: {C[k]} | run_log 322 {LEDGER_322[k]} -> {'AGREE' if agree[k] else 'DISAGREE'}")
+        print(f"  {k}: {C[k]} | ledger 322 {LEDGER_322[k]} -> {'AGREE' if agree[k] else 'DISAGREE'}")
     left = oth[oth["word"].str.startswith(("UNEXPLAINED", "MULTIPLE"))]
     print(f"  unexplained or multiple back-to-back: {len(left)}")
     for _, r in left.iterrows(): print(f"    {r['word']}: {r['game_id']} {r['team']} q{int(r['q'])} seq {r['prev_s1']} -> {r['s0']}")
     if not all(agree.values()) or len(left):
-        print(f"\nR1 SUMMARY injected_faults {npass}/{len(res)} | counts DISAGREE with run_log line 322 or unexplained {len(left)}: code and record disagree | no file written"); sys.exit(1)
+        print(f"\nR1 SUMMARY plants {npass}/{len(res)} | counts DISAGREE with ledger line 322 or unexplained {len(left)}: code and record disagree | no file written"); sys.exit(1)
 
     print("\n=== POSTSEASON: the same counts with and without the 76 postseason games (Q1) ===")
     post = set(D.loc[D["season_type"] != "REG", "game_id"])
@@ -235,11 +235,11 @@ def main():
           and all(int(bb.loc[bb["rule_class"] == k, "count"].sum()) == v for k, v in list(C["classes"].items()) + [(k, v) for k, v in C["kinds"].items() if k != "other"])
     print(f"N7 classes: rows {len(CC)} | sums back to the counts: {ok_} | articles per A-line {ART} | book {BOOK}")
     if not ok_:
-        print(f"\nR1 SUMMARY injected_faults {npass}/{len(res)} | the class split does not sum to the counts | no classes file written"); sys.exit(1)
+        print(f"\nR1 SUMMARY plants {npass}/{len(res)} | the class split does not sum to the counts | no classes file written"); sys.exit(1)
     with open(OUT_CLASSES, "w") as f:
         f.write(f"# {tag}\n"); CC.to_csv(f, index=False)
     print(f"written, stamped on line 1: {OUT_CLASSES} rows {len(CC)} sha {sha(OUT_CLASSES)}")
-    print(f"\nR1 SUMMARY injected_faults {npass}/{len(res)} | possessions {C['possessions']} games {C['games']} = run_log 322 | unexplained 0 | without the {len(post)} postseason games: possessions {Cr['possessions']} games {Cr['games']} back-to-back {Cr['kinds']} | {OUT} {sha(OUT)}")
+    print(f"\nR1 SUMMARY plants {npass}/{len(res)} | possessions {C['possessions']} games {C['games']} = ledger 322 | unexplained 0 | without the {len(post)} postseason games: possessions {Cr['possessions']} games {Cr['games']} back-to-back {Cr['kinds']} | {OUT} {sha(OUT)}")
 
 
 if __name__ == "__main__":
