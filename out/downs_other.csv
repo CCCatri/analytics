@@ -1,0 +1,2 @@
+# the downs check.py 8532a090b885 | R4_TARGETS.md aedf16a4ca8c | record read (the rules level clause 3), not product
+check,word,why,game_id,season,season_type,seq,team,down,ydstogo,yardline_100,expected,prev_seq,prev_kind,prev_down,prev_ptype,prev_pen_team,foul_seq,foul_name,foul_defense,S,L,next_togo,prev_pen,prev2_pen,try_seq,kick_seq,kick_kind,next_seq,next_team,next_kind

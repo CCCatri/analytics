@@ -1,0 +1,26 @@
+PASS record: raw rows immutable and credits replay the official tally exactly
+PASS rules: linked passer/receiver credits, laterals, sacks, kneels and spikes
+PASS finishing: tri-state, the final drive from the sequence, missing participation is UNKNOWN not FALSE
+PASS boundary: training view admits nothing from the hold-out or after the fit week; evaluation access grants no training access
+PASS roster: issue-time lineup reads no participation; unresolved codes stay unresolved
+PASS reducer: production credits conserve; a corrupted credit, a missing run allocation and an unprocessed event are caught
+PASS simulator: equal worlds, legal lineups, identities over every world, one finishing mask per man
+PASS model: typed fit results; the passer kernel with no informative risk set is FIT_OK as its declared prior; other starved fits are INSUFFICIENT_DATA
+PASS temporal: the sparse gap transition equals the dense chain's dt-step law; market columns are never read
+PASS contract: unique key, p xor reason, a duplicated key is refused
+PASS judge: structured decisions; undeclared tolerances read INSUFFICIENT; oracle BETTER and shuffle WORSE; a planted group shift reads OUT
+PASS gate: end-to-end run on planted fits records a terminal status, DISPLAY and KEY pass, hold-out access is tracked by dataset identity
+Traceback (most recent call last):
+  File "/home/claude/nfl3/gate.py", line 129, in main
+    F = model.load_or_fit(c_); fit_status[c_.fit_key()] = {"fit": f"{c_.season}w{c_.fit_week:02d}", "status": F.status(), "counts": F.counts}
+  File "/home/claude/nfl3/model.py", line 603, in load_or_fit
+    F = load_fits(cutoff)
+  File "/home/claude/nfl3/tests/test_product.py", line 232, in <lambda>
+    model.load_fits = lambda c: (_ for _ in ()).throw(RuntimeError("planted crash in FIT"))
+                                ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/claude/nfl3/tests/test_product.py", line 232, in <genexpr>
+    model.load_fits = lambda c: (_ for _ in ()).throw(RuntimeError("planted crash in FIT"))
+RuntimeError: planted crash in FIT
+PASS gate: a crash before scoring is recorded as CRASHED with its exception, never as a predictive verdict
+
+0 failures: []

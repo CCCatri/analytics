@@ -1,0 +1,45 @@
+{
+ "revision stage": 3,
+ "name": "tendencies estimator (sparse Laplace GLMM replaces Stan)",
+ "rules": [
+  "R1",
+  "R2",
+  "R18"
+ ],
+ "mechanism": "estimate.py: latent z = [alpha][beta][a_pos][v_def][s][g|m2] per category; inner Newton on the joint log-density, outer L-BFGS-B on the Laplace log-marginal plus contract priors; OU chain precision tridiagonal; draws from the conditional posteriors (unit chain block inverse, scalar 1/sqrt(H_ii)); unit constant m absorbed (sigma_m = 0).",
+ "scope": "all 12 sub-models (snap, target, rusher, passer, call, branch, result, td_pass, td_run, gain_pass, gain_run, gain_sack); model_version = sha(MODEL + estimate.py).",
+ "fitting_procedure": "development data only; cfg = contract.MODEL['estimator']; resume by FitResult.input_sha.",
+ "predictions": [
+  {
+   "claim": "every sub-model of one real cutoff fits FIT_OK in minutes, not hours",
+   "provenance": "development estimate (synthetic 12 sub-models in ~114 s; real rows ~5-10x larger)",
+   "measure": "run log row FITS.sub-models[*].seconds",
+   "reject_if": "any sub-model > 30 min or status != FIT_OK"
+  },
+  {
+   "claim": "fake-data recovery: |est - truth| < 3 max(se, .05) for log sigma_pos, tau, lambda, sigma_def",
+   "provenance": "simulation (tests t_estimator)",
+   "reject_if": "any parameter outside"
+  },
+  {
+   "claim": "unit-effect posterior coverage of truth in [0.88, 0.995] at nominal 0.95",
+   "provenance": "simulation",
+   "reject_if": "outside"
+  },
+  {
+   "claim": "m == 0 in every draw (R2: no unit constant)",
+   "provenance": "identity",
+   "reject_if": "any nonzero"
+  },
+  {
+   "claim": "simulate audits all zero on estimated sub-models; identities read zero",
+   "provenance": "identity",
+   "reject_if": "any audit > 0"
+  }
+ ],
+ "companion_checks": [
+  "grader diagnostics: converged flag, log_marginal finite",
+  "preflight identical to revision 10 (j_prev 1-based, chain stats)"
+ ],
+ "rejection": "any prediction fails -> restore revision 14 product files; run log row records the lesson."
+}

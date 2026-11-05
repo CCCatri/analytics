@@ -1,0 +1,6 @@
+# pinned to the versions the construction tests ran with (Python 3.13); CmdStanPy is the reference inference backend (install CmdStan with
+# python3 -c "import cmdstanpy; cmdstanpy.install_cmdstan()"). Stan programs are written for Stan >= 2.33 syntax (array[] declarations).
+numpy==2.5.3
+pandas==3.0.5
+scipy==1.18.1
+cmdstanpy==1.3.0

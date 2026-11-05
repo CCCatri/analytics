@@ -1,0 +1,5 @@
+# pinned to the versions the construction tests ran with (Python 3.13). The tendencies estimator (estimate.py) needs only numpy and scipy;
+# no sampler and no compiler is installed.
+numpy==2.5.3
+pandas==3.0.5
+scipy==1.18.1

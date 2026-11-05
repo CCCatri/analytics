@@ -1,0 +1,326 @@
+{
+ "run_id": "20261031T105944Z_61876_full",
+ "chain": [
+  "/Users/cameroncatri/LocalWork/version 4/e2b_v38_7f5379dd7ce2.py",
+  "7f5379dd7ce2"
+ ],
+ "mode": "full",
+ "status": "COMPLETE",
+ "reason": "",
+ "last_section": "ac2: the reads",
+ "inputs": {
+  "the possessions check.py": "684d8fed2311",
+  "the clock check.py": "567e8946b4e0",
+  "the downs check.py": "8532a090b885",
+  "record.py": "a18b89fe7985",
+  "policy.py": "c141f8d3086a",
+  "the season-rules measurement.py": "944aef150c1b",
+  "rules_level.py": "ede0aef941c2",
+  "engine.py": "4f28bf6aa3cc",
+  "out/sim_games.csv": "d3d2dd1303de",
+  "out/r7_seasons.csv": "1d3606b8c099",
+  "out/e1_checks.csv": "f54577bfd3be",
+  "rules/RULE_PINS.json": "ca8b1060e3aa",
+  "PROGRESS.md": "811fddf2ab32",
+  "E2_TARGETS.md": "165d9321da35",
+  "transition.py": "fcca26b4997f",
+  "test_transition.py": "d47712aa9faa",
+  "out/engine/MANIFEST.json": "c539a85289bc",
+  "clock_check.py": "981facf94d61",
+  "rules/play_clock_pins.tsv": "5b83ab1dda95",
+  "rules/warning_pins.tsv": "3dc29875f627",
+  "rules.py": "3d9b5a3b1985"
+ },
+ "results": {
+  "h_play": null,
+  "h_fit": null,
+  "section4": false,
+  "failures": 0,
+  "unsupported_games": 648,
+  "games": 1676,
+  "timing": [
+   25,
+   36,
+   0
+  ],
+  "plays": 136.76968973747017,
+  "possessions": 21.849045346062052,
+  "timeouts": 6.615155131264917,
+  "points": 40.936754176610975,
+  "table": "e12d7d3c4413",
+  "missing": [],
+  "gates": {
+   "section 4 on the engine: every ACCEPTED WHEN item": false,
+   "q: engine.py alone byte-identical": true,
+   "section 4 on the record: the no-rise quality gate": true,
+   "ACCEPTED": false,
+   "P1-P4 fail as they must (none INEFFECTIVE_CHECK)": true,
+   "leak tests 1-3 pass": true,
+   "parallel byte-identical to serial (the quick run's games and fits)": true,
+   "the shared parse equal to separate parses": true,
+   "both calibration injected faults fail": true,
+   "the ceiling injected fault refused": true,
+   "FULL-GAME ACCEPTANCE: no unsupported continuation drawn in any game": false,
+   "y0 (a): the injected fault (a check fed a NaN) prints NOT MEASURED": true,
+   "y1: the case on the candidate (wiped and before the snap)": true,
+   "y1: the injected fault fails the case": true,
+   "y0 (b): each played season's play clock after an enforcement read from its book": true,
+   "y: every worker's results and every reused working table name only the modules the product's model files load and this chain's library": true,
+   "y: the module check's injected fault (an e2b_v24_lib object packed two deep) refused": true
+  },
+  "predictions": {
+   "ai0 (b): 4th and 1 shares a bin with 2-3 at the first levels (read)": true,
+   "after ai1 the go share at 4th and 1 within 2SE in at least 4 of the 5 zones above the 11-20, and in the 11-20": false,
+   "after ai1 the go share at 4th and 2-3 within 2SE in at least 4 of the 5 zones above the 11-20, and in the 11-20": false,
+   "the punt share's part of the punt gap below 0.2 (ah2 0.29 on v37)": false,
+   "plays a game within 2SE of the record's 136.73 (v37 136.60)": true
+  },
+  "line": "full run | interval-table v18 e12d7d3c4413 | NOT ACCEPTED: failing section 4 on the engine, every ACCEPTED WHEN item true (the downs check UNCHECKED 0 (1)); ai1: the share of fourth-and-1 draws at a level keyed by the whole-yard distance above the accepted engine's at every zone (the 1 1.000 | 2-3 0.000 | 4-5 0.465 | 6-10 0.000 | 11-20 0.000 | opp 21-40 0.225 | the 41-50 0.214 | own 41-49 0.449 | own 21-40 0.427 | own 1-20 0.000) | record section 4 1213 | games eff7af83bd8c | section 4 engine NOT MET: the downs check UNCHECKED 0 (1) | e1 alone byte-identical | unsupported games 0.3866 (648 of 1676) | timing 25/36 | y: foul APART, PARTIAL within, over the play clock 0 | plays 136.77 | possessions 21.85 | timeouts 6.62 | points 40.94 | 565 s | PROGRESS.md unchanged"
+ },
+ "gates": {
+  "600 s end to end, the evidence written": true
+ },
+ "landable": null,
+ "working_tables": [
+  [
+   "book_nfl_rulebook_2020_pdf",
+   "463cb79d457a",
+   "reused",
+   "8f1ee37c32e4"
+  ],
+  [
+   "book_nfl_rulebook_2021_pdf",
+   "02548455a418",
+   "reused",
+   "3bb532dd8934"
+  ],
+  [
+   "book_nfl_rulebook_2023_pdf",
+   "52c69f98b2b9",
+   "reused",
+   "c2ff2cc187cc"
+  ],
+  [
+   "book_nfl_rulebook_2024_pdf",
+   "ce6429bd15f6",
+   "reused",
+   "0eda8018dfa1"
+  ],
+  [
+   "book_nfl_rulebook_2025_html",
+   "7a519a0aa0f0",
+   "reused",
+   "8b217a8a1e4c"
+  ],
+  [
+   "book_nfl_rulebook_2026_pdf",
+   "144cec5bffd2",
+   "reused",
+   "c7ac3421723b"
+  ],
+  [
+   "x6",
+   "890aaccc7d66",
+   "built (0 s)",
+   "193f1f7e696a"
+  ],
+  [
+   "d_record_check",
+   "aeaf74e499d6",
+   "built (10 s)",
+   "f9df85b7c88f"
+  ],
+  [
+   "record_counts",
+   "0d86aa93d8cb",
+   "built (66 s)",
+   "34f1147bf9d5"
+  ],
+  [
+   "engine_tables",
+   "ca5463a49407",
+   "built (82 s)",
+   "3c92961b5b0d"
+  ],
+  [
+   "floor_evaluated",
+   "b9605078e444",
+   "built (17 s)",
+   "e3f8c4bd922b"
+  ],
+  [
+   "record_timeouts",
+   "0d86aa93d8cb",
+   "built (2 s)",
+   "f6c5f526af2e"
+  ],
+  [
+   "fits",
+   "c00d67772d99",
+   "reused",
+   "31a4be45e192"
+  ],
+  [
+   "aa_record_side",
+   "f2ac8e20f05d",
+   "built (12 s)",
+   "bf7fcc55f162"
+  ],
+  [
+   "y_record_read",
+   "99f836473f96",
+   "built (2 s)",
+   "00a83b919b8f"
+  ]
+ ],
+ "sections": [
+  [
+   "start: pins and acceptance criteria",
+   0.04094505310058594
+  ],
+  [
+   "pins: books read",
+   0.10941290855407715
+  ],
+  [
+   "pins: injected faults, the pin checks, the articles",
+   0.07316207885742188
+  ],
+  [
+   "c: Rule 11 Section 6 read",
+   24.512665033340454
+  ],
+  [
+   "table: the record loaded (six seasons, with the rebuild's columns)",
+   15.394438982009888
+  ],
+  [
+   "table: clock state after each act",
+   5.0139219760894775
+  ],
+  [
+   "table: the state after each row, rebuilt",
+   7.519996166229248
+  ],
+  [
+   "e: the next-snap check",
+   1.3309118747711182
+  ],
+  [
+   "c: the foul-related rows sorted",
+   1.278001070022583
+  ],
+  [
+   "e: the transition and the rebuild comparison",
+   6.654031038284302
+  ],
+  [
+   "table: the warning and 0:00 placed",
+   0.3701748847961426
+  ],
+  [
+   "table: the three times",
+   0.22426295280456543
+  ],
+  [
+   "table: saved, reloaded, injected fault",
+   5.124408006668091
+  ],
+  [
+   "table: coverage",
+   0.08458614349365234
+  ],
+  [
+   "table checks",
+   0.005203962326049805
+  ],
+  [
+   "v19 o, c, d, k: the books searched; k's record check",
+   1.8806588649749756
+  ],
+  [
+   "y0 (b), y1: Rule 4's articles printed whole",
+   0.011337995529174805
+  ],
+  [
+   "c: the race's and the stopped part's rows",
+   2.473057985305786
+  ],
+  [
+   "section 4 on the record",
+   9.61648416519165
+  ],
+  [
+   "record counted (count_side)",
+   66.28823399543762
+  ],
+  [
+   "engine: built, its pools",
+   88.85690402984619
+  ],
+  [
+   "the floor played and counted",
+   26.691743850708008
+  ],
+  [
+   "ac0, ab1: the pool read, the record inside the 20, the cases",
+   47.73593807220459
+  ],
+  [
+   "race: the stopped part and the race fitted",
+   0.15207505226135254
+  ],
+  [
+   "construction: leak tests",
+   23.191442012786865
+  ],
+  [
+   "race: validation",
+   5.690955877304077
+  ],
+  [
+   "model engine: played",
+   114.49122095108032
+  ],
+  [
+   "model engine: counted",
+   39.84106397628784
+  ],
+  [
+   "validation: timing percentiles",
+   2.6323482990264893
+  ],
+  [
+   "checks: p, f, e, h",
+   2.0728015899658203
+  ],
+  [
+   "game figures: record | floor | model",
+   13.578441381454468
+  ],
+  [
+   "the engine legality stage section 4",
+   0.19025373458862305
+  ],
+  [
+   "the engine legality stage injected faults P1-P4",
+   11.119063138961792
+  ],
+  [
+   "y2, y1: possessions, seconds, the clock read; the case and the injected fault",
+   14.106384038925171
+  ],
+  [
+   "ac2: the reads",
+   26.831761837005615
+  ]
+ ],
+ "log": "v38_20261031T105944Z_61876_full.txt",
+ "seconds": 566.9,
+ "versions": {
+  "python": "3.12.8",
+  "numpy": "2.5.3",
+  "pandas": "3.0.5",
+  "sklearn": "1.7.2"
+ }
+}

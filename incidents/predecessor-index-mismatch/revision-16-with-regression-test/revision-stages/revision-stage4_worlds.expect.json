@@ -1,0 +1,42 @@
+{
+ "revision stage": 4,
+ "name": "worlds: count-based stopping and keyed streams",
+ "rules": [
+  "R12",
+  "R13"
+ ],
+ "mechanism": "R12: n* = ceil(0.25 / mc_tolerance^2) finishing worlds per priceable player (contract.mc_worlds()); growth reads finishing counts only; lines with fewer carry insufficient_simulation; every line carries mc_bound = 0.5/sqrt(n_finished). R13: model.Streams \u2014 SplitMix64 finaliser over (game key, global world id, per-world draw counter); every draw an inverse transform (gamma via gammaincinv, Box-Muller normal, Gumbel); world offset per batch = worlds already run.",
+ "scope": "product.simulate/price/lines_for; model.Streams, Table.draw, softmax_draw, gumbel_topk, categorical_draw, sample_gain, player_effects, defense_effect; contract CONTRACT gains mc_bound.",
+ "predictions": [
+  {
+   "claim": "batch invariance: running worlds 0..n-1 as one batch or as two batches (0..k-1, k..n-1) gives identical integer Y, finishing masks and team stats",
+   "provenance": "identity (R13)",
+   "measure": "tests: simulate(..., W=n, offset=0) vs concat of (k,0) and (n-k,k)",
+   "reject_if": "any element differs"
+  },
+  {
+   "claim": "stopping never reads a p: worlds_grown depends on finishing counts and n* only",
+   "provenance": "identity (R12)",
+   "reject_if": "price loop references p or mc_se"
+  },
+  {
+   "claim": "no published line has n_finished_worlds < n*",
+   "provenance": "identity",
+   "reject_if": "any such line with p not null"
+  },
+  {
+   "claim": "real-run pricing time per game within 2x of revision 14 (inverse transforms cost more per draw; batches unchanged)",
+   "provenance": "development estimate",
+   "measure": "run log TIMINGS.PRICE",
+   "reject_if": "> 2x"
+  }
+ ],
+ "companion_checks": [
+  "all audits zero",
+  "lines_priced + lines_declared unchanged in count from revision 14 on the same scope"
+ ],
+ "rejection": "any prediction fails -> restore revision 14 product.py/model.py draw sites; run log row records the lesson.",
+ "not_yet_done": [
+  "batch-invariance oracle test in tests/test_product.py (t_streams) \u2014 written below as the reviewer's next test to add; the product change lands only when the quality gate has seen it"
+ ]
+}

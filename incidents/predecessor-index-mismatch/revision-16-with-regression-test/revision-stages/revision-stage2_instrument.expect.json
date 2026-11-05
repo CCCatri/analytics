@@ -1,0 +1,12 @@
+{
+  "revision stage": "2 check", "layer": [6], "held out": "2026-10-23", "rules": ["R9", "R10", "R11"], "because": ["no per-stage timing on the run log", "finished fits that never reached disk", "a cache key that hashed less than the stage consumed"],
+  "mechanism": "every quality gate stage records its seconds on the run log row (timings); every check's decision and injected fault result land as structured fields (checks); a fitted sub-model carries the sha256 of the serialised input it consumed (FitResult.input_sha) and is reused on resume only when the input is byte-identical, so a record.py change can no longer resume a stale sub-model; the preflight's checked counts and each sub-model's seconds are in its sidecar; load_or_fit always rebuilds observations (seconds) to compare",
+  "files": ["quality gate.py", "model.py (FitResult.input_sha, input_hash, fit_one, fit_all resume, load_sub_model, load_or_fit)", "tests/test_product.py"],
+  "predictions": [
+    {"what": "no probability or decision changes", "provenance": "identity", "value": "injected-fit quality gate run identical"},
+    {"what": "a one-byte change in a sub-model's input invalidates the cache", "provenance": "identity", "value": "load_sub_model returns None"},
+    {"what": "every stage's seconds and every check's injected fault result are on the terminal run log row", "provenance": "identity", "value": "fields present"}
+  ],
+  "rejection": "any recorded field read as a quality gate; any probability changes; a stale sub-model resumed",
+  "status": "LAND on the suite (13 of 13); real-data run not required"
+}

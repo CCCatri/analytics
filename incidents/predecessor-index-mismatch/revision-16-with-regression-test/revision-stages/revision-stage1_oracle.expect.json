@@ -1,0 +1,14 @@
+{
+  "revision stage": "1 oracle (tests only)", "layer": [2, 6], "held out": "2026-10-23", "rules": ["R4", "R5", "R6", "R16"], "because": ["the predecessor-index mismatch", "the out-of-order chain evaluation"],
+  "mechanism": "the synthetic league carries every irregularity the builders branch on (stable ids with turnover, a skipped season, a franchise code change, a season without participation, penalty no-plays with a disagreeing side, unbridged and disagreeing snap rows, absent and illegal personnel strings, two-QB snaps); model.BRANCHES declares every counted branch; every program's serialised data is round-tripped (predecessor resolves to the same player's earlier season) and an injected 0-based predecessor and code-order evaluation are refused; tests/ is hashed into the quality gate's lock (--lock) and the suite runs before any real-data stage",
+  "files": ["tests/synth.py", "tests/test_product.py", "model.py (BRANCHES, build_observations: a restructuring of fit_all's observation loop, no numerical change)", "quality gate.py (LOCK, SUITE)", "run log.py (manifest.tests)"],
+  "predictions": [
+    {"what": "every BRANCHES key without a quality gate guard is non-zero on the league", "provenance": "identity", "value": "all > 0"},
+    {"what": "pairs with a predecessor coded after them exist on the league (prev[j] > j)", "provenance": "identity", "value": "> 0"},
+    {"what": "an injected 0-based j_prev fails the preflight for all six programs", "provenance": "identity", "value": "6 of 6 refused"},
+    {"what": "no probability, count or decision changes: fit_all's observation loop is restructured, not changed", "provenance": "identity", "value": "injected-fit quality gate run identical"},
+    {"what": "a changed tests/ is refused at LOCK until --lock", "provenance": "identity", "value": "STOPPED at LOCK"}
+  ],
+  "rejection": "any declared branch zero; the injected mis-link passes any program; any probability changes on the injected-fit run",
+  "status": "LAND on the suite (13 of 13); real-data run not required"
+}
