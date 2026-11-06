@@ -79,7 +79,7 @@ My working rule of Oct 26 (in `acceptance-criteria/PROGRESS.md`): history is del
 
 ## History
 
-Four versions in October 2026. Only `main` is defined in all four; the record reader was rewritten three times and improved each time, and the checks around it were rewritten three times and did not accumulate (the table above). `incidents/predecessor-index-mismatch/INCIDENT.md` is the one incident written up in full.
+Four versions in October 2026. Earlier NFL analysis from Sep 2025 is not in this repository. Only `main` is defined in all four; the record reader was rewritten three times and improved each time, and the checks around it were rewritten three times and did not accumulate (the table above). `incidents/predecessor-index-mismatch/INCIDENT.md` is the one incident written up in full.
 
 | Version | Dates | What it was | Why it ended | What carried forward |
 |---|---|---|---|---|
@@ -106,7 +106,7 @@ The acceptance criteria name out/sim_games.csv, out/interval_table.csv and out/p
 
 ## Two components, two entry points (dated snapshot, 2026-11-05)
 
-This table was written the day before the join landed (run `20261106_082012`); its commands exercise each component alone and are kept for that purpose. The 2026 inputs were removed from the tree on 2026-11-06, so the kit column's `card 2026 4` no longer runs; the kit's current historical card is `python3 kit.py card 2025 16`. The public demo is 2024 week 15 (`checks/demo_w15.py`); the full replay's historical card is 2025 week 16 (`checks/run_handoff.sh`). Where this table and the lead case differ, the lead case is current.
+This table was written the day before the join landed (run `20261106_082012`); its commands are historical: the 2026 inputs were removed from the tree on 2026-11-06, so the kit column's `card 2026 4` no longer runs; the kit's current historical card is `python3 kit.py card 2025 16`. The public demo is 2024 week 15 (`checks/demo_w15.py`); the full replay's historical card is 2025 week 16 (`checks/run_handoff.sh`). Where this table and the lead case differ, the lead case is current.
 
 | | Engine and record checks | Slate kit |
 |---|---|---|
@@ -122,7 +122,7 @@ This table was written the day before the join landed (run `20261106_082012`); i
 - Held in facts (readable, fit on): 2019, 2020, 2021, 2023, 2024, 2025. 2026 is history for an issue inside it, never fit on.
 - `data/corpus/discovery/` (readable, not in facts): 2016, 2017, 2018 and **2022**.
 - `data/corpus/lockbox/` (2012-2015) and `data/corpus/deep_lockbox/` (1999-2011): held out, read only by a registered judgment; `facts.lockbox_check` refuses a kit module that names them.
-- **Divergence to resolve before any joined run:** the engine holds 2022 out of everything; the kit lists 2022 as readable discovery data. A joined run must declare one hold-out, and 2022 cannot be both.
+- **Divergence to resolve before evaluating the joined forecast on a hold-out window:** the engine holds 2022 out of everything; the kit lists 2022 as readable discovery data. The fixture already exercised the join; the joined forecast must declare one hold-out, and 2022 cannot be both.
 
 ### Reconciliation report: where the engine can connect
 - Consumer: EXISTING CONSUMER OF DRAWS. The card path is `cards.card -> draws.week_draws -> draws.draw_slate -> draws.draw_link`, one cell at a time in dependency order. The chain's two roots, `("F2 team attempts", TEAM)` and `("F2 team carries", TEAM)`, are the only cells drawn without a parent: `draw_link` returns `rint(center x a bootstrapped ratio)`, 2,000 draws per (season, week, team), keyed by `team`; every other cell draws from its parent's draw, so draw j across all rows is one world. Units: pass attempts with sacks excluded, rush attempts (`facts.py`), whole counts, two-point tries excluded; available at issue from the information set through week N-1. The handoff is an adapter at that one branch (acceptance-criteria/engine-to-kit-handoff.md), not a new layer; the engine also supplies what the kit lists as not modelled: both teams of a game in the same world.
@@ -135,7 +135,7 @@ This table was written the day before the join landed (run `20261106_082012`); i
 2. **What is demonstrated, and its scope.** The record of 2019-2021 and 2023-2025 meets three rule-based acceptance criteria with pre-registered counts (`run.sh` stage 4). The engine's generated games of 2024 week 15 (30 draws) meet the same criteria through the same checks, and four injected violations are each rejected on the named line (stage 5). An incident is replayed with its regression test, and the two known failures of its later revision are checked exactly (stage 3). The engine's attempts and carries equal the kit's root definition on 3,200 of 3,200 team-weeks (`checks/reconcile_root_counts_by_position.py`).
 3. **What is not demonstrated.** Any forecast: the engine's fits are look-back (each season reads the five others) and judge legality only; the kit's cards are dry runs with no forward score; the one engine-rooted card (2024 week 15) is a dry run, not a scored slate. The engine plays position placeholders, not named players, so it hands over team volume and nothing finer. The kit's vocabulary is its own, not this repo's.
 4. **What was lost.** The Oct 31 candidate's refusal printout and manifest were deleted in the cleanup and cannot be regenerated; that refusal survives only as the dated summary under Current state. Stage 5 is a separate, new demonstration on the accepted engine, not a replacement for that evidence.
-5. **Next milestone.** The 2026-11-05 milestone is done as of 2026-11-06: `draws.draw_link`'s root drawn from `out/handoff/root_draws_2024_w15.npz` behind a switch whose off position is byte-identical (run `20261106_082012`), and one card carrying the draw file's manifest (`checks/demo_w15.py`). Next: the walk-forward comparison with the engine refit per cutoff and one declared hold-out (`WORK_ORDER.md` items 2 and 3).
+5. **Next milestone.** The 2026-11-05 milestone is done as of 2026-11-06: `draws.draw_link`'s root drawn from `out/handoff/root_draws_2024_w15.npz` behind a switch whose off position matched the pre-adapter baseline by key and value in the tested card and replay (run `20261106_082012`), and one card carrying the draw file's manifest (`checks/demo_w15.py`). Next: the walk-forward comparison with the engine refit per cutoff and one declared hold-out (`WORK_ORDER.md` items 2 and 3).
 6. **Limits that bind every number here.** 2022 is held out of everything on the engine side and readable on the kit side, unresolved; the plays gap (126.99 vs 136.73 a game) stands; 16 postseason stretches are unchecked; the handoff counts omit attempts and carries on nullified plays (2 of 3,200 team-weeks on the record) because the engine writes no flags on its foul rows.
 
 ## Role-to-evidence mapping

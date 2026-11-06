@@ -26,7 +26,7 @@ The transcript is the evidence of how the standard was set; the code is the evid
 
 ### Terms
 
-- **Team attempts** — a team's pass attempts in one game. In the engine: dropbacks that ended as a throw, plus accepted-penalty plays recorded as a pass attempt, never sacks (the counting rule both components were reconciled to, 3,200 of 3,200 team-games). In the kit: the root cell `("F2 team attempts", TEAM)`.
+- **Team attempts** — a team's pass attempts in one game. In the engine: dropbacks that ended as a throw, plus accepted-penalty plays recorded as a pass attempt, never sacks (the counting rule both components were reconciled to, 3,200 of 3,200 team-weeks). In the kit: the root cell `("F2 team attempts", TEAM)`.
 - **Player attempts** — one quarterback's pass attempts in that game: the kit's `Q1 attempts` cell, drawn as his share of his team's attempts from his own history.
 - **Source draw** — one simulated playing of the game by the engine. The Week 15 fixture holds 30 of them (`draw_id` 0–29); kit column *j* reads source draw *j* mod 30, so column 30 is source draw 0, and a change to source draw 0 is expected at the 67 kit columns 0, 30, 60, … and nowhere else.
 
@@ -40,7 +40,7 @@ The transcript is the evidence of how the standard was set; the code is the evid
 
 The kit's root cells are `("F2 team attempts", TEAM)` and `("F2 team carries", TEAM)`. The engine produces exactly those two numbers per team per draw. So the handoff is one file per week — `out/handoff/root_draws_<season>_w<week>.npz` with its manifest — and one rule: in engine mode the kit's root draws are the engine's, expanded from K source draws to the kit's 2,000 columns by `j mod K`, and every other cell is drawn as before.
 
-Before anything could be handed over, both sides had to mean the same thing by "attempt" and "carry". They didn't, until a definition was written down and measured: [two components had to agree on what counts as an attempt](two-components-had-to-agree-on-what-counts-as-an-attempt.md) — 3,200 of 3,200 team-games reconciled.
+Before anything could be handed over, both sides had to mean the same thing by "attempt" and "carry". They didn't, until a definition was written down and measured: [two components had to agree on what counts as an attempt](two-components-had-to-agree-on-what-counts-as-an-attempt.md) — 3,200 of 3,200 team-weeks reconciled.
 
 ## What the adapter had to preserve
 
