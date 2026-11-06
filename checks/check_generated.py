@@ -65,5 +65,5 @@ from collections import Counter as _C; print(f"  kickoff touchbacks {len(spots)}
 verdict["season rule: kickoff touchback spot == quoted (30)"] = len(spots) > 0 and set(spots) == {30}
 print("\n=== verdict (engine-legality.md section 4; coverage above) ===")
 for k, v in verdict.items(): print(f"  {k}: {'PASS' if v else 'FAIL'}")
-print("GATE 1 VALID CONTROL:", "PASS" if all(verdict.values()) else "FAIL")
+print("GATE 1 ALL LINES PASS:", "PASS" if all(verdict.values()) else "FAIL")
 sys.exit(0 if all(verdict.values()) else 1)

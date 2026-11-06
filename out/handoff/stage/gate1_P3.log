@@ -1,4 +1,4 @@
-check_generated: season 2024 week 15 draw 0 | games 16 rows 2381 | staged /Users/cameroncatri/LocalWork/analytics/out/handoff/stage/pbp_2024.csv.gz sha 349d4b595501 | data_version f4c87a65141f
+check_generated: season 2024 week 15 draw 0 | games 16 rows 2381 | staged /Users/cameroncatri/LocalWork/analytics/out/handoff/stage/pbp_2024.csv.gz sha 3db52e16e836 | data_version 32f59a8369b5
 NOT APPLICABLE on generated input: the pinned record cases (injected faults sections), run-log line 322, EXPECTED_FASTER, FROZEN_2023 - the record's drivers only
 
 === possessions (check_possessions.load / possessions / counts, unchanged) ===
@@ -51,4 +51,4 @@ raw_frame pbp_2024.csv.gz columns 25 absent 0 betting 0
   downs UNCHECKED 0: PASS
   stopped clock: no STOP stretch falls more than the play plus 1 s: FAIL
   season rule: kickoff touchback spot == quoted (30): PASS
-GATE 1 VALID CONTROL: FAIL
+GATE 1 ALL LINES PASS: FAIL
