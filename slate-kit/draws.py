@@ -7,8 +7,13 @@ Batch 63: a count beside a yards link under the same parent draws given that yar
 Batch 61: a player's share of his team's count draws by THE ROLE LAW (chain.fit_share); the share link's pooled overdispersion is deleted.
 R3 ONE PRODUCT, ONE JUDGMENT (replay): the product is replayed whole at every cutoff and judged once, against the previous product's graded rows named by the
 caller, on F8 at every position - a rise beyond chance refuses the product.  No law here reads a verdict, a judgment, a recorded forecast or a parameter file.
-R4: the judgment is trinary against the season chance test, plus UNCHANGED, and is written before any reading is printed."""
-import os, glob, hashlib, numpy as np, pandas as pd
+R4: the judgment is trinary against the season chance test, plus UNCHANGED, and is written before any reading is printed.
+Engine root (2026-11-05, acceptance-criteria/engine-to-kit-handoff.md section 6): with SLATE_ROOT_SOURCE=engine the two root cells (F2 team attempts, F2 team
+carries) are taken from an engine draw file (SLATE_ROOT_FILE, a .npz with its manifest beside it) instead of the chain's own level draw: kit column j takes
+engine source draw j mod K, both teams of a game from the same engine draw; the root center is the engine draws' mean; a missing file, a manifest hash that
+differs from the file, a team with a game but no draws, or a declared draw count that differs from the arrays refuse the issue by name - never a fallback to the
+kit's own root draw.  With SLATE_ROOT_SOURCE unset or 'kit' nothing here differs from before."""
+import os, glob, json, hashlib, numpy as np, pandas as pd
 from scipy.stats import t as student_t
 from ingest import PROJ_DIR, FROZEN_THRU, Report, sha
 from facts import load, team_game, read_table, active_keys
@@ -18,11 +23,17 @@ from participation import week_participation, who_plays_inputs, who_plays_fit, w
 from dk import skill_dk, qb_dk, dnp_zero, F8_TERM, DK_TERM, DST_TERM, BONUS_YARDS
 from chain import chain_history, fit_chain, link_rates, sibling_law, sibling_luck_of, LINKS, LINK_ORDER, SIBLINGS, TEAM_KEY
 DRAW_COUNT = 2000
+ROOT_SOURCE = os.environ.get("SLATE_ROOT_SOURCE", "kit")   # 'kit': the chain's own root draw; 'engine': the root cells from an engine draw file (handoff section 6)
+ROOT_FILE = os.environ.get("SLATE_ROOT_FILE")              # engine mode: the .npz; its manifest is <path without .npz>.manifest.json
+if ROOT_SOURCE not in ("kit", "engine"): raise SystemExit(f"SLATE_ROOT_SOURCE={ROOT_SOURCE!r} is not a root source: unset, kit or engine - refused; nothing issued")
+ROOT_TERMS = {"F2 team attempts": "attempts", "F2 team carries": "carries"}
+ENGINE_ROOT = None
 QUANTILE_LEVELS = [0.10, 0.25, 0.50, 0.75, 0.90]; QUANTILE_NAMES = ["quantile_10", "quantile_25", "quantile_50", "quantile_75", "quantile_90"]
 CHAIN_STATE = "chain"
 FAMILIES = {"level": "team volume: the league level shrunk by reliability x a measured ratio", "share": "beta-binomial on the team draw by the role law (mean and concentration by maximum likelihood)",
             "proportion": "beta-binomial on the parent draw, overdispersion measured around its center", "sibling": "beta-binomial on the parent draw given the sibling's yards luck (the sibling law)",
             "per unit": "the parent draw x the shrunk rate + sqrt(draw) x measured per-unit residuals"}
+ENGINE_FAMILY = "team volume: the engine's generated games (handoff section 6), both teams of a game in one world"
 TD_PARTS = {("F5 TDs", position): (("F5 receiving TDs", position), ("F5 rushing TDs", position)) for position in RECEIVER_POSITIONS}
 F8_PARTS = {**{position: ("F5 receptions", "F5 receiving yards", "F5 rushing yards", "F5 TDs") for position in RECEIVER_POSITIONS},
             "QB": ("Q3 passing yards", "Q4 passing TDs", "Q5 interceptions", "QB rushing yards", "QB rushing TDs")}
@@ -31,6 +42,35 @@ GRADED_COLUMNS = ["season", "week", "key", "term", "position", "state", "outcome
 def substream(term, position, season, week, key, label):
     """A row's own generator, keyed by what the row is (SHA-256 of term|position|season|week|key|label): a row's draws never depend on which other rows are drawn."""
     return np.random.default_rng(int.from_bytes(hashlib.sha256("|".join(str(part) for part in (term, position, season, week, key, label)).encode()).digest()[:8], "little"))
+def engine_root(season, week):
+    """Engine mode: the root draws for (season, week) from ROOT_FILE, checked before any use and loaded once per process.  Refuses by name: file missing, manifest
+    missing, the manifest's root_draws_sha (the first 12 hex of SHA-256, as handoff_root_draws.py writes it) differing from the file's computed hash, the
+    manifest's season or week differing from the issue, or draw_count differing from the arrays' width.  Returns dict(draws={(team, term): DRAW_COUNT columns},
+    center={(team, term): the engine draws' mean}, teams, source_draws K, sha (full computed SHA-256), file)."""
+    global ENGINE_ROOT
+    if ENGINE_ROOT is not None and ENGINE_ROOT["key"] == (ROOT_FILE, int(season), int(week)): return ENGINE_ROOT   # a cache hit is one for this file and this issue only
+    ENGINE_ROOT = None
+    if not ROOT_FILE: raise SystemExit("engine root: SLATE_ROOT_SOURCE=engine but SLATE_ROOT_FILE is not set - refused; nothing issued")
+    path = ROOT_FILE; manifest_path = path[:-4] + ".manifest.json" if path.endswith(".npz") else path + ".manifest.json"
+    if not os.path.exists(path): raise SystemExit(f"engine root: draw file missing: {path} - refused; nothing issued")
+    if not os.path.exists(manifest_path): raise SystemExit(f"engine root: manifest missing: {manifest_path} - refused; nothing issued")
+    manifest = json.load(open(manifest_path)); computed = sha(path); stated = str(manifest.get("root_draws_sha", ""))
+    if len(stated) < 12 or not computed.startswith(stated): raise SystemExit(f"engine root: SHA mismatch: the manifest states {stated!r}, the file {os.path.basename(path)} computes {computed} - refused; nothing issued")
+    data = np.load(path, allow_pickle=False); teams = data["team"].astype(str); attempts = data["attempts"]; carries = data["carries"]; draw_ids = data["draw_id"]
+    declared = int(manifest.get("draw_count", -1)); actual = int(attempts.shape[1])
+    if not (declared == actual == int(carries.shape[1]) == len(draw_ids)): raise SystemExit(f"engine root: draw_count mismatch: the manifest declares {declared}, the arrays hold attempts {attempts.shape[1]}, carries {carries.shape[1]}, draw_id {len(draw_ids)} - refused; nothing issued")
+    if int(manifest.get("season", -1)) != int(season) or int(manifest.get("week", -1)) != int(week): raise SystemExit(f"engine root: the file is for {manifest.get('season')} w{manifest.get('week')}, the issue is {season} w{week} - refused; nothing issued")
+    columns = np.arange(DRAW_COUNT) % actual
+    draws = {}; center = {}
+    for row, team in enumerate(teams):
+        for term, array in (("F2 team attempts", attempts), ("F2 team carries", carries)):
+            draws[(team, term)] = array[row][columns].astype(float); center[(team, term)] = float(array[row].mean())
+    ENGINE_ROOT = dict(key=(ROOT_FILE, int(season), int(week)), draws=draws, center=center, teams=set(teams), source_draws=actual, columns=DRAW_COUNT, sha=computed, file=os.path.basename(path), manifest=manifest)
+    return ENGINE_ROOT
+def root_record():
+    """What the issue's root was, for the card and its report: source, file, hash, source draws and emitted columns."""
+    if ROOT_SOURCE == "engine" and ENGINE_ROOT is not None: return dict(root_source="engine", root_file=ENGINE_ROOT["file"], root_file_sha=ENGINE_ROOT["sha"], root_source_draws=ENGINE_ROOT["source_draws"], root_columns=ENGINE_ROOT["columns"])
+    return dict(root_source="kit", root_file="", root_file_sha="", root_source_draws=DRAW_COUNT, root_columns=DRAW_COUNT)
 def slate_members(player_rows, team_games, season, week):
     """A slate's members from state's issue frames (one producer of the information set and the issue domain): the eligible teams, every QB / RB / WR / TE
     candidate in the windows (routed by rule (b)) and every candidate with its routing.  Every window, routing and candidate state builds is season-to-date (its
@@ -57,8 +97,10 @@ def draw_link(cell, fit, rate, other, concentration, parent_draws, generator, si
 def depth(cell): return 0 if LINKS[cell][0] is None else 1 + depth(LINKS[cell][0])
 def draw_slate(history, fits, season, week, teams, players, active):
     """Every member of one slate drawn link by link in dependency order: draws and centers keyed (key, term), the law rows, the rows that drew nothing and why,
-    and the composed F8 per player (key, position, form, draws).  A link's center is its parent's center x its own pregame rate (a team volume: its level center)."""
+    and the composed F8 per player (key, position, form, draws).  A link's center is its parent's center x its own pregame rate (a team volume: its level center;
+    in engine mode the engine draws' mean)."""
     team_of = dict(zip(players.key, players.team)); draws, centers, rates_of, law_rows, undrawn = {}, {}, {}, [], []
+    engine = engine_root(season, week) if ROOT_SOURCE == "engine" else None
     for cell in LINK_ORDER:
         term, position = cell; parent = LINKS[cell][0]; members = teams if position == TEAM_KEY else players[players.position == position]
         if not len(members): continue
@@ -66,6 +108,13 @@ def draw_slate(history, fits, season, week, teams, players, active):
         for key, rate, other, earlier_units, concentration in zip(members.key, rates, others, units, concentrations):
             parent_key = None if parent is None else (key if parent[1] == position else team_of[key])
             if parent is not None and (parent_key, parent[0]) not in draws: undrawn.append((season, week, key, term, position, "parent law drew nothing")); continue
+            if engine is not None and parent is None and term in ROOT_TERMS:
+                if (key, term) not in engine["draws"]: raise SystemExit(f"engine root: team {key} has a game in {season} w{week} but no draws in {engine['file']} - refused; nothing issued (no fallback to the kit's root draw)")
+                draws[(key, term)] = engine["draws"][(key, term)]; rates_of[(key, term)] = rate; centers[(key, term)] = engine["center"][(key, term)]
+                law_rows.append(dict(season=season, week=week, key=key, team=key, term=term, position=position, family=ENGINE_FAMILY, state=CHAIN_STATE, layer=depth(cell),
+                                     provenance=f"engine root: {engine['file']} sha {engine['sha'][:12]}, source draws {engine['source_draws']} -> {engine['columns']} columns (column j = source j mod {engine['source_draws']}); center = the engine draws' mean",
+                                     conditioned_on_draw=np.nan, rate=float(rate), earlier_units=float(earlier_units)))
+                continue
             if not np.isfinite(rate): undrawn.append((season, week, key, term, position, "pregame state undefined (his team has no earlier game this season)")); continue
             sibling = (draws[(key, SIBLINGS[cell][0])], rates_of[(key, SIBLINGS[cell][0])], fits[SIBLINGS[cell]]) if cell in SIBLINGS else None
             draws[(key, term)] = draw_link(cell, fits[cell], rate, other, concentration, None if parent is None else draws[(parent_key, parent[0])], substream(term, position, season, week, key, CHAIN_STATE), sibling)
@@ -242,20 +291,24 @@ def summary_frame(rows):
                         columns=["season", "week", "key", "term", "position", "family", "state", "center", "center_source", "draw_mean"] + QUANTILE_NAMES)
 def week_draws(issue_season, issue_week):
     """Week N issued (one producer for kit.py draws, the card and the market): the information set through week N-1 (refused while a scheduled team-game before
-    week N has no plays on disk), the chain fit on seasons < N's season, the slate drawn, F8, P(plays) and DK draws with DNP = 0, DST laws, and per-row summaries."""
+    week N has no plays on disk), the chain fit on seasons < N's season, the slate drawn, F8, P(plays) and DK draws with DNP = 0, DST laws, and per-row summaries.
+    In engine mode the root cells come from the engine draw file (engine_root) and the issue carries root_record()."""
     player_rows, team_games = load(), team_game(); unplayed = team_games[(team_games.season == issue_season) & (team_games.week < issue_week) & team_games.plays.isna()]
     if len(unplayed): raise SystemExit(f"week_draws {issue_season} w{issue_week}: {len(unplayed)} scheduled team-games before week {issue_week} have no plays on disk - fetch them first; nothing issued")
+    if ROOT_SOURCE == "engine": engine_root(issue_season, issue_week)   # the engine file is checked before any fit: a broken input refuses here, nothing issued
     known = player_rows[(player_rows.season < issue_season) | ((player_rows.season == issue_season) & (player_rows.week < issue_week))]; history = chain_history(known)
     teams, players, candidate_rows = slate_members(player_rows, team_games, issue_season, issue_week); active = active_keys(); slate = draw_slate(history, fit_chain(history, issue_season, active), issue_season, issue_week, teams, players, active)
     participation_rows, participation_cells = week_participation(issue_season, issue_week); probability_of = participation_rows.dropna(subset=["probability_plays"]).set_index("player_id").probability_plays.to_dict()
     dk_draws = dk_draws_of(slate["composed"], probability_of, issue_season, issue_week)
     dst_rows, dst_draws, dst_without = dst_week(issue_season, issue_week); laws = slate["laws"]
-    summaries = summary_frame([(issue_season, issue_week, law.key, law.term, law.position, law.family, law.state, slate["centers"][(law.key, law.term)], "the one chain: the parent's center x the pregame rate", slate["draws"][(law.key, law.term)]) for law in laws.itertuples(index=False)]
+    root_center_source = {law.key + "|" + law.term: ("the engine draws' mean" if str(law.family) == ENGINE_FAMILY else "the one chain: the parent's center x the pregame rate") for law in laws.itertuples(index=False)}
+    summaries = summary_frame([(issue_season, issue_week, law.key, law.term, law.position, law.family, law.state, slate["centers"][(law.key, law.term)], root_center_source[law.key + "|" + law.term], slate["draws"][(law.key, law.term)]) for law in laws.itertuples(index=False)]
                               + [(issue_season, issue_week, key, F8_TERM, position, "dk transform of the player's own draws", form, f8_draws.mean(), "mean of the F8 transform's draws", f8_draws) for key, position, form, f8_draws in slate["composed"]]
                               + [(issue_season, issue_week, row.team, DST_TERM, "DST", "DST: OLS center + measured residuals (whole points)", CHAIN_STATE, row.center, "law center", dst_draws[(row.team, DST_TERM)]) for row in dst_rows.itertuples(index=False)]
                               + [(issue_season, issue_week, key, DK_TERM, position, "F8 x Bernoulli(P(plays)), DNP = 0", form, dk_draws[(key, DK_TERM)].mean(), "mean of the DK draws", dk_draws[(key, DK_TERM)]) for key, position, form, f8_draws in slate["composed"] if (key, DK_TERM) in dk_draws])
     return dict(issued=dict(candidates=candidate_rows, teams=teams, players=players), laws=laws, draws={**slate["draws"], **dk_draws, **dst_draws}, undrawn=slate["undrawn"], composed=slate["composed"],
-                participation=(participation_rows, participation_cells), dst=dict(rows=dst_rows, without=dst_without, draws=dst_draws), dk=dict(draws=dk_draws, without=[key for key, position, form, f8_draws in slate["composed"] if key not in probability_of]), summaries=summaries)
+                participation=(participation_rows, participation_cells), dst=dict(rows=dst_rows, without=dst_without, draws=dst_draws), dk=dict(draws=dk_draws, without=[key for key, position, form, f8_draws in slate["composed"] if key not in probability_of]), summaries=summaries,
+                root=root_record())
 def frozen_draws_path(issue_season, issue_week): return os.path.join(PROJ_DIR, f"frozen_draws_{issue_season}_w{issue_week}.npz")
 def player_draw_matrix(week):
     """Every issued player and DST row of week N (TEAM rows excluded), in summary order: key, term and position arrays and the draw matrix (DRAW_COUNT draws per row)."""

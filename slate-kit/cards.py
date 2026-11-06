@@ -3,7 +3,9 @@ computes no statistic.  The stat forecast is given he plays; P(he plays) stands 
 Writes proj/card_{SEASON}_w{WEEK}.csv (one row per issued stat of an issued candidate, F8 included) and proj/card_{SEASON}_w{WEEK}_candidates.csv (every candidate once,
 with its coverage status: ISSUED, NOT ISSUED with its reason, or UNRESOLVED POSITION, and its participation status and P(plays)) and proj/card_{SEASON}_w{WEEK}_dst.csv
 (one row per DST law).  Each row names its conditioning: given he plays (stats, F8), DNP = 0 (DK), or the defense plays every game (DST).  The issued draws behind it
-are frozen by draws.freeze_draws to proj/frozen_draws_{SEASON}_w{WEEK}.npz, the market's only source."""
+are frozen by draws.freeze_draws to proj/frozen_draws_{SEASON}_w{WEEK}.npz, the market's only source.
+Root provenance (2026-11-05): every card row, the candidates file and the report carry the issue's root source - 'kit', or 'engine' with the draw file, its computed
+SHA-256, the source draw count and the emitted column count (draws.root_record) - so an engine-rooted card is identified on the artifact itself."""
 import os, numpy as np, pandas as pd
 from ingest import PROJ_DIR, Report
 from facts import load_as_of, team_game, read_table, SKILL_POSITIONS
@@ -16,6 +18,8 @@ DST_CONDITIONING = "the defense plays every game"
 DST_PARTICIPATION = "NOT APPLICABLE - the defense plays every game"
 DEPENDENCE_STATUS = "cross-player dependence NOT MODELLED (M9); within-player order as earned"
 ISSUE_MODE = "DRY RUN - not prospective"
+GRADING_BASIS = "kit baseline evidence: atlas and ladder judgments graded on the kit law's replay, not on engine-rooted draws"
+ROOT_FIELDS = ["root_source", "root_file", "root_file_sha", "root_source_draws", "root_columns"]
 LADDER_FIELDS = {"rung": "ladder_rung", "center_share": "ladder_center_share", "center_band": "ladder_center_band", "tail_share": "ladder_tail_share", "width_band": "ladder_width_band",
                  "lower_share": "ladder_lower_share", "upper_share": "ladder_upper_share", "tail_balance": "ladder_tail_balance", "crpss": "ladder_crpss", "skill": "ladder_skill",
                  "prospective_evidence": "prospective_evidence"}
@@ -44,6 +48,8 @@ def card(issue_season, issue_week):
     cell (proj/ladder.csv: rung, center, width and tails, skill vs the season-to-date reference, prospective evidence, reference status), with every candidate's status.
     Refused if a graded row has no ladder cell, a ladder cell lands on an ungraded row, or a ladder cell's qualification or rows differ from the atlas it was read from."""
     report = Report(); week = week_draws(issue_season, issue_week); candidate_rows = week["issued"]["candidates"]; week_laws = week["laws"]; summaries = week["summaries"]
+    root = week.get("root", dict(root_source="kit", root_file="", root_file_sha="", root_source_draws=np.nan, root_columns=np.nan))
+    engine_fields = ({**{field: root[field] for field in ROOT_FIELDS}, "grading_basis": GRADING_BASIS} if root["root_source"] == "engine" else {})   # engine-mode artifacts only: kit mode keeps its schema
     player_rows = load_as_of(issue_season, issue_week); names = player_rows.sort_values(["season", "week"]).drop_duplicates("player_id", keep="last").set_index("player_id")["name"]
     before = player_rows[(player_rows.season == issue_season) & (player_rows.played == 1)]
     earlier_played = before.groupby(["player_id", "team"]).size().to_dict(); earlier_played_season = before.groupby("player_id").size().to_dict()
@@ -65,23 +71,26 @@ def card(issue_season, issue_week):
     stat_rows["provenance"] = stat_rows.provenance.where(stat_rows.term != F8_TERM, "F8 transform of the " + stat_rows.state + " order (dk)").where(stat_rows.term != DK_TERM, "F8 draws x the participation draw, DNP = 0 (dk.dnp_zero)")
     stat_rows["atlas_qualification"] = stat_rows.atlas_qualification.fillna("NO ATLAS CELL - not graded")
     stat_rows = stat_rows.rename(columns={"key": "player_id", "family": "law_family", "state": "law_state"}).merge(candidates[["player_id", "name", "team", "probability_plays", "participation_status"]], on="player_id", how="left")
-    stat_rows = stat_rows.assign(issuable="ISSUABLE", conditioning=np.where(stat_rows.term == DK_TERM, DNP_CONDITIONING, CONDITIONING), dependence_status=DEPENDENCE_STATUS, issue_mode=ISSUE_MODE)
+    stat_rows = stat_rows.assign(issuable="ISSUABLE", conditioning=np.where(stat_rows.term == DK_TERM, DNP_CONDITIONING, CONDITIONING), dependence_status=DEPENDENCE_STATUS, issue_mode=ISSUE_MODE, **engine_fields)
     columns = ["season", "week", "player_id", "name", "team", "position", "term", "law_family", "law_state", "layer", "provenance", "conditioned_on_draw", "center", "center_source", "draw_mean",
                "quantile_10", "quantile_25", "quantile_50", "quantile_75", "quantile_90", "issuable", "atlas_qualification", "atlas_rows", "atlas_coverage_10", "atlas_coverage_90", "atlas_bias_mean",
-               *[field for field in LADDER_FIELDS.values() if field != "prospective_evidence"], "reference_status", "prospective_evidence", "conditioning", "probability_plays", "participation_status", "dependence_status", "issue_mode"]
+               *[field for field in LADDER_FIELDS.values() if field != "prospective_evidence"], "reference_status", "prospective_evidence", "conditioning", "probability_plays", "participation_status", "dependence_status", "issue_mode", *engine_fields.keys()]
     stat_rows = stat_rows[columns].sort_values(["team", "position", "player_id", "term"], kind="stable").reset_index(drop=True)
     candidate_columns = ["player_id", "name", "team", "position", "previous_label", "label_sequence", "coverage_status", "stats_issued", "probability_plays", "participation_status", "participation_cell", "games_missed", "snap_share_mean_season_pregame"]
     dst_rows = summaries[summaries.position == "DST"].merge(week["dst"]["rows"][["team", "opponent"]], left_on="key", right_on="team", how="left").rename(columns={"key": "player_id", "family": "law_family", "state": "law_state"})
     dst_rows = dst_rows.assign(name=dst_rows.team + " DST", layer=np.nan, provenance="laws.dst_week (the earned yardstick, verdict in proj/dstick_report.txt)", conditioned_on_draw=np.nan, issuable="ISSUABLE",
                                atlas_qualification="NO ATLAS CELL - not graded", atlas_rows=np.nan, atlas_coverage_10=np.nan, atlas_coverage_90=np.nan, atlas_bias_mean=np.nan,
                                **{field: np.nan for field in LADDER_FIELDS.values() if field != "prospective_evidence"}, prospective_evidence="NO LADDER CELL", reference_status=reference_status(np.array([np.nan]))[0], conditioning=DST_CONDITIONING,
-                               probability_plays=np.nan, participation_status=DST_PARTICIPATION, dependence_status=DEPENDENCE_STATUS, issue_mode=ISSUE_MODE)[columns + ["opponent"]].sort_values("team", kind="stable").reset_index(drop=True)
+                               probability_plays=np.nan, participation_status=DST_PARTICIPATION, dependence_status=DEPENDENCE_STATUS, issue_mode=ISSUE_MODE, **engine_fields)[columns + ["opponent"]].sort_values("team", kind="stable").reset_index(drop=True)
     card_path = os.path.join(PROJ_DIR, f"card_{issue_season}_w{issue_week}.csv"); candidates_path = os.path.join(PROJ_DIR, f"card_{issue_season}_w{issue_week}_candidates.csv"); dst_path = os.path.join(PROJ_DIR, f"card_{issue_season}_w{issue_week}_dst.csv")
-    stat_rows.to_csv(card_path, index=False); candidates[candidate_columns].assign(issue_mode=ISSUE_MODE).to_csv(candidates_path, index=False); dst_rows.to_csv(dst_path, index=False); frozen_path, frozen_sha = freeze_draws(week, issue_season, issue_week)
+    stat_rows.to_csv(card_path, index=False); candidates[candidate_columns].assign(issue_mode=ISSUE_MODE, **engine_fields).to_csv(candidates_path, index=False); dst_rows.to_csv(dst_path, index=False); frozen_path, frozen_sha = freeze_draws(week, issue_season, issue_week)
     status_counts = candidates.coverage_status.value_counts(); unexplained = int((candidates.coverage_status == "NOT ISSUED - unexplained").sum())
     issued_without_rows = int(((candidates.coverage_status == "ISSUED") & (candidates.stats_issued == 0)).sum()); orphan_rows = int((~stat_rows.player_id.isin(candidates.player_id)).sum())
     f8_missing = sorted(set(candidates[candidates.coverage_status == "ISSUED"].player_id) - set(stat_rows[stat_rows.term == F8_TERM].player_id)); dk_missing = sorted(set(stat_rows[stat_rows.term == F8_TERM].player_id) - set(stat_rows[stat_rows.term == DK_TERM].player_id))
     report.say(f"kit.py card {issue_season} w{issue_week} ({ISSUE_MODE}; {CONDITIONING}; participation T1 fit on seasons {participation_cells['seasons']}, {participation_cells['rows']} rows): candidates {len(candidates)}; stat rows {len(stat_rows)} for {len(issued_keys)} players")
+    if root["root_source"] == "engine":
+        report.say(f"   root: engine - {root['root_file']} SHA-256 {root['root_file_sha']}, source draws {root['root_source_draws']} -> {root['root_columns']} columns (column j = source j mod {root['root_source_draws']}); root center = the engine draws' mean; atlas and ladder columns are {GRADING_BASIS}")
+        import json as _json; _json.dump(dict(issue=dict(season=issue_season, week=issue_week), **root, grading_basis=GRADING_BASIS), open(os.path.join(PROJ_DIR, f"card_{issue_season}_w{issue_week}_root.manifest.json"), "w"), indent=1)
     for status, count in status_counts.items(): report.say(f"   {status}: {count}")
     for status, count in candidates.participation_status.value_counts().items(): report.say(f"   participation {status}: {count}")
     issued_participation = candidates[candidates.coverage_status == "ISSUED"]
@@ -104,5 +113,5 @@ def card(issue_season, issue_week):
     participation_unmatched = int(candidates.participation_status.str.startswith("NOT ISSUED - not a skill candidate").sum())
     accepted = ladder_unmatched == 0 and ladder_orphans == 0 and ladder_disagree == 0 and len(dk_missing) == 0 and participation_unmatched == 0 and unexplained == 0 and issued_without_rows == 0 and orphan_rows == 0 and int(status_counts.sum()) == len(candidates) and not candidates.player_id.duplicated().any()
     report.say(f"\nCHECK: every candidate exactly once {not candidates.player_id.duplicated().any()}; statuses sum to candidates {int(status_counts.sum()) == len(candidates)}; unexplained {unexplained}; issued without stat rows {issued_without_rows}; stat rows without a candidate {orphan_rows}; candidates without a participation row {participation_unmatched}; F8 rows without a DK row {len(dk_missing)}; ladder unmatched / orphans / disagreeing {ladder_unmatched} / {ladder_orphans} / {ladder_disagree}")
-    report.say(("CARD ACCEPTED" if accepted else "CARD REFUSED") + f" - wrote {card_path}, {candidates_path}, {dst_path}, {frozen_path} (SHA-256 {frozen_sha})")
+    report.say(("CARD ACCEPTED" if accepted else "CARD REFUSED") + f" - wrote {card_path}, {candidates_path}, {dst_path}, {frozen_path} (SHA-256 {frozen_sha})" + (f"; root engine {root['root_file']} {root['root_file_sha']}" if root["root_source"] == "engine" else ""))
     report.write(os.path.join(PROJ_DIR, f"card_{issue_season}_w{issue_week}_report.txt")); return 0 if accepted else 1

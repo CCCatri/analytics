@@ -1,5 +1,15 @@
 # analytics
 
+## Start here
+
+The lead case is [From a simulated game to a player projection](cases/from-a-simulated-game-to-a-player-projection.md): what the engine and the slate kit each do, where they meet, what the join had to preserve, and what one combined run produced (run `20261105_220733`, PASS; evidence under `cases/evidence/`). Everything below is a part of that case:
+
+- the engine's acceptance criteria and their limits: `acceptance-criteria/engine-vs-record.md`, `engine-legality.md`, `rules-level.md`, `PROGRESS.md`
+- the handoff and its gates: `acceptance-criteria/engine-to-kit-handoff.md` (section 6 is the integration check the lead case reports)
+- the three earlier cases, each one part of the lead case: `cases/clock-check-passed-a-corrupted-game.md`, `cases/regression-test-needed-data-that-could-trigger-the-bug.md`, `cases/two-components-had-to-agree-on-what-counts-as-an-attempt.md`
+- the one command for the handoff evidence: `checks/run_handoff.sh` (baseline from saved pre-adapter code, component checks, isolated paired replay, final verdict; about 20 minutes; needs the raw play-by-play files and the saved pre-adapter kit files — a clean-checkout demo that needs neither is the next item)
+
+
 "Every game is 60 minutes; the ball changes hands after every score or stop; four downs to gain ten. This game should have about P plays between both teams, more or fewer than these teams' usual, because ___." The goal, in my words from Oct 24: "find the goal for each layer, how the layers work together to accomplish the final product, against real NFL rule conservation. For each thing that looks like it's mostly chance, go a layer deeper and see what it's composed of. If we can eliminate the noise, like ensuring apples to apples for player health, and they all rest on the same rolling average, it makes it a lot easier to find where the variance is; then we can make progressively more complex by adding in one variable at a time." Not a player's over/under price. Not a score or winner pick.
 
 ## What it demonstrates
