@@ -1,4 +1,4 @@
-"""Step 1, the baseline: the pre-adapter kit code (draws.py.before and cards.py.before, saved at the adapter rewrite) run on the same inputs the candidate will see.
+"""Step 1, the baseline: the pre-adapter kit code (draws.py.before and cards.py.before, saved at the adapter rewrite, in checks/fixtures/pre_adapter/) run on the same inputs the candidate will see.
 Under HANDOFF_RUN_DIR/baseline/: kit_pre/ is a copy of the live kit with the two saved files in place of draws.py and cards.py and the six replay outputs removed;
 kit.py replay runs there (its 'previous' is a copy of the live rows, only because the command wants one; that judgment is not evidence), then the kit-mode card for
 2025 w16. Records the pre-adapter and candidate code shas, the run identity (git revision, resolved shared inputs), the live proj/ snapshot, which outputs were
@@ -19,7 +19,7 @@ def stream(cmd, cwd, env):
     say(f"  cwd {cwd}\n  {' '.join(cmd)}\n"); t0 = time.time(); p = subprocess.Popen(cmd, cwd=cwd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     for line in p.stdout: print(line, end="", flush=True); LOG.write(line)
     rc = p.wait(); LOG.flush(); say(f"\n  finished in {time.time() - t0:.0f} s, exit {rc}"); return rc
-SAVED = os.path.expanduser("~/Desktop/kit_prev_facts"); PRE_FILES = {f: os.path.join(SAVED, f + ".before") for f in ("draws.py", "cards.py")}
+SAVED = os.path.join(ROOT, "checks", "fixtures", "pre_adapter"); PRE_FILES = {f: os.path.join(SAVED, f + ".before") for f in ("draws.py", "cards.py")}
 for f, p in PRE_FILES.items():
     if not os.path.exists(p): sys.exit(f"{p} missing - refused; the pre-adapter code is not on disk")
 PRE = {f: sha256(p) for f, p in PRE_FILES.items()}; CANDIDATE = {f: sha256(os.path.join(KIT, f)) for f in PRE_FILES}
