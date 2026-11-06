@@ -43,13 +43,11 @@ R6 Slices: per team-game, (dropbacks + handoffs + kneels) vs snaps, with spikes 
 R7 Rule changes across 2019-2025: per season, kickoff touchback rate and average drive start after kickoffs, onside tries and recoveries, overtime games and possessions per overtime. Any season break means links fit across those seasons are tested by season before use. [every level that uses field position or overtime]
 
 ## Roadmap (status 2026-10-26), one chain each, sentence and blank named
-DONE  R1 -> the rules level clause 2 (check_possessions.py: 1,506 of 1,506 back-to-back possessions by rule)
-DONE  R2 -> the rules level clause 1 (runs as clock-check.md v16, check_clock.py)
-DONE  R4 -> the rules level clause 3 (runs as downs-check.md, check_downs.py)
-OPEN  R3 -> the game level P (rule windows: R2's D2 read, printed, not graded)
+DONE  the rules level clause 2 (check_possessions.py: 1,506 of 1,506 back-to-back possessions by rule)
+DONE  the rules level clause 1 (runs as clock-check.md v16, check_clock.py)
+DONE  the rules level clause 3 (runs as downs-check.md, check_downs.py)
+OPEN  the game level P (rule windows: R2's D2 read, printed, not graded)
 OPEN  R5 + O2 -> the game level P (which count "plays" means: settled at the game level by measuring all three counts)
 OPEN  R6 + O3 -> the play-call level D,H,K (slices add up: measured at the play-call level)
-OPEN  R7 -> per-season rule breaks; runs before the engine's first games (the engine legality stage)
-Edit 2026-10-26: lines 37 and 38, the O-section heading and the Roadmap replaced in place (stale after the checks ran; 'reviewer restates' removed: the sentence is built from measurement). check_possessions.py is re-locked to this file's new sha in N7.
-Book: every article cited here is the 2026 rule book's (rules/nfl_rulebook_2026.pdf, sha 144cec5bffd2, from https://static.www.version 1.com/image/upload/fl_attachment/league/tqivdkzt9mu6wdgsh1ku.pdf); each season's own book is R7's to read, so a 2019-2025 count cites the 2026 numbering until R7 runs.
-Edit 2026-10-26: A8 cites 11-3-4 and 6-1-1a; A9's free-kick clauses cite 7-3-1e and lose the 2026 clause; each phrase was checked against the book before writing. check_possessions.py is re-locked to this file's new sha.
+DONE  per-season rule values measured (measure_season_rules.py to rules-module.md; out/season_rules.csv)
+Book: every article cited here is the 2026 rule book's (rules/nfl_rulebook_2026.pdf, sha 144cec5bffd2, from https://static.www.nfl.com/image/upload/fl_attachment/league/tqivdkzt9mu6wdgsh1ku.pdf); each season's own book is read by measure_season_rules.py, so a 2019-2025 count cites the 2026 numbering; measure_season_rules.py has measured each season's values beside the quoted rules.

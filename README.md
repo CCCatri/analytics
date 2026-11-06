@@ -6,25 +6,25 @@
 
 | Practice here | Industry term | Where |
 |---|---|---|
-| Targets written before code, with predictions; outcomes recorded whether they held or not | Pre-registration, prediction logging | `acceptance-criteria/`, `evidence/candidate-engine-v38-full-run/manifest.json` (3 of 5 predictions failed; kept) |
-| A check counts only after its injected fault fails | Fault injection, mutation testing, negative controls | `out/engine_checks.csv` P1–P4; `incidents/predecessor-index-mismatch/revision-16-with-regression-test` oracle |
-| ACCEPTED / NOT ACCEPTED with named reasons; UNKNOWN printed where a check has no power | Fail-closed gating, abstention | `evidence/candidate-engine-v38-full-run/printout.txt`, last 60 lines |
-| Every run pins its inputs by hash and freezes the code that ran | Provenance, reproducibility | `evidence/candidate-engine-v38-full-run/` (one of 51 such runs) |
-| A rule is a sentence found in its pinned source document, or it reads UNKNOWN | Citation grounding | `product/rules.py` `season_x6`, `find_quote`; `rules/RULE_PINS.json` |
-| The 2022 season refused at every read; "2022 certifies nothing: earlier iterations tested against it, their record was deleted 2026-10-26" (version-4 roadmap §5, 2026-10-26, file not kept) | Leakage control, temporal holdout | `product/record.py` `held_out()`; revision 16 tests `boundary` and `quality_gate: hold-out access is tracked by dataset identity` (stage 3) |
+| Acceptance criteria written before code, with expected counts; outcomes recorded whether they held or not | Pre-registration, prediction logging | `acceptance-criteria/clock-check.md` line 72 (FASTER counts expected before the run, met in all six seasons today); `acceptance-criteria/downs-check.md` (OTHER expected 0, met) |
+| A check counts only after its injected fault fails | Fault injection, mutation testing, negative controls | `run.sh` stage 1 (11 injected faults in `checks/test_transition.py`) and stage 4 (24, 21 and 46 in the three record checks), each failing as it must before a count is read; `incidents/.../revision-16-with-regression-test` oracle |
+| ACCEPTED / NOT ACCEPTED with named reasons; UNKNOWN printed where a check has no power | Fail-closed gating, abstention | revision 16 `quality_gate.py` (PASSED / FAILED_REQUIREMENTS / INSUFFICIENT / STOPPED / CRASHED, run by stage 3); the record checks refuse at a changed criteria sha or raw-file pin before reading a count |
+| Every read pins its inputs by hash | Provenance, reproducibility | `product/RAW_PINS.json` (45 raw files), the criteria sha in each record check, `out/engine/MANIFEST.json` checked file by file when the engine loads (stage 4) |
+| A rule is a sentence found in its pinned source document, or it reads UNKNOWN | Citation grounding | `product/rules.py` `season_rule_quotes`, `find_quote`; `rules/RULE_PINS.json` |
+| The 2022 season refused at every read; earlier iterations had tested against it and their records were deleted on 2026-10-26, so it certifies nothing (the version-4 plan of that date) | Leakage control, temporal holdout | `product/record.py` `held_out()`; revision 16 tests `boundary` and `quality_gate: hold-out access is tracked by dataset identity` (stage 3) |
 | An incident becomes a rule, with the row that caused it | Regression from incident | `policy/incident-derived-rules.md`; `checks/fixtures/regression_cases.csv` (9 cases) |
 
 ## Run it
 
     bash run.sh
 
-Stages 1–4 run from a clone. Stage 5 needs the nflverse raw files (play-by-play, schedule, rosters, participation, 2019–2025); their hashes are in `product/RAW_PINS.json` and a file whose hash differs is refused.
+Stages 1–3 run from a clone. Stage 4 needs the nflverse raw files (play-by-play, schedule, rosters, participation, 2019–2025); their hashes are in `product/RAW_PINS.json` and a file whose hash differs is refused.
 
 ## Current state
 
-The accepted engine plays 126.99 plays a game against the record's 136.73. The v38 candidate in `evidence/candidate-engine-v38-full-run` plays 136.77 and is **not accepted**: one section-4 item reads UNCHECKED instead of 0, the fourth-and-1 prediction failed in most zones, and 648 of 1,676 games drew a continuation the engine does not support. The headline number matched and the candidate was refused on its own checks.
+The accepted engine plays 126.99 plays a game against the record's 136.73. On 2026-10-31 a candidate engine played 136.77 and was **not accepted**: one engine-legality section-4 item read UNCHECKED instead of 0, the fourth-and-1 prediction failed in most field zones, and 648 of 1,676 games drew a continuation the engine does not support; 3 of its 5 pre-registered predictions failed. The headline number matched and the candidate was refused on its own checks. That run's printout and manifest are not kept: they were written in the project's earlier vocabulary and the run cannot be regenerated here without rebuilding the experiment against different inputs, so the refusal stands as this dated summary and its evidence is lost. Separately, `run.sh` stage 5 (2026-11-05) is a new demonstration on the accepted engine: the same checks on its generated games, with four planted rule violations each rejected on its own line. It does not reproduce the Oct 31 refusal.
 
-"The game-level gate judges the totals, never the landing. A landed change later found wrong is reverted or corrected by a landing, never held back for fear of it."
+My rule, stated Oct 2026 and applied here: the game-level quality gate judges the totals, never whether a change is accepted; an accepted change later found wrong is corrected by another acceptance, never held back for fear of it.
 
 ## Checks that lapsed
 
@@ -33,19 +33,26 @@ Each version of this project rewrote the product and the checks together. These 
 | Check | Last ran in | Where it is recorded |
 |---|---|---|
 | Schedule vs play-by-play agreement (`games_cross_check`) | version 3 revision 16, Oct 23 | `incidents/predecessor-index-mismatch/revision-16-with-regression-test/record.py` |
-| Snap-count cross-check with an injected +1 | version 3 revision 7 | `history/version3_RELEASE_REPORT.md` revision 7 |
+| Snap-count cross-check with an injected +1 | version 3 revision 7 | `incidents/predecessor-index-mismatch/revision-12-fix-without-regression-test/record.py` `snaps_cross_check` |
 | Twelve offensive players on a snap refused (Rule 5-1-1) | version 3 revision 16 | `incidents/predecessor-index-mismatch/revision-16-with-regression-test/record.py` `participation` |
 | Synthetic league with season chains and the predecessor oracle | version 3 revision 13–16 | `incidents/predecessor-index-mismatch/revision-16-with-regression-test/tests/` |
 
-The working rule written on Oct 26 reads "History is deleted, not kept: no body/ copies; only files a live script reads stay." A check that no live script read went with the version that read it.
+My working rule of Oct 26 (in `acceptance-criteria/PROGRESS.md`): history is deleted, not kept; only files a live script reads stay. A check that no live script read went with the version that read it.
 
 ## History
 
-Four versions in October 2026; `history/REBUILD.md` has the table. `incidents/predecessor-index-mismatch/INCIDENT.md` is the one incident written up in full.
+Four versions in October 2026. Only `main` is defined in all four; the record reader was rewritten three times and improved each time, and the checks around it were rewritten three times and did not accumulate (the table above). `incidents/predecessor-index-mismatch/INCIDENT.md` is the one incident written up in full.
+
+| Version | Dates | What it was | Why it ended | What carried forward |
+|---|---|---|---|---|
+| 1 | Oct 12–16 | worlds drawn as real past games; a player's stat the sum of plays credited to him; no number not read from the record | the handoff required the checker, grader and record reader to be reused verbatim in a rebuild from the rules; the next version rewrote them | nothing |
+| 2 | Oct 17–22 | the grader's charter: it grades and never builds; known-right and known-wrong cases must fail before a decision counts; predictions closed before the run | my questions at the time: whether the acceptances were real in the product files, and whether a gap near the threshold was noise that could flip | the decision vocabulary and predictions-before-the-run, as rules; no code |
+| 3 | Oct 22–23 | fitted hierarchical sub-models, a full simulator, a data preflight, the synthetic league with season chains; the predecessor-index incident found and fixed | my decision to order the work as a chain of constraints toward reliability on a held-out season and to define each layer as enforceable code | the reader's function names and credits; the ban on market inputs; the 2022 decision |
+| 4 → this repo | Oct 24– | two days of root search, then the Oct 26 reframe: rules first; the three record checks at 0 unexplained become the engine's transition rules and its test | current | |
 
 ## What this is not
 
-No price for a player's line, no pick, no lineup. Market lines and model columns are banned as inputs (`product/policy.py`).
+The engine prices nothing: no player line, no pick, no lineup; market lines and model columns are banned as its inputs (`product/policy.py`). The slate kit in `slate-kit/` is the pricing layer, a separate component with its own entry point; the two are joined only through the handoff described below, and no priced output of the kit has yet used an engine draw.
 
 ## Tooling
 
@@ -53,11 +60,53 @@ Built with Claude through MCP connectors and the terminal. The agents wrote code
 
 ## Not shipped
 
-out/sim_games.csv (73 MB), out/interval_table.csv (140 MB), out/product_lines.csv (19 MB), out/engine/*.pkl and MANIFEST.json are written by stage 5 of run.sh when data/raw is present; the acceptance criteria cite them by those names. The acceptance-criteria and history files name modules and outputs by the names they had when written.
+The acceptance criteria name out/sim_games.csv, out/interval_table.csv and out/product_lines.csv, outputs of earlier candidate runs that are not kept (73, 140 and 19 MB). Stage 4 writes the engine's games to out/engine_alone/; the model files under out/engine/ (183 MB) are copied in beside the raw files and are not in git.
 
 ## Qualifications
 
 - Revision 16 is kept as frozen: two of its own tests fail (`sample_gain` signature; `gain_sack` INSUFFICIENT_DATA on the synthetic league), so its quality gate would refuse at SUITE. The incident regression test (`oracle`) passes. `run.sh` stage 3 expects exactly these two failures.
-- `evidence/candidate-engine-v38-full-run/manifest.json` names code files and shas as they were when the run was made, before the rename to hiring terms; the renamed copies under `code/` do not hash to those values.
-- Stage 5 is skipped without the raw files; the record-check results are the shipped `out/` tables and the engine numbers are the printout's, neither re-verified by a clone run.
-- The two `evidence/*.log` files in each revision folder are the Oct 23 printouts the release report cites, kept as written (pre-rename vocabulary); `run.sh` writes today's runs to `out_revision12.log` and `out_revision16.log`.
+
+## Two components, two entry points (status as of 2026-11-05)
+
+| | Engine and record checks | Slate kit |
+|---|---|---|
+| Command | `bash run.sh` | `python3 kit.py card 2026 4` |
+| Working directory | `analytics/` | `analytics/slate-kit/` |
+| Required inputs | `data/raw/` (45 nflverse files pinned by sha in `product/RAW_PINS.json`), `rules/` (the pinned rule books), `out/engine/` (10 model files pinned in `MANIFEST.json`), the three check scripts' pinned acceptance-criteria files | `data/` (37 files shared with `data/raw` by symlink, 15 of its own: 2026 season, FTN charting, snap counts), `facts/raw_manifest.json`, `sources/raw/` (DraftKings salaries, odds), `data/corpus/` partitions as below, `proj/atlas_rows_batch83.csv.gz` (the previous product the replay is judged against) |
+| Output | `out/possessions_*.csv`, `out/clock_*.csv`, `out/downs_*.csv`, `out/rules_level.csv`, `out/engine_alone/` (one generated game per real game, 1,676) | `proj/card_2026_w4.csv`, `_candidates.csv`, `_dst.csv`, `proj/frozen_draws_2026_w4.npz`, the card report |
+| A successful run establishes | Stages 1-3 from a clone: the transition and clock constructions pass their known-right cases and every injected fault fails; each season's rules are found in its pinned book; the predecessor-index incident reproduces (revision 12 clean, revision 16 the oracle plus its two known failures, checked exactly). Stage 4: the play-by-play record meets the three rule-based acceptance criteria with coverage printed, counts equal to their pre-registered values, and the engine reproduces its six season hashes. Stage 5 (when `out/handoff/games_2024_w15.csv.gz` exists): the same checks, rule logic unchanged, accept the engine's generated games of 2024 week 15 with coverage printed, and each of four violations planted on a changed copy of the engine (the scoring team receiving after a field goal; a fifth down; the clock running after an incomplete pass; the 2024 touchback at the 25) is rejected on exactly its own line. The engine's ball-handlers are per-team position placeholders (QB, RB), not named players: it generates team-level play-by-play, which is what the slate kit's root consumes. | A card issued from data available through week N-1, every stat a draw summary with its calibration status against the kit's own atlas. It is a dry run: no card has been scored forward. It does not establish forecast skill. |
+| Verification state | Stages 1-4 green in this tree on 2026-11-05 17:11, before the folder consolidation (which moved nothing `run.sh` reads); stage 5 green 2026-11-05 19:25 (`checks/test_gate1_plants.py`). Full `run.sh` (stages 1-5) green in this tree 2026-11-05 19:35, after the folder consolidation, with every retired folder deleted; counts and engine hashes identical to the pre-cleanup baseline. Not yet run from a clean clone. | Verified 2026-11-05 19:47-19:51 in this tree: `kit.py card 2026 4` with the target outputs absent wrote the card (CARD ACCEPTED, exit 0) identical by key to the card on disk in every value; `kit.py facts` rebuilt all three facts tables from the symlinked raw set content-identical to the tables on disk. The five Oct 6 freezes keep their own kit hashes; the live code hashes differently (batches landed Oct 7-9). `card_2026_w4_report.txt` on disk predates the card and is superseded by the fresh report. Not yet run from a clean clone. |
+
+### Data partitions the kit reads (the folder names do not say this)
+- Fit window: every law fits on seasons <= 2025 (`ingest.FROZEN_THRU`); within it the replay refits at each cutoff s on seasons < s.
+- Held in facts (readable, fit on): 2019, 2020, 2021, 2023, 2024, 2025. 2026 is history for an issue inside it, never fit on.
+- `data/corpus/discovery/` (readable, not in facts): 2016, 2017, 2018 and **2022**.
+- `data/corpus/lockbox/` (2012-2015) and `data/corpus/deep_lockbox/` (1999-2011): held out, read only by a registered judgment; `facts.lockbox_check` refuses a kit module that names them.
+- **Divergence to resolve before any joined run:** the engine holds 2022 out of everything; the kit lists 2022 as readable discovery data. A joined run must declare one hold-out, and 2022 cannot be both.
+
+### Reconciliation report: where the engine can connect
+- Consumer: EXISTING CONSUMER OF DRAWS. The card path is `cards.card -> draws.week_draws -> draws.draw_slate -> draws.draw_link`, one cell at a time in dependency order. The chain's two roots, `("F2 team attempts", TEAM)` and `("F2 team carries", TEAM)`, are the only cells drawn without a parent: `draw_link` returns `rint(center x a bootstrapped ratio)`, 2,000 draws per (season, week, team), keyed by `team`; every other cell draws from its parent's draw, so draw j across all rows is one world. Units: pass attempts with sacks excluded, rush attempts (`facts.py`), whole counts, two-point tries excluded; available at issue from the information set through week N-1. The handoff is an adapter at that one branch (acceptance-criteria/engine-to-kit-handoff.md), not a new layer; the engine also supplies what the kit lists as not modelled: both teams of a game in the same world.
+- Scoring evidence: the replay (`proj/replay_report.txt`) is walk-forward inside the fit window - seasons 2020, 2021, 2023, 2024, 2025, 65 slates, 192,330 graded rows - and reads PRODUCT ISSUED against the previous product (QB BETTER at p = .024; RB UNCHANGED; TE, WR and team total UNKNOWN); the two root cells are DECISION-QUALIFIED with CRPSS +0.10 against the season-to-date reference. The separate root gate against the batch-56 atlas reads FAIL or UNRESOLVED on all 19 chain cells; participation's walk-forward gate recorded FAIL. Cards 2026 w4 and w5 were issued as dry runs; `proj/` holds no forward score for either (0 frozen weeks scored).
+- Next code change: (1) DONE 2026-11-05 - the section-1 reconciliation (`checks/reconcile_root_counts_by_position.py`, 3,200 of 3,200 team-weeks equal); (3) DONE 2026-11-05 - gate 1 (`run.sh` stage 5). Open: (2) the `ROOT_SOURCE` switch in `draw_link`'s level branch with a byte-identical `kit` mode checked by the replay's paired rows; (4) one card traced to an engine draw file by its manifest. The walk-forward comparison (gate 2) comes after, with the engine refit per cutoff and the hold-out declared.
+
+## Product statement (six fields, 2026-11-05)
+
+1. **What it is.** A rules-legal NFL game engine: it plays a game snap by snap from the rule book and league-wide rates and writes it in the play-by-play record's own columns, so the record's checks can be run on it unchanged. Beside it, a slate kit that prices players from team volume downward. The engine is the generative core the kit never had; the kit is the layer that would price what the engine generates.
+2. **What is demonstrated, and its scope.** The record of 2019-2021 and 2023-2025 meets three rule-based acceptance criteria with pre-registered counts (`run.sh` stage 4). The engine's generated games of 2024 week 15 (30 draws) meet the same criteria through the same checks, and four planted violations are each rejected on the named line (stage 5). An incident is replayed with its regression test, and the two known failures of its later revision are checked exactly (stage 3). The engine's attempts and carries equal the kit's root definition on 3,200 of 3,200 team-weeks (`checks/reconcile_root_counts_by_position.py`).
+3. **What is not demonstrated.** Any forecast: the engine's fits are look-back (each season reads the five others) and judge legality only; the kit's cards are dry runs with no forward score; no priced slate has used an engine draw. The engine plays position placeholders, not named players, so it hands over team volume and nothing finer. The kit's vocabulary is its own, not this repo's.
+4. **What was lost.** The Oct 31 candidate's refusal printout and manifest were deleted in the cleanup and cannot be regenerated; that refusal survives only as the dated summary under Current state. Stage 5 is a separate, new demonstration on the accepted engine, not a replacement for that evidence.
+5. **Next milestone.** One engine draw priced: `draws.draw_link`'s root replaced by `out/handoff/root_draws_2024_w15.npz` behind a switch whose off position is byte-identical to today, and one card carrying the draw file's manifest. After it, the walk-forward comparison with the engine refit per cutoff and one declared hold-out.
+6. **Limits that bind every number here.** 2022 is held out of everything on the engine side and readable on the kit side, unresolved; the plays gap (126.99 vs 136.73 a game) stands; 16 postseason stretches are unchecked; the handoff counts omit attempts and carries on nullified plays (2 of 3,200 team-weeks on the record) because the engine writes no flags on its foul rows.
+
+## Role-to-evidence mapping
+
+| Skills line | What the repo shows | Where | Scope |
+|---|---|---|---|
+| Rubric-based evaluation | Acceptance criteria written before code with expected counts; known-right cases as reference answers; every outcome recorded whether it held | `acceptance-criteria/*.md`, `checks/test_transition.py`, `clock-check.md` line 72 | six seasons; 53 + 10 + 13 reference cases |
+| Root cause analysis | An incident written up to its row and fixed with a regression test; a two-row reconciliation gap traced to two named plays and a definition | `incidents/predecessor-index-mismatch/INCIDENT.md`; `acceptance-criteria/engine-to-kit-handoff.md` section 1 | one incident; one reconciliation |
+| Reconciliation | Engine-side counts against the kit's stats-file facts, exact to the row | `checks/reconcile_root_counts_by_position.py` | 3,200 team-weeks, 0 unequal |
+| Regression testing | Injected faults that must fail before a count is read; the incident's oracle; four planted rule violations each caught on its own line | `run.sh` stages 1, 3, 4, 5; `checks/test_gate1_plants.py`, `checks/test_incident_baseline.py` | 11 + 24 + 21 + 46 injected faults; 4 plants |
+| Quality gates | Fail-closed pins on criteria and raw files; refusal before any count; stage 5 as an acceptance gate on generated games | `product/RAW_PINS.json`, the `TSHA`/`RSHA` constants, `run.sh` | every run |
+| Process improvement | One repository from five; a verification order that stops at the first failed prerequisite; a runner that distinguishes known failures from new ones | `run.sh`, `checks/test_incident_baseline.py`, this README's history table | this project |
+| Team leadership | Not evidenced in this repository | - | - |
+| Python; Claude with MCP connectors | All of the above; the agents wrote code against criteria written first (Tooling) | `product/`, `checks/` | - |

@@ -130,7 +130,7 @@ def boundary(cutoff):
     E = record.training_events(cutoff)
     leak = int((E.season.eq(cutoff.holdout) | (E.season.eq(cutoff.season) & (E.week >= cutoff.fit_week)) | (E.season > cutoff.season)).sum()) if len(E) else 0
     injected = K.Cutoff(**{**cutoff.__dict__, "admitted_seasons": tuple(sorted(set(cutoff.admitted_seasons) | {cutoff.holdout}))})
-    E2 = record.training_events(injected); leak2 = int(E2.season.eq(cutoff.holdout).sum()) if len(E2) else 0
+    E_next_start = record.training_events(injected); leak2 = int(E_next_start.season.eq(cutoff.holdout).sum()) if len(E_next_start) else 0
     return leak, leak2, len(E), injected.admits(cutoff.holdout, 1)
 
 

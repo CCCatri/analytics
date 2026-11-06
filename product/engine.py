@@ -1,4 +1,4 @@
-"""engine.py - engine v0, part E1a (v4: X6 read from each season's rule book), to engine-legality.md. Games played out snap by snap on rules.py (X1-X6) and league-wide rates, written in the record's columns.
+"""engine.py - engine v0 (v4: the season rules read from each season's rule book), to engine-legality.md. Games played out snap by snap on rules.py (snap kinds to the season rules) and league-wide rates, written in the record's columns.
 Not product: the engine is the floor the engine-vs-record stage grades. Decision when it runs: NO_CHANGE.
 Inputs (engine-legality.md section 1): rules.py; for season s, league-wide rates read from the five other unsealed seasons (never s, never 2022); the schedule
 (teams, season, week, home side, game type). Bins: down, distance (1-3, 4-6, 7-10, 11+), field (own 1-20, own 21-50, opp 49-21, opp 20-1), time (normal,
@@ -67,7 +67,7 @@ def one(x):
 def choices():
     return [
         "MIN_BIN = 30 plays: the one number the targets leave open ('too few plays'); a bin under it draws from the next coarser bin.",
-        "Fouls played (one per stretch between snaps, families of X2 by the record's foul name and side): F1 offense before the snap (False Start, 5 yards, the down replayed);"
+        "Fouls played (one per stretch between snaps, families of foul families by the record's foul name and side): F1 offense before the snap (False Start, 5 yards, the down replayed);"
         " F2 defense before the snap, a name outside DEF_AWARD (Defensive Offside, 5 yards, the down replayed unless the line is reached); F3 offense during the play,"
         " the play wiped (Offensive Holding, 10 yards from the previous spot); F4 defense during the play, DEF_AWARD, the play wiped (Defensive Holding, 5 yards and a first down);"
         " F5 loss of down (Intentional Grounding, 10 yards from the previous spot, the pass incomplete); F6 offense after the whistle on a play that stands"
@@ -75,14 +75,14 @@ def choices():
         " not played and is counted by name (fouls on kicks and Tries, defensive fouls that leave the play standing, pass interference, both-teams fouls).",
         "F6 is not played on a play that scores, turns the ball over, ends in a safety, or fails on 4th down; each such draw is counted.",
         "Turnovers, punts, missed field goals and kickoffs place the next snap at a spot drawn from the record's next snaps in the same field bin; returns for a"
-        " touchdown, muffs kept by the kicking team and fumbles on returns are not played (counted). A kickoff touchback is placed at X6's rule spot (quoted from the"
+        " touchdown, muffs kept by the kicking team and fumbles on returns are not played (counted). A kickoff touchback is placed at the season rules's rule spot (quoted from the"
         " season's book: the 25 through 2023, the 30 in 2024, the 35 in 2025); from 2024 the book's second spot, the 20 for a kick that first lands in the acceptance"
         " zone, is not played: every engine touchback is at the first spot (the record's touchbacks at the 20 are printed beside it).",
         "A kick is an onside try when its text says 'onside' (E1a v2 a: section 0's short kicks without it were squibs, played as kickoffs). When one may be tried is"
-        " X6's rule, quoted from the season's book: 2019-2023 any free kick (no article names an onside kick), 2024 the 4th period by a team trailing, 2025 any"
+        " the season rules's rule, quoted from the season's book: 2019-2023 any free kick (no article names an onside kick), 2024 the 4th period by a team trailing, 2025 any"
         " period by a team trailing; within what the rule allows, how often one is tried is the five other seasons' rate in the (period, score) cell.",
         "Timeouts are drawn after a snap by (time, score), for the offense or the defense of the next snap, while the team has one left: three a half in regulation (rule text, Rule 4 Section 5, not read in this chain);"
-        " in overtime X6's quoted timeouts (two in the regular-season period, three in each postseason overtime half).",
+        " in overtime the season rules's quoted timeouts (two in the regular-season period, three in each postseason overtime half).",
         "Clock: the class after each play is rules.clock_class over the play's own events (the same events check_clock reads); STOP holds the clock to the next snap, PARTIAL"
         " restarts it after a stopped part drawn from the record's PARTIAL stretches, RUN runs it. After a foul outside the windows on a running clock (4-3-2e) the"
         " clock is stopped for the enforcement and starts on the Referee's whistle, the snap within the season's book's play clock of it (4-6-2e): the stopped part"
@@ -90,7 +90,7 @@ def choices():
         " running clock at the moment it happens.",
         "Real time: each play's length (end stamp minus start stamp) and each gap between rows are drawn from the stamped seasons (2023-2025) other than s; after the"
         " two-minute warning the gap to the next snap is the record's warning-stretch gap less the clock that ran before the warning (redrawn while not positive, counted).",
-        "Overtime is X6's rules, each quoted from the season's book's Rule 16 (2019 from the 2020 book; 2025 from the 2025 page): the period length (600 regular"
+        "Overtime is the season rules's rules, each quoted from the season's book's Rule 16 (2019 from the 2020 book; 2025 from the 2025 page): the period length (600 regular"
         " season, 900 postseason), the possession rule (a first-possession touchdown ends it, or both teams possess first), and the timeouts (two a team in the regular"
         " season's period; three a team in each postseason overtime half, a half being two periods). A third postseason overtime period starts with a kickoff by the"
         " team that received to start overtime (the choice is not in the record). R7's measured values sit beside the rules and are never read by the engine.",
@@ -323,7 +323,7 @@ def row_kind(pt, kind, tp):
 
 
 def family(pteam, off, ptype, wiped, text_play, desc):
-    """The X2 family v0 plays for one recorded foul, or None (not played)."""
+    """The foul families family v0 plays for one recorded foul, or None (not played)."""
     if not isinstance(ptype, str) or not isinstance(pteam, str): return None
     o = pteam == off
     if wiped and not text_play:
@@ -399,12 +399,12 @@ def dur_whole(d, full, kind, pos, dn):
         base = (int(dn[i]), d.at[i, "dist"], d.at[i, "field"], d.at[i, "time"], d.at[i, "score"], "pass" if one(d.at[i, "pass"]) else "run")
         ob_i = d.at[i, "out_of_bounds"]; dep_i = dlo_i = np.nan
         if wiped and d.at[i, "penalty_type"] == "Defensive Pass Interference" and not nan(d.at[i, "penalty_yards"]) and isinstance(pos[i], str) and d.at[i, "penalty_team"] != pos[i]:
-            # v19 r1: pass interference's depth, the row's penalty_yards from its line; where the ball went to the 1 (or half the distance inside the 2) the
+            # pass interference's depth, the row's penalty_yards from its line; where the ball went to the 1 (or half the distance inside the 2) the
             # depth is censored: only its lower bound (the line less one) is kept, never drawn as the depth
             yl_i = float(d.at[i, "yardline_100"]); py_i = float(d.at[i, "penalty_yards"])
             if py_i >= yl_i - 1: dlo_i = max(yl_i - 1, 0.0)
             else: dep_i = py_i
-        R_ = lambda x_: rows.append(base + x_ + (ob_i, dep_i, dlo_i))   # v18 d: the row's own out_of_bounds mark; v19 r1: pass interference's depth (or its censored bound)
+        R_ = lambda x_: rows.append(base + x_ + (ob_i, dep_i, dlo_i))   # v18 d: the row's own out_of_bounds mark; pass interference's depth (or its censored bound)
         pt, ptype, txt = d.at[i, "penalty_team"], d.at[i, "penalty_type"], d.at[i, "desc"]
         pen = one(d.at[i, "penalty"]) and isinstance(ptype, str)
         if not wiped:
@@ -418,7 +418,7 @@ def dur_whole(d, full, kind, pos, dn):
             elif not (isinstance(pt, str) and isinstance(off, str)) or nan(py_s): why_ = "the fouling team or penalty_yards empty"
             elif one(d.at[i, "interception"]) or one(d.at[i, "fumble_lost"]) or one(d.at[i, "touchdown"]) or one(d.at[i, "safety"]):
                 case_ = "a touchdown" if one(d.at[i, "touchdown"]) else ("a safety" if one(d.at[i, "safety"]) else ("an interception" if one(d.at[i, "interception"]) else "a fumble lost"))
-                why_ = f"a score or a change of possession on the play ({case_}; by the {'offense' if pt == off else 'defense'})"   # v19 s4: a read; the try, kickoff or succeeding spot not enforced
+                why_ = f"a score or a change of possession on the play ({case_}; by the {'offense' if pt == off else 'defense'})"   # a read; the try, kickoff or succeeding spot not enforced
             else:
                 sp_ = _T.enforced_at(str(txt)[acc_[0][2]:acc_[0][3]], off); end_ = float(d.at[i, "yardline_100"]) - float(d.at[i, "yards_gained"])
                 if sp_ is None or abs(sp_ - end_) >= 0.5: why_ = "its enforcement spot is not the play's end (a spot foul or the previous spot)"
@@ -747,7 +747,7 @@ class Rates:
         P["kocell"] = Pool("onside try per kickoff", c["kocell"], ["onside"], [("per", "kscore"), ("per",), ()])
         P["pre"] = Pool("foul before the snap", c["pre"], ["fam"], FULL)
         P["dur2"] = Pool("foul on the play, drawn whole", c["dur2"], ["fam2", "side", "pyd", "oc", "ptype", "ob", "dep", "dlo"], [("grp",) + l for l in FULL])
-        self.DPI_DEP = np.sort(c["dur2"]["dep"].dropna().to_numpy(float))   # v19 r1: pass interference's uncensored depths (the other seasons' rows)
+        self.DPI_DEP = np.sort(c["dur2"]["dep"].dropna().to_numpy(float))   # pass interference's uncensored depths (the other seasons' rows)
         P["to"] = Pool("timeout after a snap", c["to"], ["caller"], [("time", "score"), ("time",), ()])
         P["try"] = Pool("Try choice", c["try"], ["choice"], [("time", "score"), ("time",), ()])
         P["xp"] = Pool("extra point good", c["try"][c["try"]["choice"] == "kick"], ["good"], [()])
@@ -775,7 +775,7 @@ def clock_txt(qs):
 
 
 class Game:
-    def __init__(self, g, rates, x6, rng, season):
+    def __init__(self, g, rates, season_rules, rng, season):
         self.g, self.R, self.P, self.rng, self.season = g, rates, rates.P, rng, season
         self.home, self.away = g["home_team"], g["away_team"]
         self.reg = g["game_type"] == "REG"
@@ -785,7 +785,7 @@ class Game:
         self.prev_kind = "other"; self.foul_used = False; self.own_cls = None; self.qa = None; self.pair_x = None; self.race_gap = None; self.race_log = []; self.race_foul = None; self.last_rv = 0.0; self.last_inj = 0.0; self.excess = {}; self.foul_gap = None
         self.pending_kick = None; self.warned = set(); self.over = False; self.declared = None; self.stretch_stop = True
         self.to_left = {self.home: HALF_TIMEOUTS, self.away: HALF_TIMEOUTS}
-        X = x6[season]; self.x6 = x6
+        X = season_rules[season]; self.season_rules = season_rules
         self.tb_spot = int(X["touchback"]["value"])
         self.rb = _TBR(season, X)
         self.chg = []   # c: where this engine plays a rule or a draw differently from engine.py's own code (the comparison reads it)
@@ -840,7 +840,7 @@ class Game:
                  quarter_seconds_remaining=self.clock, game_seconds_remaining=self.gsr(), fixed_drive=self.drive, timeout=0, penalty=0,
                  replay_or_challenge=0, return_touchdown=0, defensive_two_point_conv=0, defensive_extra_point_conv=0)
         r.update(kw)
-        self.mark(r)   # v19 s1: a half-yard spot written in the record's marking (the state keeps the exact spot)
+        self.mark(r)   # a half-yard spot written in the record's marking (the state keeps the exact spot)
         qs_ = r["quarter_seconds_remaining"]; r["game_seconds_remaining"] = qs_ if self.q >= 5 else (4 - self.q) * 900 + qs_
         r["total_home_score"] = self.score[self.home]; r["total_away_score"] = self.score[self.away]
         self.rows.append(r)
@@ -892,7 +892,7 @@ class Game:
             self.warn_row(); self.running = False
 
     def stop_after(self, events, pair=False):
-        """The clock after a play or a foul, by rules.clock_class over its events (X4)."""
+        """The clock after a play or a foul, by rules.clock_class over its events (the clock rule)."""
         cls, _ = clock_class(events, beyond(self.q, self.reg))
         if cls == "STOP" or cls == "UNKNOWN":
             self.running = False; self.restart_at = None; self.stretch_stop = True
@@ -1016,7 +1016,7 @@ class Game:
             self.timeouts()
 
     def foul_text(self, team, name, yards, at):
-        return f"PENALTY on {team}-99-S.Player, {name}, {_yt(yards)} yards, enforced at {at}"   # v19 s1: the exact yards (1.5 where the half is not whole)
+        return f"PENALTY on {team}-99-S.Player, {name}, {_yt(yards)} yards, enforced at {at}"   # the exact yards (1.5 where the half is not whole)
 
     def foul_clock(self, offense_presnap, ran):
         """The clock after a foul between snaps (4-3-2e): a clock already stopped on the stretch waits for the snap; a running one stops in the windows
@@ -1082,12 +1082,12 @@ class Game:
             nm_, sd_ = fw["ptype"], fw["side"]; why_ = None; yd_ = None; aw_ = False
             if sd_ == "defense" and nm_ == "Defensive Pass Interference":   # a spot foul: first down at the spot of the foul, the foul's depth from this line (v19 r1)
                 aw_ = True; dpt_ = None
-                if not nan(fw["dep"]): dpt_ = float(fw["dep"]); self.cnt["v19 r1: pass interference's depth, the drawn row's own (uncensored)"] += 1
+                if not nan(fw["dep"]): dpt_ = float(fw["dep"]); self.cnt["pass interference's depth, the drawn row's own (uncensored)"] += 1
                 elif nan(fw["dlo"]): why_ = "pass interference: the drawn row's depth unread"
                 else:   # the drawn row's depth censored (the ball went to the 1): a depth drawn from the uncensored depths at least its bound
                     cd_ = self.R.DPI_DEP[self.R.DPI_DEP >= float(fw["dlo"])]
                     if not len(cd_): why_ = f"pass interference: no uncensored depth at least the drawn row's bound {float(fw['dlo']):.0f}"
-                    else: dpt_ = float(cd_[self.rng.integers(len(cd_))]); self.cnt["v19 r1: pass interference's depth, censored: drawn from the uncensored depths at least its bound"] += 1
+                    else: dpt_ = float(cd_[self.rng.integers(len(cd_))]); self.cnt["pass interference's depth, censored: drawn from the uncensored depths at least its bound"] += 1
                 if why_ is None:
                     yd_ = _T.spot_foul_yards(dpt_, float(yl0))
                     if yd_ is None: why_ = "pass interference: the depth not beyond the line"
@@ -1151,7 +1151,7 @@ class Game:
             if td or saf or itc or fum: why_ = f"a score or a change of possession on the drawn play ({'a touchdown' if td else ('a safety' if saf else ('an interception' if itc else 'a fumble lost'))}; by the {fw['side']})"
             elif bk_ is None: why_ = f"its yards not found in the season's book: {fw['ptype']} by the {fw['side']}"
             else:   # v19 r: half the distance exactly as the article sets it; a half-yard spot is not one the engine places (no rounding rule assumed)
-                yd_s = _T.foul_yards(bk_[0], fw["side"], float(end), "exact")   # v19 s1: a half yard enforced exactly
+                yd_s = _T.foul_yards(bk_[0], fw["side"], float(end), "exact")   # a half yard enforced exactly
             if why_ is None:
                 ev_st = dict(ev_snap, foul_stand=dict(by=fw["side"], yards=float(yd_s), name=fw["ptype"], award=bool(bk_[1]), spot=float(end)))
                 pv_st = _TRANS(st0, ev_st, self.rb)
@@ -1199,7 +1199,7 @@ class Game:
         if R1B and 1 <= r_ad_["yardline_100"] <= 5 and not pen and kind in CALL: self.cnt[f"af0: a called snap, no foul, at the {r_ad_['yardline_100']} drawn at level {self.P['play2'].last}: {'touchdown' if r_ad_['yards_gained'] >= r_ad_['yardline_100'] else 'no touchdown'}"] += 1   # v36 af0: the level this snap's outcome resolved at (R1b: the model's snap pool, drawn on every such snap)
         if fam == "F5": self.cnt["foul F5"] += 1
         if f6: self.cnt["foul F6"] += 1
-        # the clock after the play (X4)
+        # the clock after the play (the clock rule)
         ow = oob_window(self.q, qs0, self.reg); fw = foul_window(self.q, qs0, self.reg); pa = bool(pen)
         pv = _TRANS(st0, ev_f5, self.rb) if fam == "F5" else (_TRANS(dict(pv_snap, dfn=dfn), ev_f6, self.rb) if f6 else pv_snap)
         poss_change = bool(itc or fum or pv["kick"] or pv["off"] != off)
@@ -1401,7 +1401,7 @@ class Game:
             ev = np.where(u < c1, 1, np.where(u < c2, 2, np.where(u < c3, 3, np.where(u < c4, 4, np.where(u < c5, 5, 0)))))
             if "unplayed" in cls: ev = np.where((ev == 0) & (u < c5 + P[:, cls.index("unplayed")]), 6, ev)   # its own share of each second, as the race was fitted
             for k in np.where(ev > 0)[0]:
-                t = int(ts[k]); self.cnt["g (v19): race seconds at risk, a running clock"] += t + 1   # the event second included, as the record's race rows count it
+                t = int(ts[k]); self.cnt["g: race seconds at risk, a running clock"] += t + 1   # the event second included, as the record's race rows count it
                 if ev[k] == 6:   # its defined transition: the clock stops at this second; its own effects are not played; the game UNSUPPORTED from here
                     self.advance(t); self.write_unplayed("the race, a running clock"); self.race_log.append((self.q, ce, "unplayed", t)); return
                 if ev[k] == 3:
@@ -1415,7 +1415,7 @@ class Game:
                 self.race_log.append((self.q, ce, "offense" if team == off else "defense", t)); self.cnt["race: timeout drawn on a running clock"] += 1
                 self.race_stopped("timeout", False); return
             t0 += len(ts)
-        self.cnt["g (v19): race seconds at risk, a running clock"] += tb   # every second walked to the boundary
+        self.cnt["g: race seconds at risk, a running clock"] += tb   # every second walked to the boundary
         res = self.advance(tb)
         self.race_log.append((self.q, ce, "warning" if res == "warning" else "0:00", tb)); self.cnt[f"race: the clock ran to {'the warning' if res == 'warning' else '0:00'}"] += 1
         if res == "warning" and not self.over: self.race_stopped("two-minute warning", False)
@@ -1528,22 +1528,22 @@ class Game:
 
 
 def onside_allowed(rule, q, kick_diff):
-    """X6's onside rule (quoted from the season's book) -> may the kicking team try one, in period q, with this score difference (kicking team minus receivers)."""
+    """the season rules's onside rule (quoted from the season's book) -> may the kicking team try one, in period q, with this score difference (kicking team minus receivers)."""
     if rule == "any free kick": return True
     if rule == "4th period, kicking team trailing, declared": return q == 4 and kick_diff < 0
     if rule == "any period, kicking team trailing, declared": return kick_diff < 0
-    raise record.DataGap(f"engine: X6's onside rule {rule!r} is not one the engine plays")
+    raise record.DataGap(f"engine: the season rules's onside rule {rule!r} is not one the engine plays")
 
 
-def x6_rows():
-    return {s: rules.season_x6(s) for s in SIM_SEASONS}
+def season_rules_rows():
+    return {s: rules.season_rule_quotes(s) for s in SIM_SEASONS}
 
 
-def play_season(season, sched, rates, x6, seed):
+def play_season(season, sched, rates, season_rules, seed):
     rng = np.random.default_rng([seed, season])
     rows, dec, cnt = [], [], Counter()
     for _, g in sched.iterrows():
-        G = Game(g, rates, x6, rng, season); rows += G.run(); cnt.update(G.cnt)
+        G = Game(g, rates, season_rules, rng, season); rows += G.run(); cnt.update(G.cnt)
         if G.declared: dec.append((g["game_id"], G.declared))
     return rows, dec, cnt
 
@@ -1622,7 +1622,7 @@ def check_clock(seasons):
             iv = check_clock.intervals(g)
             idx = {int(v): k for k, v in enumerate(c["order_sequence"])}
             for x in iv:
-                out[f"check_clock class {x['cls']}"] += 1; out[f"check_clock L1 {x['l1']}"] += 1
+                out[f"check_clock class {x['cls']}"] += 1; out[f"check_clock game level {x['game_level']}"] += 1
                 if x["cls"] == "UNKNOWN":
                     out[f"check_clock UNKNOWN: {x['why']}"] += 1; fails.append(("UNKNOWN", s, x["game_id"], x["sa"], x["sb"], x["q"], x["reg"], x["why"]))
                 a, b = idx[x["sa"]], idx[x["sb"]]; bt = list(range(a + 1, b))
@@ -1658,7 +1658,7 @@ def check_clock(seasons):
     return out, fails
 
 
-def check_periods(frames, x6, seasons):
+def check_periods(frames, season_rules, seasons):
     out = Counter(); bad = []
     for s in seasons:
         f = frames[s]
@@ -1674,14 +1674,14 @@ def check_periods(frames, x6, seasons):
             if has_ot != tied4: ok = False   # 16-1-1: overtime exactly when tied after regulation; no playoff game ends tied (the rules level)
             if has_ot:
                 mx = qs[q == 5].max()
-                if mx != int(x6[s]["ot_reg_len" if reg else "ot_post_len"]["value"]): ok = False
+                if mx != int(season_rules[s]["ot_reg_len" if reg else "ot_post_len"]["value"]): ok = False
                 if not reg and int(g["home_score"].iloc[0]) == int(g["away_score"].iloc[0]): ok = False
             out["games"] += 1; out["games with overtime"] += int(has_ot)
             if not ok: out["games failing the period check"] += 1; bad.append(gid)
     return out, bad
 
 
-def season_rule_check(seasons, x6):
+def season_rule_check(seasons, season_rules):
     import measure_season_rules
     out = {}
     for s in seasons:
@@ -1701,7 +1701,7 @@ if __name__ == "__main__":
 # ---------------- engine alone (the engine-vs-record stage v19 q, r3): the model files in out/engine/, each sha checked on load; the games played from them, nothing else read ----------------
 # out/engine/MANIFEST.json names every file with its sha (and the chain and engine.py that wrote them): conf.pkl (the caller-set values: PACE_SPLIT,
 # RUNOFF_RESTART, SCRIM_TB, BOOKY, ENF_CLOCK; the race's flags R1A, R1B, R1D, QE_BAND; the play clock T_CAP; the seasons), tables.pkl (each season's pools' rows,
-# prep()), x6.pkl (each season's the season rules cells), sched.pkl (the games to play, in the order their generators are numbered), race_<season>.pkl (the race and the
+# prep()), season_rules.pkl (each season's quoted rule cells), sched.pkl (the games to play, in the order their generators are numbered), race_<season>.pkl (the race and the
 # stopped part fitted for that season: the race as its parts, the fitted logistic model, the numbers' means and spreads and the play clock, rebuilt here as
 # _LRRace, the chain's estimator's own design; the stopped part the fitted trees). A file missing, or not the sha its manifest names, stops the load.
 import pickle as _pk, threading as _th
@@ -1722,7 +1722,7 @@ def engine_load(d=ENGINE_DIR):
         raw[f] = b
     conf = _pk.loads(raw["conf.pkl"])
     for k, v in conf["module"].items(): globals()[k] = v
-    return dict(conf=conf, tables=_pk.loads(raw["tables.pkl"]), x6=_pk.loads(raw["x6.pkl"]), sched=_pk.loads(raw["sched.pkl"]),
+    return dict(conf=conf, tables=_pk.loads(raw["tables.pkl"]), season_rules=_pk.loads(raw["season_rules.pkl"]), sched=_pk.loads(raw["sched.pkl"]),
                 race={s: raw[f"race_{s}.pkl"] for s in conf["seasons"]})
 
 
@@ -1802,7 +1802,7 @@ def play_alone(d=ENGINE_DIR, games=None):
         Rs.RACE = dict(eval=B.eval, run_cls=list(MOD["run"].classes_), stop_cls=list(MOD["stop"].classes_), t_cap=E["conf"]["t_cap"]) if MOD is not None else None
         rows = [None] * len(todo); sk = [None] * len(todo)
         def work(j, k, g):
-            try: rows[j] = Game(g, Rs, E["x6"], np.random.default_rng([SEED, s, k]), s).run()
+            try: rows[j] = Game(g, Rs, E["season_rules"], np.random.default_rng([SEED, s, k]), s).run()
             except record.DataGap as ex_: sk[j] = str(ex_)[:120]
             finally: B.done()
         th = [_th.Thread(target=work, args=(j, k, g)) for j, (k, g) in enumerate(todo)]

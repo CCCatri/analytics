@@ -23,7 +23,7 @@ ny_, bady_ = T.run_yard_cases()
 for b_ in bady_: print(f"    FAILED: {b_[0]}: must be {b_[1]}, came back {b_[2]}")
 check("yards cases", ny_ == 10 and not bady_, f"{ny_} cases, {len(bady_)} failed")
 
-print("2. the injected_faults (FAILS: a injected_fault that makes no case fail)")
+print("2. the injected faults (FAILS: an injected fault that makes no case fail)")
 SRC = inspect.getsource(T.after_one)
 for nm_, (o_, w_) in T.PLANTS.items():
     _, bp_ = T.run_fixtures(T.injected(SRC, o_, w_))
@@ -51,7 +51,7 @@ for _ in range(100_000):
         if not o["how"].startswith(T.STAND_PREFIX): off_rule.append(("UNKNOWN without the reason", st, ev, o["how"]))
         continue
     n_res += 1; want_ = end_ - yd_ if by_ == "defense" else end_ + yd_
-    if not (0 < want_ < 100) and 0 < end_ < 100: want_ = end_ / 2 if by_ == "defense" else end_ + (100 - end_) / 2   # v19 r2: the book's half-the-distance article
+    if not (0 < want_ < 100) and 0 < end_ < 100: want_ = end_ / 2 if by_ == "defense" else end_ + (100 - end_) / 2   # the book's half-the-distance article
     yl_o = o["yl"] if o["off"] == "AAA" else 100 - o["yl"]
     if abs(yl_o - want_) > 1e-9 or o["off"] not in ("AAA", "BBB") or (o["off"] == "BBB" and not o["how"].endswith("(7-3-2a)") and "7-3-2a" not in o["how"]):
         off_rule.append(("placed off the rule", st, ev, o))

@@ -377,14 +377,14 @@ def build_tables(E, pos, pseudo, counts):
     G = E[E.kind.eq(rules.FIELD_GOAL) & E.field_goal_result.notna()]
     T["fg_make"] = make_table("fg_make", ["made", "missed"], list(range(len(FG_BINS))), zip(fg_bin(G.yardline_100), np.where(G.field_goal_result.eq("made"), "made", "missed")), pseudo)
     # kicks and turnovers: where the other side's next drive starts (its yardline_100, 5-yard bins)
-    ns = next_start(E); E2 = E.assign(ns=ns); bins = list(range(K.FIELD_YARDS // YARD_BIN))
-    ko = E2[E2.kind.eq(rules.KICKOFF) & E2.ns.notna()]
-    prev_safety = E2.groupby("game_id").safety.shift(1).fillna(0)
+    ns = next_start(E); E_next_start = E.assign(ns=ns); bins = list(range(K.FIELD_YARDS // YARD_BIN))
+    ko = E_next_start[E_next_start.kind.eq(rules.KICKOFF) & E_next_start.ns.notna()]
+    prev_safety = E_next_start.groupby("game_id").safety.shift(1).fillna(0)
     ko_ctx = np.where(prev_safety[ko.index].eq(1), "safety_kick", "kickoff")
     T["kick_start"] = make_table("kick_start", bins, ["kickoff", "safety_kick"], zip(ko_ctx, yard_bin(ko.ns)), pseudo)
-    pu = E2[E2.kind.eq(rules.PUNT) & E2.ns.notna()]
+    pu = E_next_start[E_next_start.kind.eq(rules.PUNT) & E_next_start.ns.notna()]
     T["punt_start"] = make_table("punt_start", bins, list(range(K.FIELD_YARDS // PUNT_CTX_BIN)), zip(np.clip(pu.yardline_100.to_numpy(int) // PUNT_CTX_BIN, 0, 9), yard_bin(pu.ns)), pseudo)
-    to = E2[(E2.interception.eq(1) | E2.fumble_lost.eq(1)) & E2.ns.notna() & E2.kind.isin(rules.SCRIMMAGE)]
+    to = E_next_start[(E_next_start.interception.eq(1) | E_next_start.fumble_lost.eq(1)) & E_next_start.ns.notna() & E_next_start.kind.isin(rules.SCRIMMAGE)]
     T["turnover_start"] = make_table("turnover_start", bins, ["interception", "fumble"], zip(np.where(to.interception.eq(1), "interception", "fumble"), yard_bin(to.ns)), pseudo)
     # clock: seconds elapsed before a snap by the previous play's class and the hurry state
     C_ = S[S.elapsed_before.notna() & S.prior_class.notna() & (S.elapsed_before >= 0)]

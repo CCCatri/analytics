@@ -4,7 +4,7 @@ attributes (its row's columns), the engine its generated ones (its draws); neith
 comes back UNKNOWN with its reason, never filled.
 Landed from chain e2b_v17_1725d9c82df1's shared library (lib_trans) as 96229f766489; tb_rules takes the Rule 11 Section 6 spots as an argument.
 the engine-vs-record stage v18 c adds one case: a foul on a play that stands (stand(), the event's 'foul_stand'): the play's result kept and the foul enforced on it, by the
-family rules.py's X2 lists name (rules.py 3d9b5a3b1985, each list citing its article) and the season's Dead Ball Foul article (rb: 'the down counts',
+family rules.py's foul families lists name (rules.py 3d9b5a3b1985, each list citing its article) and the season's Dead Ball Foul article (rb: 'the down counts',
 'a taunting foul that occurs at any time'), from the row's own columns (yards_gained, penalty_yards, penalty_team, first_down_penalty) and the spot its
 text says the foul was enforced at; where those do not give a part, the parts are UNKNOWN with the reason. Every other answer is 96229f766489's.
 the engine-vs-record stage v19 part 2: stand() reads the defense's foul with no award by rules.py's Item 5 Exceptions (DEF_NEXT the next down, DEF_SAME the same down); and the
@@ -17,7 +17,7 @@ the distance from the previous spot, whichever is more beneficial (the season's 
 the engine-vs-record stage v19 s, t: a fraction of a yard is a spot (s1, t1: kept exactly however many times half the distance halves it, never rounded; the engine writes the record's columns in the record's marking); the offense's
 unnecessary roughness on a play that stands, enforced at the play's end (the succeeding spot), is a dead ball foul by the season's Dead Ball Foul article:
 'enforced from the succeeding spot, and the down counts' (s3: OFF_DEAD_BOOK; a play whose result stands carries no accepted live-ball foul by the offense).
-Its known-right cases (FIXTURES, each true by the article it names, built by hand) and its injected_faults (PLANTS, each must fail a case) live here;
+Its known-right cases (FIXTURES, each true by the article it names, built by hand) and its injected faults (PLANTS, each must fail a case) live here;
 test_transition.py runs them and proves this file byte-identical in its answers to the chain's copy."""
 import math, re
 import pandas as pd
@@ -60,7 +60,7 @@ def same(st, down, togo, yl, how):
 
 
 def tb_rules(season, x6cell, scrim_tb):
-    """A season's touchback spots, each from its pinned rule: a free kick's from X6 (rules.season_x6, the season's book; from 2024 the book names a second
+    """A season's touchback spots, each from its pinned rule: a free kick's from the season rules (rules.season_x6, the season's book; from 2024 the book names a second
     spot for a kick that first lands in the landing zone), any other touchback's from Rule 11 Section 6 (scrim_tb: season -> (yard line, where it was read),
     read by the caller from the season's book; a season missing reads unread)."""
     v = lambda k: int(x6cell[k]["value"]) if (k in x6cell and str(x6cell[k]["value"]).isdigit()) else None
@@ -136,8 +136,8 @@ def after_one(st, ev, rb):
                     return unknown(recv, "kickoff touchback: the book names two spots and which one applies is not in the row (UNKNOWN)" if cond is None else "kickoff touchback: the spot unread from the book (UNKNOWN)")
             else:
                 spot = rb.get("kick")
-                if spot is None: return unknown(recv, "kickoff touchback: X6's spot unread (UNKNOWN)")
-            return series(recv, 100 - spot, "kickoff touchback: X6's spot (the season's book)")
+                if spot is None: return unknown(recv, "kickoff touchback: the season rules's spot unread (UNKNOWN)")
+            return series(recv, 100 - spot, "kickoff touchback: the season rules's spot (the season's book)")
         return _spot(recv, ev.get("end"), "kickoff: where the return ended", "kickoff: the return's spot is not in the row (UNKNOWN)")
     # a snap: a scrimmage play, a punt or a field goal try
     if ev.get("td"):
@@ -225,7 +225,7 @@ def enforced_at(clause, holder):
 
 
 STAND_PREFIX = "a foul on a play that stands"
-OFF_DEAD_BOOK = ("Unnecessary Roughness",)   # v19 s3: the offense's fouls rules.py's lists do not name, played by the season's Dead Ball Foul article where the
+OFF_DEAD_BOOK = ("Unnecessary Roughness",)   # the offense's fouls rules.py's lists do not name, played by the season's Dead Ball Foul article where the
                                              # play stands and the foul is enforced at its end (the succeeding spot): the down counts
 
 
@@ -263,11 +263,11 @@ def stand(st, ev, rb):
             nd = next_down(down, "next")[0]
             if nd > 4: return series(dfn, 100 - yl2, f"{P}, the defense's dead ball foul: the down counts, turnover on downs (7-3-2a)")
             return same(st, nd, yl2 - line, yl2, f"{P}, the defense's dead ball foul (taunting): the down counts (the Dead Ball Foul article)")
-        if name in rules.DEF_NEXT:   # 14-1-2 Item 5 Exceptions (rules.py X2): the defense's foul with no award, the next down
+        if name in rules.DEF_NEXT:   # 14-1-2 Item 5 Exceptions (rules.py foul families): the defense's foul with no award, the next down
             nd = next_down(down, "next")[0]
             if nd > 4: return series(dfn, 100 - yl2, f"{P}, the defense's with no award (14-1-2 Item 5 Exceptions): the next down, turnover on downs (7-3-2a)")
             return same(st, nd, yl2 - line, yl2, f"{P}, the defense's with no award (14-1-2 Item 5 Exceptions): the next down")
-        if name in rules.DEF_SAME:   # 14-1-2 Item 5 Exceptions (rules.py X2): the defense's foul with no award, the same down
+        if name in rules.DEF_SAME:   # 14-1-2 Item 5 Exceptions (rules.py foul families): the defense's foul with no award, the same down
             return same(st, down, yl2 - line, yl2, f"{P}, the defense's with no award (14-1-2 Item 5 Exceptions): the same down")
         return unknown(off, f"{P}, the defense's, no award and the line not reached: whether the down counts or is replayed is not in the row (UNKNOWN)")
     if name in rules.LOSS_OF_DOWN:
@@ -277,7 +277,7 @@ def stand(st, ev, rb):
     if name in rules.OFF_DURING:
         if yl2 <= line: return series(off, yl2, f"{P}, the offense's during the down: the enforced spot reaches the line (7-3-1(a))")
         return same(st, next_down(down, "off_during")[0], yl2 - line, yl2, f"{P}, the offense's during the down: the down replayed from the enforced spot (14-1-2 Item 1, 3-8-4)")
-    if name in rules.OFF_AFTER or name in OFF_DEAD_BOOK:   # v19 s3: OFF_DEAD_BOOK by the Dead Ball Foul article
+    if name in rules.OFF_AFTER or name in OFF_DEAD_BOOK:   # OFF_DEAD_BOOK by the Dead Ball Foul article
         if not rb.get("dead_counts", True): return unknown(off, f"{P}, the offense's after the down: the season's book does not state that the down counts (UNKNOWN)")
         if end <= line: return unknown(off, f"{P}, the offense's after a down that made a first down: the Dead Ball Foul article's Item 1 not read (UNKNOWN)")
         nd = next_down(down, "off_after")[0]
@@ -317,7 +317,7 @@ YARD_CASES = [   # (case, the function, its inputs, what must come back)
     ("pass interference in the end zone from the 12: the ball at the 1, 11 yards", spot_foul_yards, (15.0, 12.0), 11.0),
     ("pass interference with no depth read: unread", spot_foul_yards, (float("nan"), 40.0), None),
     ("pass interference in the end zone from the 1 (inside the 2): half the distance, 0.5 (more beneficial than the 1)", spot_foul_yards, (12.0, 1.0), 0.5),
-    ("v19 s1: a 5-yard foul against the offense on its own 3: half the distance, 1.5, never rounded", foul_yards, (5, "offense", 97.0, "exact"), 1.5),
+    ("a 5-yard foul against the offense on its own 3: half the distance, 1.5, never rounded", foul_yards, (5, "offense", 97.0, "exact"), 1.5),
 ]
 
 
@@ -332,7 +332,7 @@ def run_yard_cases(fns=None):
 
 YARD_PLANTS = {"half the distance never applied": ("foul_yards", lambda N, side, spot, rnd: float(N) if _k(N) else None),
                "pass interference in the end zone not brought to the 1": ("spot_foul_yards", lambda depth, yl: float(depth) if _k(depth, yl) and depth > 0 else None),
-               "v19 s1: the half yard rounded down": ("foul_yards", lambda N, side, spot, rnd: (lambda v: None if v is None else float(math.floor(v)))(foul_yards(N, side, spot, "exact")))}
+               "the half yard rounded down": ("foul_yards", lambda N, side, spot, rnd: (lambda v: None if v is None else float(math.floor(v)))(foul_yards(N, side, spot, "exact")))}
 
 
 # known-right cases, true by the rules they cite (built by hand, independent of the record and of the engine); each (case, state before, event, season's
@@ -372,7 +372,7 @@ FIXTURES = [
     ("14-1-2 Item 1, 3-8-4 the offense's foul during the play: 2nd and 4 at the 30, 10 yards", _S0(2, 4, 30), dict(kind="foul", by="offense", yards=10, outcome="off_during"), _RB, ("AAA", 2, 14, 40, False, ())),
     ("14-1-2 Item 5, 7-3-1(b) the defense's foul during the play with the award: 3rd and 8 at the 50, 23 yards", _S0(3, 8, 50), dict(kind="foul", by="defense", yards=23, outcome="def_award"), _RB, ("AAA", 1, 10, 27, False, ())),
     ("14-1-2 Item 5 Exceptions, short of the line: 2nd and 9 at the 40, 5 yards on the play", _S0(2, 9, 40), dict(kind="foul", by="defense", yards=5, outcome="def_exception"), _RB, ("AAA", 2, 4, 35, False, ())),
-    ("a foul during the play, the enforced spot past the offense's goal line: half the distance, 96 to 98 (v19 r2: v17's case read UNKNOWN)", _S0(1, 10, 96), dict(kind="foul", by="offense", yards=10, outcome="off_during"), _RB, ("AAA", 1, 12.0, 98.0, False, ())),
+    ("a foul during the play, the enforced spot past the offense's goal line: half the distance, 96 to 98 (v17's case read UNKNOWN)", _S0(1, 10, 96), dict(kind="foul", by="offense", yards=10, outcome="off_during"), _RB, ("AAA", 1, 12.0, 98.0, False, ())),
     ("a fumble lost, its spot not in the row", _S0(1, 10, 60), dict(kind="snap", gain=3, turnover="fumble", turn_team="BBB"), _RB, ("BBB", None, None, None, False, ("down", "distance", "yard line"))),
     ("a foul on the play, its enforcement unread", _S0(1, 10, 60), dict(kind="snap", gain=3, foul_unread=True), _RB, ("AAA", None, None, None, False, ("down", "distance", "yard line"))),
     ("11-6 a punt touchback with Rule 11-6 unread", _S0(4, 9, 45), dict(kind="punt", tb=True), dict(_RB, scrim=None), ("BBB", None, None, None, False, ("down", "distance", "yard line"))),
@@ -407,12 +407,12 @@ FIXTURES = [
      dict(kind="snap", gain=1, foul_stand=dict(by="defense", yards=5, name="Defensive Too Many Men on Field", award=False, spot=49.0)), _RB, ("AAA", 3, 3, 44, False, ())),
     ("pass interference in the end zone from the 10 (a spot foul): first down at the 1, goal to go", _S0(3, 8, 10),
      dict(kind="foul", by="defense", yards=9, outcome="def_award"), _RB, ("AAA", 1, 1, 1, False, ())),
-    # v19 r2: the book's half-the-distance article where the enforcement would carry the ball past a goal line
+    # the book's half-the-distance article where the enforcement would carry the ball past a goal line
     ("the book's half-the-distance article: a 15-yard foul against the offense on its own 10, 2nd and 10: the ball on its own 5, the down replayed",
      _S0(2, 10, 90), dict(kind="foul", by="offense", yards=15, outcome="off_during"), _RB, ("AAA", 2, 15.0, 95.0, False, ())),
     ("the book's half-the-distance article: the defense's 5-yard foul at its own 1, 3rd and goal: the ball at the half-yard line, the same down",
      _S0(3, 1, 1), dict(kind="foul", by="defense", yards=5, outcome="def_exception"), _RB, ("AAA", 3, 0.5, 0.5, False, ())),
-    # v19 s1: a half-yard spot kept exactly; s3: the offense's unnecessary roughness on a play that stands, the Dead Ball Foul article
+    # a half-yard spot kept exactly; s3: the offense's unnecessary roughness on a play that stands, the Dead Ball Foul article
     ("v19 s1 the book's half-the-distance article: a 5-yard foul against the offense on its own 3, 2nd and 10: the ball on its own 1.5, the down replayed from there",
      _S0(2, 10, 97), dict(kind="foul", by="offense", yards=5, outcome="off_during"), _RB, ("AAA", 2, 11.5, 98.5, False, ())),
     ("v19 t1 half the distance again: the defense's 5-yard foul at its own 1.5, 1st and goal: the ball at the 0.75, the same down",
@@ -440,26 +440,26 @@ def injected_fault_stand(old, new):
     """A changed copy of stand() (v18 c's injected_fault): stand() and after_one() run from a copy of this module's names with the one line replaced."""
     import inspect
     src = inspect.getsource(stand)
-    if src.count(old) != 1: raise record.DataGap(f"a injected_fault's anchor is in stand() {src.count(old)} times")
+    if src.count(old) != 1: raise record.DataGap(f"an injected fault's anchor is in stand() {src.count(old)} times")
     ns = dict(globals()); exec(src.replace(old, new), ns); exec(inspect.getsource(after_one), ns)
     return lambda st, ev, rb: second(ns["after_one"](st, ev, rb), ev)
 
 
 def injected(src, old, new):
-    """A changed copy of the transition (a injected_fault): its source with one line replaced, run in a copy of this module's names."""
-    if src.count(old) != 1: raise record.DataGap(f"a injected_fault's anchor is in the transition {src.count(old)} times")
+    """A changed copy of the transition (an injected fault): its source with one line replaced, run in a copy of this module's names."""
+    if src.count(old) != 1: raise record.DataGap(f"an injected fault's anchor is in the transition {src.count(old)} times")
     ns = dict(globals()); exec(src.replace(old, new), ns)
     return lambda st, ev, rb: second(ns["after_one"](st, ev, rb), ev)
 
 
-# each injected_fault: one line of after_one replaced; each must make a known-right case fail (a injected_fault that fails none means the cases cannot see that line)
+# each injected_fault: one line of after_one replaced; each must make a known-right case fail (an injected fault that fails none means the cases cannot see that line)
 PLANTS = {"the next down not counted (3-8-5)": ('    nd = next_down(down, "next")[0]\n    if nd > 4:   # 3-8-2: four downs', '    nd = down\n    if nd > 4:   # 3-8-2: four downs'),
-          "the yards copied whole past the goal line (no half-the-distance article; v19 r2)": ("            yl2 = goal_half(yl, yd, by)\n", "            yl2 = None\n"),
-          "v19 t1: a state that holds only half yards (the spot rounded to the nearest half)": ("            yl2 = goal_half(yl, yd, by)\n", "            yl2 = goal_half(yl, yd, by); yl2 = None if yl2 is None else round(2 * yl2) / 2\n"),
-          "v19 s1: the half yard rounded (the ball put on a whole yard)": ("            yl2 = goal_half(yl, yd, by)\n", "            yl2 = goal_half(yl, yd, by); yl2 = None if yl2 is None else float(round(yl2))\n"),
+          "the yards copied whole past the goal line (no half-the-distance article)": ("            yl2 = goal_half(yl, yd, by)\n", "            yl2 = None\n"),
+          "a state that holds only half yards (the spot rounded to the nearest half)": ("            yl2 = goal_half(yl, yd, by)\n", "            yl2 = goal_half(yl, yd, by); yl2 = None if yl2 is None else round(2 * yl2) / 2\n"),
+          "the half yard rounded (the ball put on a whole yard)": ("            yl2 = goal_half(yl, yd, by)\n", "            yl2 = goal_half(yl, yd, by); yl2 = None if yl2 is None else float(round(yl2))\n"),
           "a punt touchback at the 25 (Rule 11 Section 6 says the 20)": ('return series(recv, 100 - sp, "punt, touchback', 'return series(recv, 100 - 25, "punt, touchback')}
 # v18 c's injected_fault, in stand(): the defense's foul enforced toward the defense (the yards added, not taken)
 STAND_PLANTS = {"the defense's foul on a play that stands enforced the wrong way": ('    yl2 = end - yd if by == "defense" else end + yd\n', '    yl2 = end + yd if by == "defense" else end + yd\n'),
-                "v19 s3: the offense's unnecessary roughness not read by the Dead Ball Foul article": ("    if name in rules.OFF_AFTER or name in OFF_DEAD_BOOK:", "    if name in rules.OFF_AFTER:"),
+                "the offense's unnecessary roughness not read by the Dead Ball Foul article": ("    if name in rules.OFF_AFTER or name in OFF_DEAD_BOOK:", "    if name in rules.OFF_AFTER:"),
                 "14-1-2 Item 5 Exceptions' next down read as the same down": ('            nd = next_down(down, "next")[0]\n            if nd > 4: return series(dfn, 100 - yl2, f"{P}, the defense\'s with no award',
                                                                                '            nd = down\n            if nd > 4: return series(dfn, 100 - yl2, f"{P}, the defense\'s with no award')}

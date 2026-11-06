@@ -1,0 +1,50 @@
+check_generated: season 2024 week 15 draw 26 | games 16 rows 2823 | staged /Users/cameroncatri/LocalWork/analytics/out/handoff/stage/pbp_2024.csv.gz sha 60fa02188fd7 | data_version cc5d3901534e
+NOT APPLICABLE on generated input: the pinned record cases (injected faults sections), run-log line 322, EXPECTED_FASTER, FROZEN_2023 - the record's drivers only
+
+=== possessions (check_possessions.load / possessions / counts, unchanged) ===
+raw_frame pbp_2024.csv.gz columns 49 absent 0 betting 0
+events 2024 play_type values outside the contract 0 []
+events 2024 no_play rows that are timeouts 100 | no_play rows charged a timeout that hold a snap, kept as penalty (15-1) 0
+events 2024 fake-kick passes (kick formation, passer named, pass outcome) 0
+events 2024 null flags on scrimmage rows 0
+events 2024 yards_gained null on scrimmage rows 0
+events 2024 KIND_NEEDS passer_player_id missing on 0 rows of kinds ('pass', 'sack', 'spike')
+events 2024 KIND_NEEDS rusher_player_id missing on 0 rows of kinds ('run', 'scramble', 'kneel')
+events 2024 rows 2823 kinds {'pass': 1080, 'run': 807, 'kickoff': 162, 'penalty': 149, 'punt': 124, 'other': 118, 'timeout': 100, 'try': 83, 'sack': 68, 'field_goal': 55, 'scramble': 54, 'kneel': 18, 'spike': 5} scrimmage 2032 null flags on non-scrimmage rows (read as not set) {'two_point_attempt': 433, 'pass': 516, 'rush': 516, 'sack': 516, 'qb_scramble': 516, 'complete_pass': 516, 'incomplete_pass': 516, 'interception': 516, 'fumble_lost': 516, 'pass_touchdown': 516, 'rush_touchdown': 516, 'touchdown': 516} wall 0.1s
+raw_frame pbp_2024.csv.gz columns 9 absent 0 betting 0
+check_possessions 2024: rows 2823 joined one-to-one (events 2823, raw extras 2823)
+  possessions 340 games 16 | back-to-back kinds {'halftime': 8, 'overtime start': 1} | classes {} | unexplained or multiple 0
+
+=== clock (check_clock.load / intervals, unchanged) ===
+raw_frame pbp_2024.csv.gz columns 25 absent 0 betting 0
+  intervals 2145 | columns ['game_id', 'sa', 'sb', 'pt', 'q', 'qa', 'qb', 'ob', 'nb', 'same', 'reg', 'inc', 'pen', 'pen_a', 'tmo', 'bw', 'accepted', 'presnap', 'score', 'poss', 'inj', 'ref', 'rep', 'cls', 'why', 'admin', 'tmw', 'tmw_row_v5', 'runoff', 'dG', 'dW', 'rW', 'res', 'x', 'rx', 'game_level', 'game_level_prior', 'd3', 'd3_v5', 'wrap']
+  game level {'WITHIN REAL TIME': 2145}
+  classes {'RUN': 1041, 'PARTIAL': 271, 'STOP': 833}
+  empty cells {'posteam': 218, 'play_type': 118, 'two_point_attempt': 433, 'incomplete_pass': 516, 'out_of_bounds': 516, 'touchdown': 516, 'field_goal_result': 2768, 'safety': 612, 'touchback': 450, 'interception': 516, 'fumble_lost': 516, 'time_of_day': 82, 'end_clock_time': 218, 'penalty_team': 2658, 'penalty_type': 2658}
+
+=== downs (check_downs.load / checks, unchanged) ===
+raw_frame pbp_2024.csv.gz columns 49 absent 0 betting 0
+events 2024 play_type values outside the contract 0 []
+events 2024 no_play rows that are timeouts 100 | no_play rows charged a timeout that hold a snap, kept as penalty (15-1) 0
+events 2024 fake-kick passes (kick formation, passer named, pass outcome) 0
+events 2024 null flags on scrimmage rows 0
+events 2024 yards_gained null on scrimmage rows 0
+events 2024 KIND_NEEDS passer_player_id missing on 0 rows of kinds ('pass', 'sack', 'spike')
+events 2024 KIND_NEEDS rusher_player_id missing on 0 rows of kinds ('run', 'scramble', 'kneel')
+events 2024 rows 2823 kinds {'pass': 1080, 'run': 807, 'kickoff': 162, 'penalty': 149, 'punt': 124, 'other': 118, 'timeout': 100, 'try': 83, 'sack': 68, 'field_goal': 55, 'scramble': 54, 'kneel': 18, 'spike': 5} scrimmage 2032 null flags on non-scrimmage rows (read as not set) {'two_point_attempt': 433, 'pass': 516, 'rush': 516, 'sack': 516, 'qb_scramble': 516, 'complete_pass': 516, 'incomplete_pass': 516, 'interception': 516, 'fumble_lost': 516, 'pass_touchdown': 516, 'rush_touchdown': 516, 'touchdown': 516} wall 0.1s
+raw_frame pbp_2024.csv.gz columns 11 absent 0 betting 0
+downs check 2024: rows 2823 joined one-to-one (events 2823, raw extras 2823)
+  items 3178 | words {'AS RULE': 2971, 'EXPLAINED': 207} | pairs not judged 324 | OTHER 0 | UNCHECKED 0
+
+=== stopped clock (clock_check.check_clock2, unchanged) ===
+raw_frame pbp_2024.csv.gz columns 25 absent 0 betting 0
+  checked {'no-play downs made snaps': 96, 'PARTIAL checked': 310, 'STOP checked': 847} | violations 0 [] | warning placements {'STOP stopped by the warning, between downs at 2:00': 23, 'STOP stopped by the warning, at the conclusion of the down': 7} | 0 []
+
+=== verdict (engine-legality.md section 4; coverage above) ===
+  possessions unexplained 0: PASS
+  clock FASTER not licensed 0: PASS
+  clock UNCHECKED 0 (engine stamps every snap): PASS
+  downs OTHER 0: PASS
+  downs UNCHECKED 0: PASS
+  stopped clock: no STOP stretch falls more than the play plus 1 s: PASS
+GATE 1 VALID CONTROL: PASS

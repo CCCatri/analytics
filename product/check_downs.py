@@ -1,4 +1,4 @@
-"""check_downs.py - rules-level clause 3, downs ("four downs to gain ten"), to downs-check.md v19 (e6fb7875b651). A record read, not product.
+"""check_downs.py - rules-level clause 3, downs ("four downs to gain ten"), to downs-check.md v19 (7c579decd785). A record read, not product.
 Reads record.events (down, ydstogo, yardline_100, yards_gained, posteam, penalty, kind, two_point_attempt, qtr, game clock, scores and turnovers) joined one-to-one
 on (game_id, play_id) to record.raw_frame + record.typed for: order_sequence, season_type, first_down, first_down_penalty, penalty_team, penalty_type,
 desc, own_kickoff_recovery, fumble_recovery_1_team.
@@ -10,7 +10,7 @@ Choices the targets do not fix, declared and printed:
    adjacent down-carrying rows where the game clock runs backward under order_sequence is printed.
  - a down-carrying row is a snap (policy.CALL_KINDS, punt, field goal attempt) or a no_play row, with a down; Tries never are.
  - an accepted foul is the record's penalty flag set and the foul named; its side is the offense when penalty_team is the snapping team, else the defense.
- - a no-play keeps v4's rule (v5): repeated (3-8-4), unless a loss of down by name, or the next spot at or past the line to gain, or a defensive award (both 7-3-1(b), v11).
+ - a no-play keeps v4's rule: repeated (3-8-4), unless a loss of down by name, or the next spot at or past the line to gain, or a defensive award (both 7-3-1(b), v11).
  - any other snap with an accepted foul is judged by v5/v6 C1 (a)-(c): S is the next snap's yardline_100, L the fouled down's yardline_100 minus its ydstogo.
    "The play itself reached L" is yards_gained on the fouled snap >= its ydstogo. Unnecessary Roughness by the offense is a foul after the whistle when its
    text says 'between downs' or yards_gained is 0 (the spot is the line of scrimmage with no gain); otherwise it is judged under (c).
@@ -28,14 +28,14 @@ Choices the targets do not fix, declared and printed:
    (it carried the distance unchanged, v3), the first row with a foul explains the distance, and a charged snap, the other team, a kickoff, a Try or a break stops the walk.
  - C1 pairs two down-carrying rows of one team in a row, with no kickoff or Try between, no half or overtime start between, and the first row not a punt,
    field goal attempt, score, safety or turnover; other pairs are not judged and their count is printed.
- - C3 'a kick' is a kickoff, or a punt or field goal attempt by the other team; a fourth down with no snap after it in the half is EXPLAINED by its period (v2).
+ - C3 'a kick' is a kickoff, or a punt or field goal attempt by the other team; a fourth down with no snap after it in the half is EXPLAINED by its period.
  - v17: 14-1-2 Item 5's Exceptions are read from rules/nfl_rulebook_2026.pdf (its numbered lines), not typed; a foul name is an Exception when its words match
    a line, or, for Defensive Too Many Men on Field, by the tie the run re-measures (0 first downs short of the line to gain; else the tie breaks and items are
    recomputed). A receivers' foul on a punt the kickers downed, the down repeated, is named as a record error or an unread article, not told apart.
  - v19 3'': flag, do not resolve: a foul row whose (penalty_team, penalty_type) is none of the fouls its play text names as accepted (declined only when
    'declined' follows the name directly) is not judged by its columns; its C1 item reads the flag, word EXPLAINED. A text naming no foul is not flagged (its
    count prints). The targets' flag text joins two clauses with ';'; check_downs keeps one reason per item, so the two are joined with ','.
- - the rules-module stage: the foul families, Item 5's Exceptions and the tie, the illegal touch pass and the no-foul next down are read from rules.py (rules-module.md X2, X3).
+ - the rules-module stage: the foul families, Item 5's Exceptions and the tie, the illegal touch pass and the no-foul next down are read from rules.py (rules-module.md foul families, the next-down rule).
 Words: AS RULE / EXPLAINED (rule and article named) / OTHER (listed) / UNCHECKED (checker empty). No decision word."""
 import hashlib, os, re, sys
 from collections import Counter, defaultdict
@@ -45,7 +45,7 @@ import rules
 from rules import PRESNAP_OFFENSE, LOSS_OF_DOWN, OFF_DURING, OFF_AFTER, DEF_AWARD, DEF_NEXT, DEF_SAME, BOOK, TMM, norm, book, is_exc, touch_yards, next_down
 
 SELF = hashlib.sha256(open(os.path.abspath(__file__), "rb").read()).hexdigest()[:12]
-TARGETS, TSHA = "acceptance-criteria/downs-check.md", "e6fb7875b651"
+TARGETS, TSHA = "acceptance-criteria/downs-check.md", "7c579decd785"
 OUT_COUNTS = "out/downs_counts.csv"
 OUT_OTHER = "out/downs_other.csv"
 OUT_REASONS = "out/downs_reasons.csv"
@@ -101,7 +101,7 @@ def flagged(pt, ptype, text):
 
 
 def foul_clauses(text):
-    """Each 'PENALTY on' clause in a play's text, any case: (team, accepted, start, end). Accepted: no 'declined' or 'offsetting' in the clause (v7)."""
+    """Each 'PENALTY on' clause in a play's text, any case: (team, accepted, start, end). Accepted: no 'declined' or 'offsetting' in the clause."""
     t = text if isinstance(text, str) else ""
     st = [m.start() for m in re.finditer(r"penalty on ", t, flags=re.I)]
     out = []
@@ -186,7 +186,7 @@ def checks(g):
         if fx is not None and flagged(c["penalty_team"][fx], F, c["desc"][fx]):   # v19 3'': flag, do not resolve
             item("C1", "EXPLAINED", FLAG, j, **kw); continue
         if fx is None:   # no accepted foul on the snap or between: AS RULE or OTHER
-            exp, rule = next_down(dn[i], "first_down" if (one(c["first_down"][i]) or one(c["first_down_penalty"][i])) else ("cancelled" if cx else "next"))   # the rules module X3
+            exp, rule = next_down(dn[i], "first_down" if (one(c["first_down"][i]) or one(c["first_down_penalty"][i])) else ("cancelled" if cx else "next"))   # the rules module the next-down rule
             if dn[j] == exp: item("C1", "AS RULE", rule, j, expected=exp, **kw)
             else: item("C1", "OTHER", f"expected down {exp}, got {dn[j]}", j, expected=exp, **kw)
             continue
@@ -198,7 +198,7 @@ def checks(g):
             elif dn[j] == exp: item("C1", "EXPLAINED", f"an illegal touch pass with no yardage, loss of down (8-1-8(b)): {F}" if case == "b" else f"an illegal touch pass with yardage on a no-play, the same down (8-1-8(a), 14-1-2 Item 1): {F}", j, **kw)
             else: item("C1", "OTHER", f"an illegal touch pass, 8-1-8({case}) gives down {exp}, the next snap is down {dn[j]}: {F}", j, **kw)
             continue
-        if cx:   # a no-play keeps v4's rule (v5)
+        if cx:   # a no-play keeps v4's rule
             if F in LOSS_OF_DOWN and dn[j] == dn[i] + 1: item("C1", "EXPLAINED", f"loss of down (14-1-2 Item 2): {F}", j, **kw)
             elif dn[j] == 1 and reach: item("C1", "EXPLAINED", f"the ball placed at or past the line to gain ({'14-1-2 Item 5, 7-3-1(b)' if fdef else '14-1-2 Item 4'}): {F}", j, **kw)
             elif fdef and F in DEF_AWARD:   # v8: the award list applies to no-plays
@@ -272,7 +272,7 @@ def checks(g):
             fx = None
             for x in range(k - 1, -1, -1):
                 if kind[x] in ("kickoff", "try") or half_break(q[x], q[k]) or (isinstance(team[x], str) and team[x] != team[k]): break
-                if kind[x] == "penalty" and dn[x] == dn[k] and c["ydstogo"][x] == yt and not nan(dn[x]): continue   # carried the distance unchanged (v3)
+                if kind[x] == "penalty" and dn[x] == dn[k] and c["ydstogo"][x] == yt and not nan(dn[x]): continue   # carried the distance unchanged
                 if one(c["penalty"][x]): fx = x; break
                 if kind[x] in CALL | {"punt", "field_goal"}: break
             if fx is not None:
@@ -355,28 +355,28 @@ def main():
     for gd in G.values():
         it, u = checks(gd); ITEMS += it; unpaired += u; UNP[(gd["season"].iloc[0], gd["season_type"].iloc[0])] += u
     tc = tie_counts(ITEMS)
-    print(f"v17 2 tie re-measured: {TMM} on C1 pairs by the side not snapping {sum(tc.values())} | {dict(tc)} | the tie holds: {tc['1st down short of the line'] == 0}")
+    print(f"tie re-measured: {TMM} on C1 pairs by the side not snapping {sum(tc.values())} | {dict(tc)} | the tie holds: {tc['1st down short of the line'] == 0}")
     if tc["1st down short of the line"]:
         rules.TIE = False; ITEMS, unpaired, UNP = [], 0, Counter()
         for gd in G.values():
             it, u = checks(gd); ITEMS += it; unpaired += u; UNP[(gd["season"].iloc[0], gd["season_type"].iloc[0])] += u
-        print(f"v17 2 the tie broke: {TMM} is not an Exception; items recomputed")
+        print(f"the tie broke: {TMM} is not an Exception; items recomputed")
     I = pd.DataFrame(ITEMS)
     print(f"items {len(I)} | C1 pairs not judged (a change of team, a break or a possession-ending first row) {unpaired}")
     ko = D[(D["kind"] == "other") & D["down"].notna() & (D["penalty"] == 1) & D["penalty_type"].notna() & (D["two_point_attempt"] != 1)]
-    print(f"kind 'other' rows with a down and an accepted, named foul, now paired by C1 (v8): {len(ko)}")
+    print(f"kind 'other' rows with a down and an accepted, named foul, now paired by C1: {len(ko)}")
     for _, x in ko.iterrows():
         print(f"   {x['game_id']} seq {int(x['order_sequence'])} {x['posteam']} down {x['down']} togo {x['ydstogo']} at {x['yardline_100']} | {x['penalty_type']} by {x['penalty_team']} | {x['desc']}")
 
     B_ = book()
-    print(f"v17 1 Item 5 Exceptions read from {BOOK} (book lines {B_['exc_lines'][0]} to {B_['exc_lines'][1]}): {B_['exc']}")
+    print(f"Item 5 Exceptions read from {BOOK} (book lines {B_['exc_lines'][0]} to {B_['exc_lines'][1]}): {B_['exc']}")
     A_ = D[(D["penalty"] == 1) & D["penalty_type"].notna()]
     FL = [(g_, int(s_), t_, p_, text_named(d_)) for g_, s_, t_, p_, d_ in zip(A_["game_id"], A_["order_sequence"], A_["penalty_team"], A_["penalty_type"], A_["desc"]) if flagged(t_, p_, d_)]
     none_ = sum(1 for d_ in A_["desc"] if not text_named(d_))
-    print(f"v19 3'' accepted penalty rows {len(A_)} | flagged (columns name none of the text's accepted fouls): {len(FL)} | rows whose text names no foul (not flagged): {none_}")
+    print(f"accepted penalty rows {len(A_)} | flagged (columns name none of the text's accepted fouls): {len(FL)} | rows whose text names no foul (not flagged): {none_}")
     for g_, s_, t_, p_, tf_ in FL: print(f"   {g_} seq {s_} | columns ({t_}, {p_}) | text names {tf_}")
 
-    print("\n=== PLANTS, row by row (each negative must read OTHER; any FAIL stops the run) ===")
+    print("\n=== INJECTED FAULTS, row by row (each negative must read OTHER; any FAIL stops the run) ===")
     res = []
 
     def injected_fault(name, cond):
@@ -498,32 +498,32 @@ def main():
     neg("NEG15 the next snap's down set to 3", r, "down", 3.0)
     r = at("2021_11_DET_CLE", 2863)
     injected_fault(f"P16 unsportsmanlike conduct by the offense 'between downs' after a 13-yard gain, next snap 1st and 25 (C1 (b)) -> {None if r is None else (r['word'], r['why'])}", r is not None and r["word"] == "EXPLAINED" and r["why"].startswith("a foul by the offense between downs, the down unchanged (14-1-2 Item 7)"))
-    neg("NEG16 (v6) the next snap's down set to 2", r, "down", 2.0)
+    neg("NEG16 the next snap's down set to 2", r, "down", 2.0)
     p18 = C1[(C1["word"] == "EXPLAINED") & (C1["why"] == "a foul by the defense that awards a first down (14-1-2 Item 5, 7-3-1(b)): Defensive Holding") & (C1["foul_seq"] == C1["prev_seq"])
              & (C1["L"] > 0) & (C1["S"] > C1["L"]) & (C1["S"] >= 10) & (C1["next_togo"] == 10) & (C1["prev_down"] == 3)]
     r = p18.iloc[0] if len(p18) else None
     if r is not None: print(f"  P18 found and pinned: {r['game_id']} seq {r['prev_seq']} -> {r['seq']} | S {r['S']} L {r['L']}:"); rows(r["game_id"], r["prev_seq"], r["seq"])
     injected_fault(f"P18 a defensive holding short of L outside goal-to-go, next snap 1st and 10 from S (C1 (b) award) -> {None if r is None else (r['word'], r['why'])}", r is not None)
-    neg("NEG18 (v7) the next snap's down set to 3, the fouled down replayed", r, "down", 3.0)
+    neg("NEG18 the next snap's down set to 3, the fouled down replayed", r, "down", 3.0)
     r = at("2021_09_ARI_SF", 1586)
-    injected_fault(f"P19 (v19) SF's Taunting and ARI's Unsportsmanlike Conduct, the columns naming ARI's Taunting: the flag -> {None if r is None else (r['word'], r['why'])}", r is not None and r["word"] == "EXPLAINED" and r["why"] == FLAG)
+    injected_fault(f"P19 SF's Taunting and ARI's Unsportsmanlike Conduct, the columns naming ARI's Taunting: the flag -> {None if r is None else (r['word'], r['why'])}", r is not None and r["word"] == "EXPLAINED" and r["why"] == FLAG)
     if r is not None:
         F = G[r["game_id"]].copy(); m = F["order_sequence"] == r["prev_seq"]; t0 = str(F.loc[m, "desc"].iloc[0])
         t1 = "".join(t0[a:b] for w, ok, a, b in foul_clauses(t0) if not (ok and w == "ARI")); t1 = t0[:foul_clauses(t0)[0][2]] + t1 if foul_clauses(t0) else t0
         print(f"      NEG19 text after the ARI clause is removed: {t1}")
         F.loc[m, "desc"] = t1; F.loc[m, "penalty_team"] = "SF"; F.loc[F["order_sequence"] == r["seq"], "down"] = 4.0
-        w = grader(F, "C1", r["seq"]); injected_fault(f"NEG19 (v8) the ARI clause removed, penalty_team set to SF, the next snap's down set to 4: {r['word']} -> {w}", w == "OTHER")
+        w = grader(F, "C1", r["seq"]); injected_fault(f"NEG19 the ARI clause removed, penalty_team set to SF, the next snap's down set to 4: {r['word']} -> {w}", w == "OTHER")
     else: injected_fault("NEG19 (nothing pinned)", False)
     r = at("2023_10_DEN_BUF", 4471)
-    injected_fault(f"P20 (v8) Defensive Too Many Men on Field on a kind-other row, the same down (C1 (b), defense, no award) -> {None if r is None else (r['word'], r['why'])}", r is not None and r["word"] == "EXPLAINED" and r["why"] == "a foul by the defense with no award (14-1-2 Item 5 Exceptions): Defensive Too Many Men on Field")
-    neg("NEG20 (v8) the next snap's down set to 1", r, "down", 1.0)
+    injected_fault(f"P20 Defensive Too Many Men on Field on a kind-other row, the same down (C1 (b), defense, no award) -> {None if r is None else (r['word'], r['why'])}", r is not None and r["word"] == "EXPLAINED" and r["why"] == "a foul by the defense with no award (14-1-2 Item 5 Exceptions): Defensive Too Many Men on Field")
+    neg("NEG20 the next snap's down set to 1", r, "down", 1.0)
     r = at("2019_01_PIT_NE", 3917)
     injected_fault(f"P21 offensive Unnecessary Roughness, the next snap fits after the whistle (C1 (c)) -> {None if r is None else (r['word'], r['why'])}", r is not None and r["word"] == "EXPLAINED" and r["why"] == f"{FITS} (after the whistle): Unnecessary Roughness")
     neg("NEG21 the next snap's down set to 3", r, "down", 3.0)
     if r is not None:   # v19: the foul name changes in the columns and the text together; a column-only change is a disagreement the flag reads
         F = G[r["game_id"]].copy(); m = F["order_sequence"] == r["prev_seq"]
         F.loc[m, "penalty_type"] = "Offensive Holding"; F.loc[m, "desc"] = F.loc[m, "desc"].map(lambda t: t.replace("Unnecessary Roughness", "Offensive Holding"))
-        w = grader(F, "C1", r["seq"]); injected_fault(f"NEG17 (under P21, v19) the foul name set to Offensive Holding in the columns and the play text: {r['word']} -> {w}", w == "OTHER")
+        w = grader(F, "C1", r["seq"]); injected_fault(f"NEG17 (under P21) the foul name set to Offensive Holding in the columns and the play text: {r['word']} -> {w}", w == "OTHER")
     else: injected_fault("NEG17 (nothing pinned)", False)
     x = I[(I["check"] == "C5 next") & (I["game_id"] == "2020_07_DET_ATL") & (I["seq"] == 4362)]
     r = x.iloc[0] if len(x) == 1 else None
@@ -536,16 +536,16 @@ def main():
         w = grader(F, "C5 next", 4362); injected_fault(f"NEG22 a 2nd-down ATL snap inserted after it in the same quarter: EXPLAINED -> {w}", w == "OTHER")
     else: injected_fault("NEG22 (nothing pinned)", False)
     r = at("2020_16_NYG_BAL", 1821)
-    injected_fault(f"P23 (v15) an Illegal Touch Pass, 0 yards, 2nd down then 3rd (8-1-8(b)) -> {None if r is None else (r['word'], r['why'])}", r is not None and r["word"] == "EXPLAINED" and r["why"].startswith("an illegal touch pass with no yardage, loss of down (8-1-8(b))"))
+    injected_fault(f"P23 an Illegal Touch Pass, 0 yards, 2nd down then 3rd (8-1-8(b)) -> {None if r is None else (r['word'], r['why'])}", r is not None and r["word"] == "EXPLAINED" and r["why"].startswith("an illegal touch pass with no yardage, loss of down (8-1-8(b))"))
     if r is not None:
         F = G[r["game_id"]].copy(); m = F["order_sequence"] == r["prev_seq"]
         F.loc[m, "desc"] = F.loc[m, "desc"].map(lambda t: re.sub(r"(Illegal Touch Pass,\s*)\d+(\s*yard)", r"\g<1>5\g<2>", t, flags=re.I))
         print(f"      NEG23 text with the penalty's yardage set to 5: {F.loc[m, 'desc'].iloc[0]}")
-        w = grader(F, "C1", r["seq"]); injected_fault(f"NEG23 (v15) the penalty's yardage set to 5 yards (case (a) requires a no-play and the same down): EXPLAINED -> {w}", w == "OTHER")
+        w = grader(F, "C1", r["seq"]); injected_fault(f"NEG23 the penalty's yardage set to 5 yards (case (a) requires a no-play and the same down): EXPLAINED -> {w}", w == "OTHER")
     else: injected_fault("NEG23 (nothing pinned)", False)
     npass = sum(res)
     if npass != len(res) or len(res) != 46:
-        print(f"\nR4 SUMMARY injected_faults {npass}/{len(res)} FAILED | no count read, no file written"); sys.exit(1)
+        print(f"\nDOWNS SUMMARY injected faults {npass}/{len(res)} FAILED | no count read, no file written"); sys.exit(1)
 
     print("\n=== COUNTS per season, regular season and postseason apart (AS RULE / EXPLAINED / OTHER / UNCHECKED; no decision word) ===")
     crow = []
@@ -580,9 +580,9 @@ def main():
     RR = I.groupby(["season", "season_type", "check", "word", "why"]).size().reset_index(name="count")
     back_ = RR.groupby(["season", "season_type", "check", "word"])["count"].sum().to_dict(); ct_ = CT.set_index(["season", "season_type", "check", "word"])["count"].to_dict()
     nj = pd.DataFrame([(s, st, "C1 not judged", "NOT JUDGED", "a change of team, a break, or a possession ending on its first snap", u) for (s, st), u in sorted(UNP.items())], columns=RR.columns)
-    print(f"N7 reasons: rows {len(RR)} | the split sums back to the counts: {back_ == ct_} | C1 pairs not judged {int(nj['count'].sum())} (printed total {unpaired})")
+    print(f"reasons table: rows {len(RR)} | the split sums back to the counts: {back_ == ct_} | C1 pairs not judged {int(nj['count'].sum())} (printed total {unpaired})")
     if back_ != ct_ or int(nj["count"].sum()) != unpaired:
-        print(f"\nR4 SUMMARY injected_faults {npass}/{len(res)} | the reason split does not sum to the counts | no reasons file written"); sys.exit(1)
+        print(f"\nDOWNS SUMMARY injected faults {npass}/{len(res)} | the reason split does not sum to the counts | no reasons file written"); sys.exit(1)
     with open(OUT_REASONS, "w") as f:
         f.write(f"# {tag}\n"); pd.concat([RR, nj], ignore_index=True).to_csv(f, index=False)
     print(f"\nwritten, stamped on line 1: {OUT_COUNTS} sha {sha(OUT_COUNTS)} | {OUT_OTHER} rows {len(O)} sha {sha(OUT_OTHER)} | {OUT_REASONS} sha {sha(OUT_REASONS)}")
@@ -596,7 +596,7 @@ def main():
         print(f"  {s}: " + " | ".join(f"{e} n {len(v)} mean {np.mean(v):.2f} median {np.median(v):.0f}" for e, v in sorted(L.items())))
     tot = dict(Counter(I["word"]))
     print(f"\nOTHER {len(O)} (the reviewer's expectation before the run: 0) -> {'holds' if len(O) == 0 else 'MISSED'} | loss-of-down fouls read by name: {dict(Counter(I.loc[I['why'].str.startswith('loss of down'), 'why']))}")
-    print(f"\nR4 SUMMARY injected_faults {npass}/{len(res)} | OTHER {len(O)} (expected 0) | items {tot} | OTHER {len(O)} listed in {OUT_OTHER} {sha(OUT_OTHER)} | {OUT_COUNTS} {sha(OUT_COUNTS)}")
+    print(f"\nDOWNS SUMMARY injected faults {npass}/{len(res)} | OTHER {len(O)} (expected 0) | items {tot} | OTHER {len(O)} listed in {OUT_OTHER} {sha(OUT_OTHER)} | {OUT_COUNTS} {sha(OUT_COUNTS)}")
 
 
 if __name__ == "__main__":

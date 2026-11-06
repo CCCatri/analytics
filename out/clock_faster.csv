@@ -1,5 +1,5 @@
-# check_clock.py b0c45efc956d | clock-check.md 576bd140df3b (v16) | record read (rules-level clause 1), not product
-season,game_id,sa,sb,q,pt,cls,why,runoff,dG,dW,rW,res,x,rx,size,l1,l1_v12,d3
+# check_clock.py c2ec51009075 | clock-check.md dfff5f9d7de8 | record read (rules-level clause 1), not product
+season,game_id,sa,sb,q,pt,cls,why,runoff,dG,dW,rW,res,x,rx,size,game_level,game_level_prior,d3
 2019,2019_01_ATL_MIN,3134,3158,4,pass,RUN,,False,25.0,21.0,1.0,2.0,,,4.0,FASTER not licensed,FASTER not licensed,UNCHECKED
 2019,2019_01_BAL_MIA,1388,1409,2,run,RUN,,False,43.0,39.0,1.0,2.0,,,4.0,FASTER not licensed,FASTER not licensed,UNCHECKED
 2019,2019_01_BAL_MIA,2039,2063,2,pass,RUN,,False,26.0,9.0,1.0,2.0,,,17.0,FASTER not licensed,FASTER not licensed,UNCHECKED

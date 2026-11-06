@@ -1,4 +1,4 @@
-# check_downs.py 5c53272a657d | acceptance-criteria/downs-check.md e6fb7875b651 | record read (rules-level clause 3), not product
+# check_downs.py 13b0f812b61a | acceptance-criteria/downs-check.md 7c579decd785 | record read (rules-level clause 3), not product
 season,season_type,check,word,count
 2019,POST,C1,AS RULE,1260
 2019,POST,C1,EXPLAINED,107

@@ -1,6 +1,6 @@
 """rules.py - the rules-module stage, one rules module, to rules-module.md. The rules the record reads (check_possessions.py, check_clock.py, check_downs.py) and the engine (the engine stage) play by, each with its article.
-The book is rules/nfl_rulebook_2026.pdf (sha 144cec5bffd2). X1 snap kinds; X2 foul families; X3 next_down; X4 the clock (windows, clock_class, the play clock);
-X5 next_possession; X6 season_rules, read from out/season_rules.csv (written by measure_season_rules.py from the record; 2022 is held_out and stays UNKNOWN). No record is read here."""
+The book is rules/nfl_rulebook_2026.pdf (sha 144cec5bffd2). snap kinds; foul families; the next-down rule, next_down; the clock rule (windows, clock_class, the play clock);
+the next-possession rule, next_possession; the season rules, season_rules, read from out/season_rules.csv (written by measure_season_rules.py from the record; 2022 is held_out and stays UNKNOWN). No record is read here."""
 import csv, hashlib, io, re, sys
 
 _ITEM5 = {}
@@ -14,10 +14,10 @@ def _nan(x):
     return x is None or (isinstance(x, float) and x != x)
 
 
-# X1 snap kinds (3-8-1a, 3-29); Tries are not snaps of a series (11-3-1)
+# snap kinds (3-8-1a, 3-29); Tries are not snaps of a series (11-3-1)
 SNAP_KINDS = ("pass", "run", "qb_kneel", "qb_spike", "punt", "field_goal")
 
-# X2 foul families, by the record's foul name
+# foul families, by the record's foul name
 PRESNAP_OFFENSE = ("False Start", "Delay of Game", "Illegal Formation", "Illegal Shift", "Illegal Motion", "Illegal Substitution")   # by the offense before the snap, the down replayed with yardage (14-4-9, 14-3)
 OFF_DURING = ("Offensive Holding", "Illegal Block Above the Waist", "Illegal Blindside Block", "Low Block", "Illegal Crackback", "Clipping", "Chop Block",
               "Tripping", "Illegal Peelback", "Lowering the Head to Initiate Contact")   # by the offense during the play, the down replayed from the spot (14-1-2 Item 1, 3-8-4)
@@ -81,7 +81,7 @@ def touch_yards(text):
     return int(m.group(1)) if m else None
 
 
-# X3 the next down: outcome -> (the next down from the fouled or played down, the rule with its article)
+# the next-down rule: outcome -> (the next down from the fouled or played down, the rule with its article)
 NEXT_DOWN = {
     "first_down": (lambda dn: 1, "a first down starts a new series (7-3-1(a))"),
     "cancelled": (lambda dn: dn, "a down cancelled by a foul is repeated (3-8-4)"),
@@ -106,7 +106,7 @@ def next_down(dn, outcome):
     return f(dn), why
 
 
-# X4 the clock: the windows, the class of a stretch between snaps, the play clock
+# the clock rule: the windows, the class of a stretch between snaps, the play clock
 def beyond(q, reg):
     return bool((not reg) and q >= 6)             # Retired list: NOT TESTABLE, no quarter number assumed (v14 b: a Python bool for any scalar)
 
@@ -188,7 +188,7 @@ def play_clock(adm, x, rx):
     return "UNCHECKED" if _nan(x) or _nan(rx) else ("WITHIN 40" if x <= 40 + rx else "OVER 40")
 
 
-# X5 the next possession: ending -> (who receives or snaps next, the rule with its article)
+# the next-possession rule: ending -> (who receives or snaps next, the rule with its article)
 POSSESSION = {
     "try_or_field_goal": ("scored upon", "after a Try or a field goal, the team scored upon receives (11-3-4, 11-4-6, 6-1-1a)"),
     "safety": ("scoring team", "after a safety, the team scored upon free kicks (11-5-1(b), 11-5-2)"),
@@ -206,7 +206,7 @@ def next_possession(ending, scorer=None, scored_on=None, team=None, other=None):
     return {"scored upon": scored_on, "scoring team": scorer, "other team": other, "kicking team": team}.get(who), why
 
 
-# the season rules season rules, 2019-2025: measured by measure_season_rules.py into out/season_rules.csv; 2022 is the held_out season, its values from rule text only, UNKNOWN until read
+# the season rules, 2019-2025: measured by measure_season_rules.py into out/season_rules.csv; 2022 is the held_out season, its values from rule text only, UNKNOWN until read
 R7_FILE = "out/season_rules.csv"
 
 
@@ -225,7 +225,7 @@ def season_rules(season):
     return out
 
 
-# the season rules rules (engine-legality.md E1a v4): each season's rule quoted from that season's book in rules/ (pinned in rules/RULE_PINS.json), the quote found inside its
+# the season rules (engine-legality.md, engine v4): each season's rule quoted from that season's book in rules/ (pinned in rules/RULE_PINS.json), the quote found inside its
 # article by the heading finder; R7's measured value sits beside it (season_rules above). A measured value supports a rule; it never stands in for one (v3 a).
 RULE_PINS_FILE = "rules/RULE_PINS.json"
 RULE_BOOK_OF = {2019: ("2020", "the 2020 book; 2019 book not read"), 2020: ("2020", ""), 2021: ("2021", ""), 2023: ("2023", ""), 2024: ("2024", ""),
@@ -367,8 +367,8 @@ def find_quote(book, quote):
     return [_place(r_, s_, a_, t_) for r_, s_, a_, t_, x in B["spans"] if q in x]
 
 
-def season_x6(season, quotes=None):
-    """X6 for a season: {rule: {'value', 'quote', 'book', 'sha', 'note', 'found_in', 'predicted', 'held', 'measured'}}; a rule whose quote is not found in an
+def season_rule_quotes(season, quotes=None):
+    """The season's rules quoted from its pinned book: {rule: {'value', 'quote', 'book', 'sha', 'note', 'found_in', 'predicted', 'held', 'measured'}}; a rule whose quote is not found in an
     article (or whose book reads no onside article where none is predicted, or whose book's sha differs from its pin) has value UNKNOWN."""
     Q = RULE_QUOTES if quotes is None else quotes
     book, note = RULE_BOOK_OF[season]

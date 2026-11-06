@@ -1,0 +1,22 @@
+facts.py  seasons with weekly stats on disk: [2019, 2020, 2021, 2023, 2024, 2025, 2026];  complete (stats, play-by-play, snaps, injuries, game-day roster status): [2019, 2020, 2021, 2023, 2024, 2025, 2026]
+
+season  player rows  played  snap matched  priced  salary matched  listed team-games with plays dst pts
+2019          21543   17770         99.3%    6194           99.3%    2460        512       100%    100%
+2020          22082   18090         99.7%    6370          100.0%    2453        512       100%    100%
+2021          23278   19432         99.7%    6901           99.5%    2494        544       100%    100%
+2023          23024   19195         99.7%       0            nan%    2670        544       100%    100%
+2024          23468   19480         99.6%       0            nan%    2749        544       100%    100%
+2025          23807   19764         99.6%       0            nan%    2678        544       100%    100%
+2026           5430    4698         99.7%       0            nan%     423        544        24%     24%
+
+game-day roster status among skill players who played: 2019 99.8% ACT  2020 100.0% ACT  2021 99.8% ACT  2023 99.9% ACT  2024 100.0% ACT  2025 99.8% ACT  2026 100.0% ACT
+
+INDEPENDENT CHECK vs DraftKings' recorded points: DST 1562 games, exact 98.4%;  skill 18773 player-games, exact 99.6%
+  play-by-play cross-check 2019: player-games 5243, values differing 0
+  play-by-play cross-check 2020: player-games 5430, values differing 3
+  play-by-play cross-check 2021: player-games 5679, values differing 3
+  play-by-play cross-check 2023: player-games 5636, values differing 1
+  play-by-play cross-check 2024: player-games 5581, values differing 12
+  play-by-play cross-check 2025: player-games 5628, values differing 2
+  play-by-play cross-check 2026: player-games 1263, values differing 2
+PLAY-BY-PLAY CROSS-CHECK (a reading; the stats file is the source of record): 23 differing values written to facts/pbp_crosscheck.csv

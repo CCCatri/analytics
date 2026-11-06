@@ -1,5 +1,5 @@
 """rules_level.py - the rules level, the rules sentence, built from measurement. Product.
-No word or number in out/rules_level.csv is typed here: the template's words are read from PROGRESS.md (the line starting 'the rules level Rules'), and every label,
+No word or number in out/rules_level.csv is typed here: the template's words are read from PROGRESS.md (the line starting 'the rules level'), and every label,
 article, book and count is read from the three record reads' own files: out/clock_reasons.csv (clock), out/possessions_classes.csv (possessions), out/downs_reasons.csv (downs).
 This file fixes only which part each source row belongs to (template, total, as rule, exception, unsettled, not judged, diagnostic) and which count a share
 is taken of. Writes out/rules_level.csv stamped on line 1 with this file's sha, the sha of the template line's own text (not PROGRESS.md's file sha, which
@@ -10,7 +10,7 @@ import pandas as pd
 
 SELF = hashlib.sha256(open(os.path.abspath(__file__), "rb").read()).hexdigest()[:12]
 OUT = "out/rules_level.csv"
-TEMPLATE_FILE, TEMPLATE_KEY = "acceptance-criteria/PROGRESS.md", "the rules level Rules"
+TEMPLATE_FILE, TEMPLATE_KEY = "acceptance-criteria/PROGRESS.md", "the rules level"
 SRC = {"clock": "out/clock_reasons.csv", "possessions": "out/possessions_classes.csv", "downs": "out/downs_reasons.csv"}
 FITS = "fits one of the rules the record cannot tell apart"   # check_downs.py's FITS reason: the record does not say which rule applied
 NOT_APART = "not told apart"   # check_downs.py v17 4: a reason naming two readings the record does not tell apart
@@ -43,10 +43,10 @@ def template():
 
 def part_of(source, check, word, label):
     if source == "clock":
-        if check == "L1_V12": return "diagnostic"
+        if check == "GAME_LEVEL_PRIOR": return "diagnostic"
         if check == "CLASS": return {"RUN": "as rule", "UNKNOWN": "unsettled"}.get(word, "exception")
         if check == "TAG": return "exception"
-        if check == "L1": return {"WITHIN REAL TIME": "as rule", "WITHIN RESOLUTION": "as rule", "FASTER licensed (runoff)": "exception"}.get(word, "unsettled")
+        if check == "GAME_LEVEL": return {"WITHIN REAL TIME": "as rule", "WITHIN RESOLUTION": "as rule", "FASTER licensed (runoff)": "exception"}.get(word, "unsettled")
         if check == "D3": return {"WITHIN 40": "as rule", "N/A (ADMIN)": "exception"}.get(word, "unsettled")
     if source == "possessions":
         return {"possessions": "total", "back_to_back": "exception", "unexplained": "unsettled"}[check]

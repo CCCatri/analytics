@@ -5,3 +5,8 @@ out_revision16.log
 data/raw/
 out/engine/
 out/engine_alone/
+slate-kit/data/
+slate-kit/proj/
+slate-kit/archive/
+slate-kit/sources/
+slate-kit/__pycache__/

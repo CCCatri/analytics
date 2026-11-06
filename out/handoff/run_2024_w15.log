@@ -1,0 +1,18 @@
+engine alone: conf.pkl c85098532d17 (manifest c85098532d17) ok
+engine alone: race_2019.pkl b85a38b52310 (manifest b85a38b52310) ok
+engine alone: race_2020.pkl b5383e3068d9 (manifest b5383e3068d9) ok
+engine alone: race_2021.pkl 62371ba2798e (manifest 62371ba2798e) ok
+engine alone: race_2023.pkl 8f830e3f21a7 (manifest 8f830e3f21a7) ok
+engine alone: race_2024.pkl beb28ee165e1 (manifest beb28ee165e1) ok
+engine alone: race_2025.pkl a9c67b3de8c8 (manifest a9c67b3de8c8) ok
+engine alone: sched.pkl 6108cfe905d5 (manifest 6108cfe905d5) ok
+engine alone: season_rules.pkl 193f1f7e696a (manifest 193f1f7e696a) ok
+engine alone: tables.pkl 4c347a4ecd35 (manifest 4c347a4ecd35) ok
+  draw 1/30: 22.1 s elapsed (22.06 s per draw)
+  draw 2/30: 42.7 s elapsed (21.37 s per draw)
+  draw 3/30: 63.1 s elapsed (21.04 s per draw)
+  draw 10/30: 208.6 s elapsed (20.86 s per draw)
+  draw 20/30: 418.4 s elapsed (20.92 s per draw)
+  draw 30/30: 632.7 s elapsed (21.09 s per draw)
+ball-handler positions seen on pass and run rows: ['QB', 'RB']
+handoff: /Users/cameroncatri/LocalWork/analytics/out/handoff/root_draws_2024_w15.npz | games 16 teams 32 draws 30 | attempts mean 33.0 sd 5.9 | carries mean 27.2 sd 5.8 | accepted-foul rows with a ball-handler (not all would count) 2475 | sha ee8dcc1dd089

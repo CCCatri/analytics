@@ -11,7 +11,7 @@ Writes out/possessions_possessions.csv and out/possessions_classes.csv, stamped 
 out/possessions_classes.csv (N7): possessions and back-to-back possessions per season and class, each class with the articles rules-level.md cites on its line
 (A7-A11; halftime and overtime start are A11), read verbatim, and in a book column rules-level.md's Book line, read verbatim, on every row that carries articles;
 the run stops if the classes do not sum back to the counts.
-the rules-module stage: the snap kinds and the possession rules after a score and a safety (A8, A7) are read from rules.py (rules-module.md X1, X5)."""
+the rules-module stage: the snap kinds and the possession rules after a score and a safety (A8, A7) are read from rules.py (rules-module.md snap kinds, the next-possession rule)."""
 import hashlib, os, re, sys
 from collections import Counter
 import numpy as np, pandas as pd
@@ -19,14 +19,14 @@ import record, policy
 from rules import SNAP_KINDS, next_possession
 
 SELF = hashlib.sha256(open(os.path.abspath(__file__), "rb").read()).hexdigest()[:12]
-RULES, RSHA = "acceptance-criteria/rules-level.md", "9f848410c606"
+RULES, RSHA = "acceptance-criteria/rules-level.md", "3756eff7170d"
 OUT = "out/possessions_possessions.csv"
 OUT_CLASSES = "out/possessions_classes.csv"
 EXTRA = {"game_id": ("str", False), "play_id": ("int", False), "order_sequence": ("int", False), "season_type": ("str", False), "return_touchdown": ("int", True),
          "touchback": ("int", True), "own_kickoff_recovery": ("int", True), "fumble_recovery_1_team": ("str", True), "fumble_recovery_2_team": ("str", True)}
 FROM_EVENTS = ["game_id", "play_id", "posteam", "home_team", "away_team", "total_home_score", "total_away_score", "qtr", "play_type", "two_point_attempt",
                "interception", "td_team", "safety"]
-LEDGER_322 = {"possessions": 36348, "games": 1676, "gap": {0: 715, 1: 798, 2: 154, 3: 8, 4: 1}, "kinds": {"other": 644, "halftime": 824, "overtime start": 38},
+RUN_LOG_322 = {"possessions": 36348, "games": 1676, "gap": {0: 715, 1: 798, 2: 154, 3: 8, 4: 1}, "kinds": {"other": 644, "halftime": 824, "overtime start": 38},
               "classes": {"A8 other side scored": 428, "A9 kicking team recovered": 202, "A10 two changes in one down": 11, "A7 safety before the receiving side's own snap": 3}}
 
 
@@ -104,7 +104,7 @@ def scored_on(full, seq):
 def classes(r, full):
     w = full[(full["order_sequence"] >= r["prev_s1"]) & (full["order_sequence"] < r["s0"])].sort_values("order_sequence"); t = r["team"]; found = set()
     sc = [s for s in w["td_team"].dropna() if s != t] + (["the other side"] if (w["return_touchdown"] == 1).any() else [])
-    if any(next_possession("try_or_field_goal", scorer=s, scored_on=t)[0] == t for s in sc): found.add("A8 other side scored")   # the rules module X5
+    if any(next_possession("try_or_field_goal", scorer=s, scored_on=t)[0] == t for s in sc): found.add("A8 other side scored")   # the rules module the next-possession rule
     mine = w["posteam"] == t; r1 = w["fumble_recovery_1_team"]; r2 = w["fumble_recovery_2_team"]
     lost = mine & ((w["interception"] == 1) | (r1.notna() & (r1 != t)))
     back = mine & ((r1.notna() & (r1 != t) & (r2 == t)) | ((w["interception"] == 1) & (r1 == t)))
@@ -113,7 +113,7 @@ def classes(r, full):
     if (w["own_kickoff_recovery"] == 1).any() or (kick & (r1 == t)).any(): found.add("A9 kicking team recovered")
     for sseq in w.loc[w["safety"] == 1, "order_sequence"]:
         so = scored_on(full.sort_values("order_sequence").reset_index(drop=True), sseq)
-        if so is None or next_possession("safety", scorer=(t if so != t else None), scored_on=so)[0] != t: continue   # the rules module X5
+        if so is None or next_possession("safety", scorer=(t if so != t else None), scored_on=so)[0] != t: continue   # the rules module the next-possession rule
         ran = w[(w["order_sequence"] < sseq) & (w["posteam"] == so) & w["play_type"].isin(["pass", "run"]) & (w["two_point_attempt"] != 1)]
         if ran.empty: found.add("A7 safety before the receiving side's own snap")
     return found
@@ -144,11 +144,11 @@ def main():
     G = {g: d.sort_values("order_sequence").reset_index(drop=True) for g, d in D.groupby("game_id")}
     b2b, oth, C = counts(P, G)
 
-    print("\n=== PLANTS, row by row (any FAIL stops the run) ===")
+    print("\n=== INJECTED FAULTS, row by row (any FAIL stops the run) ===")
     res = []
 
     def injected_fault(name, cond):
-        res.append(bool(cond)); print(f"  PLANT {name} -> {'PASS' if cond else 'FAIL'}")
+        res.append(bool(cond)); print(f"  INJECTED FAULT {name} -> {'PASS' if cond else 'FAIL'}")
 
     def cl(r, frame=None):
         return classes(r, frame if frame is not None else G[r["game_id"]])
@@ -193,19 +193,19 @@ def main():
     injected_fault("no CAR back-to-back in TB-CAR q1", sel("2019_02_TB_CAR", "CAR", 1).empty)
     npass = sum(res)
     if npass != len(res) or len(res) != 24:
-        print(f"\nR1 SUMMARY injected_faults {npass}/{len(res)} FAILED | no count read, no file written"); sys.exit(1)
+        print(f"\nPOSSESSIONS SUMMARY injected faults {npass}/{len(res)} FAILED | no count read, no file written"); sys.exit(1)
 
     print("\n=== COUNTS against run_log line 322 (written before this script existed) ===")
-    agree = {k: C[k] == LEDGER_322[k] for k in LEDGER_322}
-    for k in LEDGER_322:
-        print(f"  {k}: {C[k]} | run_log 322 {LEDGER_322[k]} -> {'AGREE' if agree[k] else 'DISAGREE'}")
+    agree = {k: C[k] == RUN_LOG_322[k] for k in RUN_LOG_322}
+    for k in RUN_LOG_322:
+        print(f"  {k}: {C[k]} | run_log 322 {RUN_LOG_322[k]} -> {'AGREE' if agree[k] else 'DISAGREE'}")
     left = oth[oth["word"].str.startswith(("UNEXPLAINED", "MULTIPLE"))]
     print(f"  unexplained or multiple back-to-back: {len(left)}")
     for _, r in left.iterrows(): print(f"    {r['word']}: {r['game_id']} {r['team']} q{int(r['q'])} seq {r['prev_s1']} -> {r['s0']}")
     if not all(agree.values()) or len(left):
-        print(f"\nR1 SUMMARY injected_faults {npass}/{len(res)} | counts DISAGREE with run_log line 322 or unexplained {len(left)}: code and record disagree | no file written"); sys.exit(1)
+        print(f"\nPOSSESSIONS SUMMARY injected faults {npass}/{len(res)} | counts DISAGREE with run_log line 322 or unexplained {len(left)}: code and record disagree | no file written"); sys.exit(1)
 
-    print("\n=== POSTSEASON: the same counts with and without the 76 postseason games (Q1) ===")
+    print("\n=== POSTSEASON: the same counts with and without the 76 postseason games ===")
     post = set(D.loc[D["season_type"] != "REG", "game_id"])
     Pr = P[~P["game_id"].isin(post)].reset_index(drop=True)
     for c in ("team", "q", "s1"): Pr["prev_" + c] = Pr.groupby("game_id")[c].shift()
@@ -233,13 +233,13 @@ def main():
     bb = CC[CC["check"] == "back_to_back"]
     ok_ = int(CC.loc[CC["check"] == "possessions", "count"].sum()) == C["possessions"] and int(bb["count"].sum()) == sum(C["kinds"].values()) \
           and all(int(bb.loc[bb["rule_class"] == k, "count"].sum()) == v for k, v in list(C["classes"].items()) + [(k, v) for k, v in C["kinds"].items() if k != "other"])
-    print(f"N7 classes: rows {len(CC)} | sums back to the counts: {ok_} | articles per A-line {ART} | book {BOOK}")
+    print(f"classes table: rows {len(CC)} | sums back to the counts: {ok_} | articles per A-line {ART} | book {BOOK}")
     if not ok_:
-        print(f"\nR1 SUMMARY injected_faults {npass}/{len(res)} | the class split does not sum to the counts | no classes file written"); sys.exit(1)
+        print(f"\nPOSSESSIONS SUMMARY injected faults {npass}/{len(res)} | the class split does not sum to the counts | no classes file written"); sys.exit(1)
     with open(OUT_CLASSES, "w") as f:
         f.write(f"# {tag}\n"); CC.to_csv(f, index=False)
     print(f"written, stamped on line 1: {OUT_CLASSES} rows {len(CC)} sha {sha(OUT_CLASSES)}")
-    print(f"\nR1 SUMMARY injected_faults {npass}/{len(res)} | possessions {C['possessions']} games {C['games']} = run_log 322 | unexplained 0 | without the {len(post)} postseason games: possessions {Cr['possessions']} games {Cr['games']} back-to-back {Cr['kinds']} | {OUT} {sha(OUT)}")
+    print(f"\nPOSSESSIONS SUMMARY injected faults {npass}/{len(res)} | possessions {C['possessions']} games {C['games']} = run_log 322 | unexplained 0 | without the {len(post)} postseason games: possessions {Cr['possessions']} games {Cr['games']} back-to-back {Cr['kinds']} | {OUT} {sha(OUT)}")
 
 
 if __name__ == "__main__":

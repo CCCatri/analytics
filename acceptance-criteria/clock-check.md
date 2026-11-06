@@ -1,4 +1,4 @@
-# R2 TARGETS v16 - clock (the rules level clause 1; the game level P's clock), set by the reviewer before any R2 code. Supersedes 7166ab748789 (v15), aa2b34dca092 (v13), fabe2e2bc91a (v12), 0faae8913144 (v11), c6b5d696910c (v10), 49e0af3f888d (v9), 0fe215ec05d0 (v8), c02e5f4ccc07 (v7), e733cf9b12d7 (v6), 63bf80068c13 (v5), 8490a5dee69e (v4), 00745daf5cce (v3), 90949d61217f (v2), 7a2325413f82 (v1).
+# R2 TARGETS v16 - clock (the rules level clause 1; the game level P's clock), set by the reviewer before any R2 code. Supersedes 7166ab748789, aa2b34dca092, fabe2e2bc91a, 0faae8913144, c6b5d696910c, 49e0af3f888d, 0fe215ec05d0, c02e5f4ccc07, e733cf9b12d7, 63bf80068c13, 8490a5dee69e, 00745daf5cce, 90949d61217f, 7a2325413f82.
 Every target rests on an article of the 2026 rule book, named on its line; none is graded as an exact law (see Laws). Seasons 2019-2025 read per season (R7).
 No cutoff, pass rate or tolerance is set in advance: v1-v4's 95%, 99%, 99.5% and +2 s had no rule or measurement behind them and are withdrawn.
 
@@ -12,16 +12,16 @@ Not a check: summing game-clock changes into parts equals the total by construct
 ## Instruments (names read from the header before use)
 G = game clock at each snap (game_seconds_remaining), recorded in whole seconds (measured, every value, six seasons): each dG carries 1 s of resolution.
 Scrimmage snap = every down that starts with a snap (3-8-1a, 3-29): pass, run, kneel, spike, punt, field goal attempt. Tries are excluded (untimed, 11-3-1).
-W = wall-clock time at the start of each play (time_of_day). Both recorded formats parsed; an interval's resolution is the coarser of its two W stamps plus G's 1 s (v13).
+W = wall-clock time at the start of each play (time_of_day). Both recorded formats parsed; an interval's resolution is the coarser of its two W stamps plus G's 1 s.
 E = wall-clock time the play ended (end_clock_time).
 
 ## Counting: three counts, never merged, never a range
 Every check runs on every season where its check is present at all, and reports per season its counts under the names its own line gives (the game level: WITHIN REAL TIME / WITHIN RESOLUTION / FASTER / UNCHECKED; D3: WITHIN 40 / OVER 40 / UNCHECKED):
   the intervals checked that stay inside the rule's bound;
   the intervals checked that fall outside it, each listed with its size and its rule-licensed cause where the record names one;
-  UNCHECKED, intervals missing an check, with counts by play type and by class, so the gap is described, not guessed.
+  UNCHECKED, intervals missing a check, with counts by play type and by class, so the gap is described, not guessed.
 No count is folded into another, and no decision word is attached.
-Plant and negative runs print only the change they cause, never season totals.
+Injected-fault and negative runs print only the change they cause, never season totals.
 v9 holds no law the record can grade exactly (see Laws), so every check reports its three counts and no decision word.
 FROZEN at v10: no further edit before R2 runs, unless an injected fault fails or a rule article contradicts a line; either reason is printed with the edit. v13 adds a third ground, stated as an addition: a measured check property (a resolution read from disk), labeled when found after counts were seen.
 v11 edit, reason printed: injected faults PL6 and PL1b failed in the v10 run (2026-10-26); frozen again at v11 on the same terms.
@@ -37,18 +37,18 @@ RUN: none of the above (4-3-2).
 ADMIN (4-6-2), a flag independent of the class: change of possession, charged timeout, two-minute warning (placed as above), period end, penalty enforcement, replay. Intervals without ADMIN carry the 40-second play clock (4-6-1).
 Every interval gets exactly one class; none matching prints UNKNOWN.
 
-## Laws: none the record can grade exactly (v9). Both clock relations carry rule-licensed exceptions the record does not always log.
-the game level read, not a law (v9): the game clock can fall faster than real time by rule: a 10-second runoff takes 10 s off with no play (4-7-1 Item 1, 4-5-1 penalty, 4-5-4 Note 3, 4-7-2, 4-7-4, 15-5-2), and the officials may correct the game clock before the next snap (4-1-4), which the record does not log. Four counts, never merged (v13): WITHIN REAL TIME (dG <= dW); WITHIN RESOLUTION (0 < dG - dW <= resolution: the two clocks cannot tell these apart); FASTER (dG - dW > resolution), each listed with dG - dW and whether play text between the snaps names a runoff (licensed) or not (a correction by the officials or a record error, not told apart; none is called a violation); UNCHECKED.
-the team level withdrawn as a law (v7): 4-6-1 limits the play clock, not the wall clock, and the play clock stops and keeps its time for any interruption before the snap, including Referee's timeouts for a measurement, a pileup, spotting the ball, a conference or equipment (4-6-3, 4-5-5), which the record does not log. A wall-clock gap over 40 s after the play ends keeps the rules whenever such an interruption occurred. Corrected after the frozen 2023 counts were seen; grounded only in 4-6-3 and 4-5-5; the counts stay frozen.
+## Laws: none the record can grade exactly. Both clock relations carry rule-licensed exceptions the record does not always log.
+the game level read, not a law: the game clock can fall faster than real time by rule: a 10-second runoff takes 10 s off with no play (4-7-1 Item 1, 4-5-1 penalty, 4-5-4 Note 3, 4-7-2, 4-7-4, 15-5-2), and the officials may correct the game clock before the next snap (4-1-4), which the record does not log. Four counts, never merged: WITHIN REAL TIME (dG <= dW); WITHIN RESOLUTION (0 < dG - dW <= resolution: the two clocks cannot tell these apart); FASTER (dG - dW > resolution), each listed with dG - dW and whether play text between the snaps names a runoff (licensed) or not (a correction by the officials or a record error, not told apart; none is called a violation); UNCHECKED.
+the team level withdrawn as a law: 4-6-1 limits the play clock, not the wall clock, and the play clock stops and keeps its time for any interruption before the snap, including Referee's timeouts for a measurement, a pileup, spotting the ball, a conference or equipment (4-6-3, 4-5-5), which the record does not log. A wall-clock gap over 40 s after the play ends keeps the rules whenever such an interruption occurred. Corrected after the frozen 2023 counts were seen; grounded only in 4-6-3 and 4-5-5; the counts stay frozen.
 
 ## Reads (distributions printed, not graded)
 D1 (4-3-2, 4-4) dW - dG for RUN, PARTIAL and STOP intervals, per season: count, median, 90th and 99th percentile. The rules say RUN sits at the clock operator's lag (4-1-4) and STOP above it; the read is how far the classes separate (share of RUN intervals above the STOP median, share of STOP intervals below the RUN 90th percentile). The RUN distribution is the measured operator lag; nothing is assumed for it.
 D2 Seconds per snap by class and by rule window (last 2:00 of the first half, last 5:00 of the game; A5), per season (R7).
 D3 (4-6-1, 4-6-3) Intervals without ADMIN, in seasons where E is present: W(i+1) - E(i), three counts: WITHIN 40 (<= 40 + resolution); OVER 40, each listed with its size (an unlogged play-clock interruption or a record error; the record does not tell them apart, so none is called a violation); UNCHECKED, by play type and class.
 
-## Plants, pinned to plays, read row by row before any count
+## Injected faults, pinned to plays, read row by row before any count
 PL1 2019_01_IND_LAC seq 3209 -> 3230 -> RUN, no ADMIN, dG = dW = 26 s: the wall clock shows no stoppage. (v5's 'the two-minute warning follows' was the reviewer's unread guess; withdrawn.)
-PL1b the rule places the two-minute warning of 2019_01_IND_LAC q4 from the quarter clock (3-41): the interval whose first snap has more than 2:00 left and whose next snap has 2:00 or less, here the interval ending at seq 3209 (snapped at 2:00) -> STOP, ADMIN (4-6-2c), rows printed. The record has no warning row in this quarter (read in the v10 run); placement does not wait for one. The record logs no warning row (v16); the quarter clock is the only source.
+PL1b the rule places the two-minute warning of 2019_01_IND_LAC q4 from the quarter clock (3-41): the interval whose first snap has more than 2:00 left and whose next snap has 2:00 or less, here the interval ending at seq 3209 (snapped at 2:00) -> STOP, ADMIN (4-6-2c), rows printed. The record has no warning row in this quarter (read in the v10 run); placement does not wait for one. The record logs no warning row; the quarter clock is the only source.
 PL2 2019_01_IND_LAC seq 3230 -> 3251: run in bounds, no stoppage -> RUN, no ADMIN, dG = 24 s.
 PL3 2019_01_IND_LAC seq 3297 -> 3340: incomplete pass, then the LAC timeout row before the next snap -> STOP, ADMIN (the timeout row is read).
 PL4 author finds and pins an out-of-bounds run before 2:00 of the second quarter -> PARTIAL, rows printed.
@@ -66,10 +66,10 @@ PL8 author finds and pins an interval whose play text names an injury after the 
 NEG8 a copy with PL8's snap clocks moved above 2:00 in the same quarter -> PARTIAL (4-5-3).
 PL9 2019_18_BUF_HOU seq 4363 -> 4392: a pass ending out of bounds in the first period of a postseason overtime, no other event -> PARTIAL (4-3-2a; 16-1-4(h) sets no window in that period), rows printed. 12 clean cases exist; all 13 such snaps are passes.
 NEG9 a copy with PL9's quarter set to 6 -> UNKNOWN: no game in 2019-2025 reached a second postseason overtime period (every overtime is quarter 5), so the record cannot show which quarter number marks it; none is assumed.
-PL10 2023_01_ARI_WAS seq 77 -> 102 (FASTER by +0.330 s in the v12 run) -> WITHIN RESOLUTION.
+PL10 2023_01_ARI_WAS seq 77 -> 102 (FASTER by +0.330 s in the frozen run) -> WITHIN RESOLUTION.
 NEG10 a copy with G's 1 s removed from the margin: PL10 reads FASTER.
 READ1 closed: the record logs no two-minute warning row (see Retired); there is nothing to search.
 EXPECTED before the v13 run (the author's 'still FASTER' column, same margin): FASTER 2019 267 | 2020 238 | 2021 258 | 2023 356 | 2024 349 | 2025 321; any difference means code and text disagree.
 
 ## Seen before the injected faults passed (2026-10-26, failed injected fault run, clock-check.md 63bf80068c13)
-2023 the team level (now D3: HELD reads WITHIN 40, BROKE reads OVER 40): HELD 23659, BROKE 4060, UNCHECKED 564, N/A (ADMIN) 10019. Frozen: the the team level definition is not changed after this sight; the rerun must reproduce these four exactly, or print which edit in v6, v7 or v8 moved each one (v8's rule placement of the two-minute warning adds ADMIN intervals and is expected to move them).
+2023 the team level (now D3: HELD reads WITHIN 40, BROKE reads OVER 40): HELD 23659, BROKE 4060, UNCHECKED 564, N/A (ADMIN) 10019. Frozen: the team-level definition is not changed after this sight; the rerun must reproduce these four exactly, or print which edit in v6, v7 or v8 moved each one (v8's rule placement of the two-minute warning adds ADMIN intervals and is expected to move them).
