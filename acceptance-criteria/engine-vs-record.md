@@ -1,7 +1,7 @@
 # engine-vs-record.md - the acceptance criteria a candidate engine is judged by, and the limitations that bind the accepted one
 
 ## 0. Same populations, same code
-The engine's games and the record's games for 2019-2021 and 2023-2025 (2022 held out of everything) are counted by the same code: the possessions check, the clock check and the downs check, and one shared counting function; regular season and postseason apart, overtime apart. Every gap prints per season with its range at 2SE, taken by game (games are the unit; snaps inside a game are not independent).
+The engine's games and the play-by-play record's games for 2019-2021 and 2023-2025 (2022 held out of everything) are counted by the same code: the possessions check, the clock check and the downs check, and one shared counting function; regular season and postseason apart, overtime apart. Every gap prints per season with its range at 2SE, taken by game (games are the unit; snaps inside a game are not independent).
 
 ## 1. What is compared, per game
 Possessions; each possession's length in snaps and in game seconds; how each ends (touchdown, field goal try, punt, turnover, turnover on downs, end of half, safety) as a rate per possession. Plays = possessions x snaps per possession, both sides; game seconds per snap by clock class (RUN, STOP, PARTIAL) and time bin (normal, last 2:00 of a half, last 5:00 of the game, overtime); no-plays apart. Points by kind (offensive touchdowns, field goals, tries, return and defensive touchdowns, safeties), each as chances times conversion. Starting field position by how the possession began.

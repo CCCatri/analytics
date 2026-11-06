@@ -32,13 +32,13 @@ attempts and carries arrays as the root draws. Players, shares, conversions and 
 ## 4. The two quality gates on a joined run (in this order; the second does not run until the first passes)
 Quality gate 1 - legality of what the engine hands over: the generated games behind the root draws pass the unchanged record checks (engine-legality.md section 4)
 with coverage printed; the four injected violations P1-P4 are each rejected through that path. A failing control or an undetected violation stops here. PASSED 2026-11-05 on 2024 w15 (30 draws; P1-P4 each detected on its own line; engine-legality.md Status).
-Gate 2 - what the engine contributed: the kit's replay (kit.py replay) run twice on the same slate window, same salaries, eligibility and scoring rule, with
+Quality quality gate 2 - what the engine contributed: the kit's replay (kit.py replay) run twice on the same slate window, same salaries, eligibility and scoring rule, with
 ROOT_SOURCE 'kit' and 'engine'; paired by (season, week, key, term); the season chance test as the kit already defines it (BETTER / WORSE / UNKNOWN /
 UNCHANGED). Exposure stated before the number: the window is unseen only if the engine's fits for season s read seasons < s; with the current look-back
 fits the result is reported as IN-SAMPLE AT THE ROOT and is not the integration claim. An UNKNOWN is reported as UNKNOWN.
 
 ## 5. What is not claimed
-No forecast-accuracy claim for the engine until gate 2 reads BETTER on a window whose exposure is stated and clean. The first priced slate traced to engine
+No forecast-accuracy claim for the engine until quality gate 2 reads BETTER on a window whose exposure is stated and clean. The first priced slate traced to engine
 draws (quality gate 1 passed, the file's manifest in the card's provenance) is the integration milestone; it is not an accuracy result.
 
 ## 6. Integration checks (pinned 2026-11-05, before the adapter is written)
