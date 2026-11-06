@@ -1,4 +1,4 @@
-check_generated: season 2024 week 15 draw 20 | games 16 rows 2750 | staged /Users/cameroncatri/LocalWork/analytics/out/handoff/stage/pbp_2024.csv.gz sha 87e578ed6e83 | data_version 8c8d4334f37e
+check_generated: season 2024 week 15 draw 20 | games 16 rows 2750 | staged /Users/cameroncatri/LocalWork/analytics/out/handoff/stage/pbp_2024.csv.gz sha 7c43c7eb0e81 | data_version 8c0f3c576269
 NOT APPLICABLE on generated input: the pinned record cases (injected faults sections), run-log line 322, EXPECTED_FASTER, FROZEN_2023 - the record's drivers only
 
 === possessions (check_possessions.load / possessions / counts, unchanged) ===
@@ -40,6 +40,9 @@ downs check 2024: rows 2750 joined one-to-one (events 2750, raw extras 2750)
 raw_frame pbp_2024.csv.gz columns 25 absent 0 betting 0
   checked {'no-play downs made snaps': 92, 'STOP checked': 827, 'PARTIAL checked': 259} | violations 0 [] | warning placements {'STOP stopped by the warning, between downs at 2:00': 24, 'STOP stopped by the warning, at the conclusion of the down': 6} | 0 []
 
+=== season rule on generated games: the kickoff touchback spot (measure_season_rules M1 definition) ===
+  kickoff touchbacks 89 | spot counts {30: 89} | quoted for 2024: 30
+
 === verdict (engine-legality.md section 4; coverage above) ===
   possessions unexplained 0: PASS
   clock FASTER not licensed 0: PASS
@@ -47,4 +50,5 @@ raw_frame pbp_2024.csv.gz columns 25 absent 0 betting 0
   downs OTHER 0: PASS
   downs UNCHECKED 0: PASS
   stopped clock: no STOP stretch falls more than the play plus 1 s: PASS
-GATE 1 VALID CONTROL: PASS
+  season rule: kickoff touchback spot == quoted (30): PASS
+GATE 1 ALL LINES PASS: PASS
