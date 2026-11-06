@@ -6,6 +6,24 @@ The lead case. Two components that were built separately, the point where they m
 
 Start where an argument on Sunday starts: *if Las Vegas throws more in this game, where does that show up in the quarterback's projection?* To answer it you need three things to be inspectable: how many times the team throws (team attempts), what share of those throws this quarterback gets (player attempts), and which simulated version of the game you are looking at (the source draw). This case follows one such change — Las Vegas's attempts in one simulated game raised from 36 to 60 by hand — from the simulated game to Desmond Ridder's projected attempts, and ends with the command that reproduces it from a clean checkout. The pieces were built separately; the question is what joining them had to preserve, and what the join does and does not yet show.
 
+The design came out of pushing back on the simulation until it could be checked against the real pool. Three asks from the chat on 2026-09-30, five weeks before the adapter existed, in Cameron's words, spelling corrected and nothing else:
+
+> I'm not worried about week 4 I'm worried about creating the appropriate models. With the data on my local slate_kit, what connections can I simulate realistically? Where when one thing happens another thing usually does too, and another thing does not happen.. kind of like anchoring for inferences and counterfactuals
+>
+> Ok but you just spent 20+ minutes simulating - can we save that to my current slate kit script suite and run the selections the slate kit makes against the realistic pool of players? I'd download the script to the same folder I have, and it would create a new section of information for each proposed line up to show if it's realistically profitable vs the pool of data
+>
+> Ok so I just want to get back to first principles. Do we have apples to apples data sets across the different seasons? what data is simulated and what isn't? Are they using realistic information by attaching to averages and both extremes within the granularities relevant to the rule book? if anything was normalized, did we normalized stats from early seasons to fit later variation/numbers that show in later seasons, possibly from trend differences or rule changes? and anything else
+
+Each ask became something in this repository that can be run:
+
+| The ask (2026-09-30) | What answers it now | Where |
+|---|---|---|
+| *What connections can I simulate realistically?* | A simulated game is accepted only if it breaks no rule, and every rule check had to catch a planted violation first: 30 of 30 generated Week 15 games passed, four plants caught on their own lines. | `checks/check_generated.py`, `checks/test_gate1_plants.py`; `acceptance-criteria/engine-legality.md` |
+| *Run the selections the slate kit makes against the realistic pool of players* | The simulation's team attempts and carries are handed to the kit as its root draws and traced into one named player: LV draw 0 raised 36 → 60, Ridder's attempts 6 → 10, the 67 mapped columns moved and nothing else; with the switch off, the kit is unchanged against its own pre-adapter code. | `checks/demo_w15.py` (clean checkout, ~100 s); `checks/run_handoff.sh`; `cases/evidence/` |
+| *What data is simulated and what isn't? Apples to apples across seasons?* | Both sides were made to count the same thing before anything crossed (3,200 of 3,200 team-games); every engine-mode card names its source file and SHA; the seasons are partitioned with 2022 held out; and what has not been shown is written down rather than implied. | `cases/two-components-had-to-agree-on-what-counts-as-an-attempt.md`; the card's `root_*` columns; `acceptance-criteria/engine-to-kit-handoff.md`; "What this does not show" below |
+
+The transcript is the evidence of how the standard was set; the code is the evidence that it was met where it says it was met, and not elsewhere.
+
 ### Terms
 
 - **Team attempts** — a team's pass attempts in one game. In the engine: dropbacks that ended as a throw, plus accepted-penalty plays recorded as a pass attempt, never sacks (the counting rule both components were reconciled to, 3,200 of 3,200 team-games). In the kit: the root cell `("F2 team attempts", TEAM)`.
