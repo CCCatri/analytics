@@ -2,6 +2,16 @@
 
 The lead case. Two components that were built separately, the point where they met, what the join had to preserve, and what one combined run produced. The three earlier cases are parts of this one and are linked where they belong.
 
+## The question
+
+Start where an argument on Sunday starts: *if Las Vegas throws more in this game, where does that show up in the quarterback's projection?* To answer it you need three things to be inspectable: how many times the team throws (team attempts), what share of those throws this quarterback gets (player attempts), and which simulated version of the game you are looking at (the source draw). This case follows one such change — Las Vegas's attempts in one simulated game raised from 36 to 60 by hand — from the simulated game to Desmond Ridder's projected attempts, and ends with the command that reproduces it from a clean checkout. The pieces were built separately; the question is what joining them had to preserve, and what the join does and does not yet show.
+
+### Terms
+
+- **Team attempts** — a team's pass attempts in one game. In the engine: dropbacks that ended as a throw, plus accepted-penalty plays recorded as a pass attempt, never sacks (the counting rule both components were reconciled to, 3,200 of 3,200 team-games). In the kit: the root cell `("F2 team attempts", TEAM)`.
+- **Player attempts** — one quarterback's pass attempts in that game: the kit's `Q1 attempts` cell, drawn as his share of his team's attempts from his own history.
+- **Source draw** — one simulated playing of the game by the engine. The Week 15 fixture holds 30 of them (`draw_id` 0–29); kit column *j* reads source draw *j* mod 30, so column 30 is source draw 0, and a change to source draw 0 is expected at the 67 kit columns 0, 30, 60, … and nowhere else.
+
 ## What each project could do
 
 **The engine** (`product/`, `checks/`, `run.sh`) plays a game out play by play under the rules: sixty minutes, the ball changing hands after every score or stop, four downs to gain ten. For a given week it produces, per draw, how many plays each team ran, how many possessions, how many pass attempts and carries. Its ball-handlers are placeholders (`SIM-<team>-QB`): it forecasts the environment, not the people. Its acceptance is rule-based: a generated game that breaks a rule fails, and each rule check had to fail on a planted fault before its pass counted ([the clock check that passed a corrupted game](clock-check-passed-a-corrupted-game.md); [the regression test that needed data able to trigger the bug](regression-test-needed-data-that-could-trigger-the-bug.md)). Gate 1 of the handoff: 30 of 30 generated 2024 week 15 games passed every verdict line, and four planted violations (possession, downs, clock, touchback spot) were each caught on their own line.

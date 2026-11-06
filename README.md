@@ -8,6 +8,7 @@ The lead case is [From a simulated game to a player projection](cases/from-a-sim
 - the handoff and its gates: `acceptance-criteria/engine-to-kit-handoff.md` (section 6 is the integration check the lead case reports)
 - the three earlier cases, each one part of the lead case: `cases/clock-check-passed-a-corrupted-game.md`, `cases/regression-test-needed-data-that-could-trigger-the-bug.md`, `cases/two-components-had-to-agree-on-what-counts-as-an-attempt.md`
 - the two ways to verify it, below
+- the test that would decide whether the join forecasts better, designed and frozen before any outcome is read, not yet run: `acceptance-criteria/forward-window.md`
 
 ### Two ways to verify
 
