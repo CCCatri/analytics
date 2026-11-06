@@ -4,7 +4,7 @@
 
 ## What it demonstrates
 
-Cases a reviewer can read on their own: `cases/clock-check-passed-a-corrupted-game.md` (a passing check gave an incomplete answer; the stopped-clock check caught the planted fault).
+Cases a reviewer can read on their own: `cases/clock-check-passed-a-corrupted-game.md` (a passing check gave an incomplete answer; the stopped-clock check caught the planted fault) · `cases/regression-test-needed-data-that-could-trigger-the-bug.md` (twelve tests passed for eight revisions on a fixture that could not express the fault).
 
 | Practice here | Industry term | Where |
 |---|---|---|
