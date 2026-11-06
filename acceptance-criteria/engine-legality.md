@@ -31,7 +31,7 @@ Per season, the engine's mean and spread of plays, possessions and points per ga
 Section 4 and P1-P4 run in run.sh stage 5 (checks/check_generated.py, checks/inject_generated.py, checks/test_gate1_plants.py) on the engine's generated games of 2024 week 15
 (out/handoff/games_2024_w15.csv.gz, 30 draws of 16 games). Result: every draw meets section 4 with coverage printed (draw 0: 340 possessions, 0 unexplained; 2,101 clock
 stretches all WITHIN REAL TIME, 0 UNCHECKED; 3,104 down items, OTHER 0, UNCHECKED 0, 324 pairs not judged; stopped clock 809 STOP and 299 PARTIAL stretches, 0
-violations; 81 kickoff touchbacks all at the quoted 30). Each of P1-P4, planted on a changed copy of the engine made at run time (one function or one season-rule
+violations; 81 kickoff touchbacks all at the quoted 30). Each of P1-P4, injected on a changed copy of the engine made at run time (one function or one season-rule
 value replaced, named in the output), turns exactly its own line to FAIL: P1 possessions unexplained; P2 downs OTHER; P3 the stopped-clock check, the clock check
 still passing it; P4 the touchback spot read 25 against the quoted 30. The record-only sections (pinned record cases, run-log line 322, EXPECTED_FASTER, FROZEN_2023)
 are NOT APPLICABLE on generated input and do not run there. Not shown by this: anything about forecast accuracy.

@@ -12,7 +12,7 @@ The player model (shares, efficiencies, participation) is identical in both vers
 ## Scoring
 The kit's own grader: CRPS per stat row on the recorded outcome, paired by (season, week, player, term); the paired difference summarised per cell with the season-chance test the replay already uses (ALPHA_FAMILY as pinned). Reported for every cell, with coverage (rows issued, rows graded, rows declared) beside it, whichever version wins.
 
-## Owner's rulings — blank until ruled, nothing runs before they are filled
+## Project owner's rulings — blank until ruled, nothing runs before they are filled
 - Eligible slates: season ____, weeks ____ to ____ (within the kit's ISSUE_WEEKS 4–16). 
 - Engine draws per week: K = ____ (the fixture used 30; the repetition j mod K is a known limitation to be stated with the result).
 - Decision threshold: the candidate replaces the baseline for a cell only if its paired CRPS is better by at least ____ with the season-chance test below ALPHA_FAMILY; otherwise the baseline stands and the result is recorded as it is.
