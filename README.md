@@ -1,5 +1,7 @@
 # analytics
 
+[![demo](https://github.com/CCCatri/analytics/actions/workflows/demo.yml/badge.svg)](https://github.com/CCCatri/analytics/actions/workflows/demo.yml) — `checks/demo_w15.py` run on a clean Ubuntu runner on every push: dependencies from `requirements.txt`, fixtures from the tree, the Week 15 trace and controlled change reproduced.
+
 ## The result
 
 One saved simulated game was changed by hand: Las Vegas's pass attempts in engine draw 0 raised from **36 to 60**. The slate kit's projection for Desmond Ridder's attempts moved from **6 to 10** at the traced column; all 67 kit columns mapped to that draw moved and none of the others did, in his attempt calculation and in the team root. With the adapter switched off, the kit is unchanged against its own pre-adapter code (card equal; 192,330 and 26,722 graded rows equal by key and value). Saved verdicts: [`cases/evidence/`](cases/evidence/). The engine's simulated team volume reaches a named player's projection; whether that improves the forecast is a separate, unrun test (`acceptance-criteria/forward-window.md`).
