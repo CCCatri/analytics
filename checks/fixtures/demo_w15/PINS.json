@@ -1,0 +1,10 @@
+{
+ "atlas.csv": "5f16ec137093c10799de12c2b66a6c37f1221b817619e9899ac8df95d8838a37",
+ "injuries_2019.csv": "daddfe8e04ddc3a29bce14f362e774fbadfb274c807f1f0fde7b5bf32aaf6cdf",
+ "injuries_2020.csv": "706cca82824214f6b73ba0c6e537d3ee39766a50c644b8974b9fc28d7518de90",
+ "injuries_2021.csv": "1049fb9ff0fe7cfcf3ba8bfe1f5a35d3aba985c461c8fb7bf5201735b6d34254",
+ "injuries_2023.csv": "16b04e21da5aa3944cfa9c22cafcc84ed7e6d9866eaddf0344e9b8cbf2f63afe",
+ "injuries_2024.csv": "498bce8e13cb64b2ab9bb0ad6cb81d0a63c2ddb24016c9fc90c2de2126fae449",
+ "ladder.csv": "8501ef7730fc592ef97c3d077a96374388d3ea4a7f23c2d253ee0b1163e25d84",
+ "../../../out/handoff/root_draws_2024_w15.npz": "ee8dcc1dd089afb66e7534ebe14d3e0f8b920bfdaadb0ba39acdbaefaea4b050"
+}
