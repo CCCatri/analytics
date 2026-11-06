@@ -1,22 +1,28 @@
-# Forward window — does the join forecast better? (design frozen before any outcome is read)
+# Forward window — does the join forecast better? (prospective pilot; design pinned before any outcome is read)
 
-Status: DESIGN. No forecast in this comparison has been recorded or scored. This file exists so that the baseline, the candidate, the scoring rule and the decision threshold are fixed before kickoff of the first eligible slate; a result is admissible only if it was produced under this file's pinned sha.
+Status: PILOT DESIGN, pinned by the commit that introduces this text. No forecast in this comparison has been recorded or scored. The pilot collects evidence that can only be collected before kickoff; it does not decide whether the candidate replaces the baseline. A result is admissible only if the issued cards, their hashes and the issuance record were produced under this file's pinned sha.
 
 ## The two versions
-- **Baseline** — the slate kit in kit mode: team volume from the kit's own rate and bootstrapped ratio. Player model as of the pinned kit sha.
-- **Candidate** — the same kit in engine mode: team attempts and carries from the engine's root draws for that week (`out/handoff/root_draws_<season>_w<week>.npz`, K draws expanded by j mod K). Same player model, same sha. The only difference between the two versions is the root.
+- **Baseline** — the slate kit in kit mode: team volume from the kit's own rate and bootstrapped ratio.
+- **Candidate** — the same kit in engine mode: team attempts and carries from the engine's root draws for that week (`out/handoff/root_draws_<season>_w<week>.npz`, K source draws expanded by j mod K). The only intended difference between the two versions is the root.
 
-## What is held fixed
-The player model (shares, efficiencies, participation) is identical in both versions — the join is the only variable. Both versions issue for the same slates, the same candidates, the same terms. Cards are issued and hashed before the first game of the slate kicks off; the issue time is on the card.
+## "The only difference is the root" — made checkable
+Held fixed across both modes, and recorded per slate: the kit code revision (git sha), the pregame inputs and their information-time cutoff, the candidate rules, and the downstream random-number policy (the keyed substreams, so a player's draws differ between modes only through the root they consume). A row that appears on one card and not the other is an **unmatched row**: it is reported beside the paired scores, by cell, so the common rows cannot hide a coverage loss. Both cards are issued for the same slate, the same candidates, the same terms.
 
-## Scoring
-The kit's own grader: CRPS per stat row on the recorded outcome, paired by (season, week, player, term); the paired difference summarised per cell with the season-chance test the replay already uses (ALPHA_FAMILY as pinned). Reported for every cell, with coverage (rows issued, rows graded, rows declared) beside it, whichever version wins.
+## Preserving what existed before kickoff
+For each eligible slate the Builder saves: both issued cards and their SHA-256; the root artifact and its SHA-256 (candidate); the kit sha and this file's sha; the raw-input pins in force; and an issuance record stating when the pair existed (the card's issue time, the commit that holds the hashes, pushed before the slate's first kickoff). The Falsifier scores those saved cards after the games, never a reissue. A hash identifies the file; the issuance record establishes when it existed.
 
-## Project owner's rulings — blank until ruled, nothing runs before they are filled
-- Eligible slates: season ____, weeks ____ to ____ (within the kit's ISSUE_WEEKS 4–16). 
-- Engine draws per week: K = ____ (the fixture used 30; the repetition j mod K is a known limitation to be stated with the result).
-- Decision threshold: the candidate replaces the baseline for a cell only if its paired CRPS is better by at least ____ with the season-chance test below ALPHA_FAMILY; otherwise the baseline stands and the result is recorded as it is.
-- Upstream quality gate: the engine's plays-per-game gap (126.99 generated vs 136.73 recorded, `engine-vs-record.md`) is measured against the existing game-volume criterion before the first eligible slate; if it fails, the comparison still runs and the result is reported with that failure beside it.
+## Scoring (report only, in the pilot)
+The kit's own grader: CRPS per stat row on the recorded outcome, paired by (season, week, player, term). Reported per cell: baseline CRPS, candidate CRPS, the paired difference with its spread, rows issued, rows graded, rows declared, unmatched rows. The replay's season-chance test treats seasons as units; a one-season window gives it one unit, so it is **not** applied in the pilot. Before any promotion window opens, the Falsifier shows what the current test returns for a one-season input, and a test suited to the window is chosen and pinned then.
+
+## Project owner's rulings (pilot)
+- **Eligible slates**: 2026, from the first slate for which both cards can be issued before its first kickoff, through week 16 (within the kit's ISSUE_WEEKS 4–16). The actual start week is pinned by the first issuance record. Every eligible slate is logged, including a missed issue or a failed card, with the reason.
+- **Engine draws per week**: K = 30 for the pilot, the fixture's count, if its runtime stays representative. A larger K is adopted only after a preflight on development data shows whether team-volume summaries and player projections settle as K rises, and is pinned before the first issue it applies to. Thirty source draws reused across 2,000 columns remain thirty game scenarios; player draws vary within them.
+- **Decision threshold**: none in the pilot. No replacement of the baseline. The minimum worthwhile improvement and the test suited to the window are set before a later promotion window, not during the pilot.
+- **Upstream quality gate**: the engine's plays-per-game gap (126.99 generated vs 136.73 recorded, `engine-vs-record.md`) is measured against the existing game-volume criterion; the pilot runs and reports whether or not it passes, with the gate's status beside every result. A pass is required for promotion, not for the pilot.
+
+## Division of work
+The owner rules on what the pilot can earn (this file). The Builder issues the two cards per slate and saves the evidence above. The Falsifier checks the issuance record, grades the frozen pair after the games, and reports what the window can support — including UNKNOWN where it cannot.
 
 ## What a result earns
-A better candidate earns one sentence: "on these slates, rooting the player model in simulated team volume improved the paired CRPS on these cells by this much." A worse or inconclusive result completes the experiment just the same, keeps the baseline, and gives the engine-mode card a specific thing to explain. Neither outcome changes anything in the lead case, which claims only that the join works and is inspectable.
+Evidence, not a decision: per cell, where the candidate helped, hurt, or could not be told apart, with coverage and the gate's status beside it. A worse or inconclusive pilot completes the pilot just the same. Nothing here changes the lead case, which claims only that the join works and is inspectable.
