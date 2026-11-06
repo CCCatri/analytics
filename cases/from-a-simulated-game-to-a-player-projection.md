@@ -74,4 +74,4 @@ In Cameron's words, spelling corrected and nothing else:
 >
 > If the model had to break a rule to create a simulation, like a fifth down, that iteration failed.
 
-The code and the harness in this repository were written by AI assistants under that procedure, including the mistakes recorded above; the checks named in this case are the predefined pass/fail. The repo is arranged so that a reader can run the same command and get the same lines.
+The code and the harness in this repository were written by AI assistants under that procedure, including the mistakes recorded above; the checks named in this case are the predefined pass/fail. The short demo and its verdict were reproduced from a fresh clone and a fresh environment on this machine and on a GitHub runner; the full replay has its own prerequisites, stated in the README.
