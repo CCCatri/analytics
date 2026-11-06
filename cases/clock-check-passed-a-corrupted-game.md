@@ -26,18 +26,6 @@ stopped-clock check:            checked {'no-play downs made snaps': 80, 'STOP c
   season rule: kickoff touchback spot == quoted (30): PASS
 GATE 1 ALL LINES PASS: FAIL
 ```
-clock check, all stretches:     game level {'WITHIN REAL TIME': 1777}
-stopped-clock check:            checked {'no-play downs made snaps': 80, 'STOP checked': 663, 'STOP failed': 246, 'PARTIAL checked': 246} | violations 246 [('STOP', '2024_15_ATL_LV', 5, 6, 41.0, 9.0, 'incomplete 4-4f', 32.0, 2024, 1, True, 'incomplete 
-=== verdict (engine-legality.md section 4; coverage above) ===
-  possessions unexplained 0: PASS
-  clock FASTER not licensed 0: PASS
-  clock UNCHECKED 0 (engine stamps every snap): PASS
-  downs OTHER 0: PASS
-  downs UNCHECKED 0: PASS
-  stopped clock: no STOP stretch falls more than the play plus 1 s: FAIL
-  season rule: kickoff touchback spot == quoted (30): PASS
-GATE 1 VALID CONTROL: FAIL
-```
 
 **What this shows and what it does not.** It shows that acceptance here rests on more than one check, that the checks' blind spots were written down before they were tested, and that the test is the detection of a known fault through the real acceptance path - not the absence of failures. It was verified in the consolidated repository on 2026-11-05 (the full `run.sh`, stages 1-5). It does not show reproduction from a clean clone (not yet run), anything about the engine's forecast accuracy (no claim is made), or anything about the October 31 candidate engine whose refusal record was deleted in the cleanup; this is a separate demonstration on the accepted engine.
 
