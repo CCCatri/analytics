@@ -15,7 +15,7 @@ if all(recs.values()):
     line("same candidate code in all three", b["candidate"] == c["candidate"] == r["candidate"], f"{short(b['candidate'])}")
     line("baseline is the pre-adapter code", all(b["pre_code"][f] != b["candidate"][f] for f in b["pre_code"]), f"pre {short(b['pre_code'])}")
     line("same run identity in baseline and replay", b["identity"] == r["identity"], f"git {b['identity']['git_head'][:12]}, {len(b['identity']['git_dirty_paths'])} dirty paths, inputs {list(b['identity']['inputs'])}")
-    line("components' pinned inputs and A1 card are the baseline's outputs", c["pinned_inputs"] == {f: b["outputs"][f] for f in c["pinned_inputs"]} and c["baseline_card_sha"] == b["outputs"]["card_2026_w4.csv"], f"{short(c['pinned_inputs'])}")
+    line("components' pinned inputs and A1 card are the baseline's outputs", c["pinned_inputs"] == {f: b["outputs"][f] for f in c["pinned_inputs"]} and c["baseline_card_sha"] == b["outputs"][next(k for k in b["outputs"] if k.startswith("card_"))], f"{short(c['pinned_inputs'])}")
     line("replay copy taken from the baseline's live snapshot", r["live_proj_snapshot"] == b["live_proj_snapshot"])
     line("baseline step", b["verdict"] == "PASS", b["verdict"]); line("component checks A1, B, B2, C", c["verdict"] == "PASS", c["verdict"]); line("A2 paired replay", r["verdict"] == "PASS", r["verdict"])
 lines.append(f"\nHANDOFF ADAPTER {os.path.basename(RUN)}: {'PASS' if ok else 'FAIL'}")

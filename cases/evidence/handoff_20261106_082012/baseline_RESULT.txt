@@ -1,0 +1,44 @@
+run /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261106_082012
+pre-adapter code  draws.py 3c5f9c4779c2 cards.py 8b0e8d9f6d1b  (from /Users/cameroncatri/Desktop/kit_prev_facts)
+candidate code    draws.py be959adb3025 cards.py dd8bf811bd6f
+  pre-adapter and candidate code differ in both files: PASS
+identity: git d5f26277d876 with 12 dirty paths; inputs data -> /Users/cameroncatri/LocalWork/analytics/slate-kit/data (46 files), facts -> /Users/cameroncatri/LocalWork/analytics/slate-kit/facts (6 files), sources -> /Users/cameroncatri/LocalWork/analytics/slate-kit/sources (1 files); RAW_PIN None
+
+=== live proj/ snapshot (the inputs both copies start from) ===
+  371 files hashed
+
+=== kit_pre at /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261106_082012/baseline/kit_pre ===
+  copied ['.DS_Store', 'CHARTER.md', 'README.md', 'TAXONOMY.md', 'TAXONOMY_short_names.tsv', 'cards.py', 'chain.py', 'dk.py', 'draws.py', 'evaluate.py', 'facts.py', 'ingest.py', 'kit.py', 'market.py', 'optimize.py', 'participation.py', 'proj/', 'state.py']
+  symlinked ['data/', 'facts/', 'sources/']
+  removed from the copy's proj/ before the run: ['atlas_rows.csv.gz', 'dk_rows.csv.gz', 'atlas.csv', 'ladder.csv', 'product_judgment.csv', 'replay_report.txt']
+  draws.py and cards.py replaced by the saved pre-adapter files
+  kit_pre holds the pre-adapter code: PASS
+  replay outputs absent in kit_pre/proj before the run: PASS
+
+=== baseline replay (pre-adapter code, kit mode) ===
+  cwd /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261106_082012/baseline/kit_pre
+  /Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -u kit.py replay /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261106_082012/baseline/previous_for_command/atlas_rows.csv.gz /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261106_082012/baseline/previous_for_command/dk_rows.csv.gz
+
+
+  finished in 478 s, exit 0
+  baseline replay exit 0: PASS
+  replay freshly emitted all six outputs (absent before, present after): PASS | {'atlas_rows.csv.gz': True, 'dk_rows.csv.gz': True, 'atlas.csv': True, 'ladder.csv': True, 'product_judgment.csv': True, 'replay_report.txt': True}
+
+=== baseline card 2025 w16 (pre-adapter code, kit mode) ===
+  cwd /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261106_082012/baseline/kit_pre
+  /Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -u -c import sys, cards; sys.exit(cards.card(2025, 16))
+
+
+  finished in 61 s, exit 0
+  baseline card exit 0: PASS
+  kit_pre/proj/atlas_rows.csv.gz: 563979078627
+  kit_pre/proj/dk_rows.csv.gz: bbab6482b192
+  kit_pre/proj/atlas.csv: 60d9b5d6a1ce
+  kit_pre/proj/ladder.csv: 0ee25a698079
+  kit_pre/proj/product_judgment.csv: e3c9f7714a36
+  kit_pre/proj/replay_report.txt: f8d4f27ead48
+  kit_pre/proj/card_2025_w16.csv: 0b5663dfbb45
+  baseline outputs present: PASS
+  live proj/ untouched: PASS | changed []
+
+BASELINE (pre-adapter code on the same inputs): PASS

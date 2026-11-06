@@ -19,7 +19,7 @@ if os.path.exists(OUT): sys.exit(f"{OUT} exists - refused; one run id holds one 
 os.makedirs(OUT); LOG = open(os.path.join(OUT, "full_log.txt"), "w")
 sha256 = lambda p: hashlib.sha256(open(p, "rb").read()).hexdigest()
 PINNED = {f: sha256(os.path.join(BASE_PROJ, f)) for f in ("atlas.csv", "ladder.csv")}; CANDIDATE = {f: sha256(os.path.join(KIT, f)) for f in ("draws.py", "cards.py")}
-BASE_CARD = os.path.join(BASE_PROJ, "card_2026_w4.csv")
+BASE_CARD = os.path.join(BASE_PROJ, "card_2025_w16.csv")
 import draws, cards
 from chain import LINKS
 LINES = []; ok = True
@@ -39,7 +39,7 @@ def set_mode(source, path=None): draws.ROOT_SOURCE = source; draws.ROOT_FILE = p
 say(f"run {RUN}\ncandidate draws.py {CANDIDATE['draws.py'][:12]} cards.py {CANDIDATE['cards.py'][:12]} | baseline (pre-adapter code) draws.py {brec['pre_code']['draws.py'][:12]} cards.py {brec['pre_code']['cards.py'][:12]}")
 say(f"pinned inputs from kit_pre/proj: atlas.csv {PINNED['atlas.csv'][:12]} ladder.csv {PINNED['ladder.csv'][:12]} | baseline card {sha256(BASE_CARD)[:12]} | fixture {sha256(FIX)[:12]}")
 verdict("candidate code is the code the baseline step recorded", CANDIDATE == brec["candidate"])
-verdict("pinned inputs are the baseline step's outputs", PINNED == {f: brec["outputs"][f] for f in PINNED} and sha256(BASE_CARD) == brec["outputs"]["card_2026_w4.csv"])
+verdict("pinned inputs are the baseline step's outputs", PINNED == {f: brec["outputs"][f] for f in PINNED} and sha256(BASE_CARD) == brec["outputs"]["card_2025_w16.csv"])
 boundary = []; pending = []; orig_substream, orig_draw_link, orig_week_draws = draws.substream, draws.draw_link, draws.week_draws; held = {}
 def substream_logging(term, position, season, week, key, label):
     if label == draws.CHAIN_STATE: pending.append((term, position, key))
@@ -60,8 +60,8 @@ def fixture(name, manifest_edit=None, arrays_edit=None, absent=False):
     json.dump(m, open(p[:-4] + ".manifest.json", "w"), indent=1); return p
 # ---------------- A1 ----------------
 say("\n=== A1: kit mode against the baseline card (pre-adapter code, same inputs), isolated output ===")
-set_mode("kit"); d = outdir("A_kit"); rc = quiet(cards.card, 2026, 4)
-base = pd.read_csv(BASE_CARD); new = pd.read_csv(os.path.join(d, "card_2026_w4.csv")); key = ["season", "week", "player_id", "term"]
+set_mode("kit"); d = outdir("A_kit"); rc = quiet(cards.card, 2025, 16)
+base = pd.read_csv(BASE_CARD); new = pd.read_csv(os.path.join(d, "card_2025_w16.csv")); key = ["season", "week", "player_id", "term"]
 m = base.merge(new, on=key, how="outer", suffixes=("_b", "_n"), indicator=True)
 def differs(c):
     b, n = m[c + "_b"], m[c + "_n"]

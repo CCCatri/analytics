@@ -1,7 +1,7 @@
 """Step 1, the baseline: the pre-adapter kit code (draws.py.before and cards.py.before, saved at the adapter rewrite) run on the same inputs the candidate will see.
 Under HANDOFF_RUN_DIR/baseline/: kit_pre/ is a copy of the live kit with the two saved files in place of draws.py and cards.py and the six replay outputs removed;
 kit.py replay runs there (its 'previous' is a copy of the live rows, only because the command wants one; that judgment is not evidence), then the kit-mode card for
-2026 w4. Records the pre-adapter and candidate code shas, the run identity (git revision, resolved shared inputs), the live proj/ snapshot, which outputs were
+2025 w16. Records the pre-adapter and candidate code shas, the run identity (git revision, resolved shared inputs), the live proj/ snapshot, which outputs were
 freshly emitted and their shas. The live proj/ is hashed before and after and must be untouched."""
 import os, sys, json, shutil, subprocess, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))); from handoff_identity import identity, copy_kit, OUTPUTS, sha256
@@ -39,9 +39,9 @@ env = {k: v for k, v in os.environ.items() if k not in ("SLATE_ROOT_SOURCE", "SL
 say("\n=== baseline replay (pre-adapter code, kit mode) ===")
 rc = stream([sys.executable, "-u", "kit.py", "replay", os.path.join(PREV, "atlas_rows.csv.gz"), os.path.join(PREV, "dk_rows.csv.gz")], COPY, env); verdict("baseline replay exit 0", rc == 0)
 emitted = {n: os.path.exists(os.path.join(COPY, "proj", n)) for n in OUTPUTS}; verdict("replay freshly emitted all six outputs (absent before, present after)", all(emitted.values()), f"{emitted}")
-say("\n=== baseline card 2026 w4 (pre-adapter code, kit mode) ===")
-rc = stream([sys.executable, "-u", "-c", "import sys, cards; sys.exit(cards.card(2026, 4))"], COPY, env); verdict("baseline card exit 0", rc == 0)
-NAMES = OUTPUTS + ("card_2026_w4.csv",); outputs = {n: (sha256(os.path.join(COPY, "proj", n)) if os.path.exists(os.path.join(COPY, "proj", n)) else None) for n in NAMES}
+say("\n=== baseline card 2025 w16 (pre-adapter code, kit mode) ===")
+rc = stream([sys.executable, "-u", "-c", "import sys, cards; sys.exit(cards.card(2025, 16))"], COPY, env); verdict("baseline card exit 0", rc == 0)
+NAMES = OUTPUTS + ("card_2025_w16.csv",); outputs = {n: (sha256(os.path.join(COPY, "proj", n)) if os.path.exists(os.path.join(COPY, "proj", n)) else None) for n in NAMES}
 for n, h in outputs.items(): say(f"  kit_pre/proj/{n}: {h[:12] if h else 'MISSING'}")
 verdict("baseline outputs present", all(outputs.values()))
 live_after = files_of(os.path.join(KIT, "proj")); verdict("live proj/ untouched", live_before == live_after, f"changed {[n for n in set(live_before) | set(live_after) if live_before.get(n) != live_after.get(n)]}")

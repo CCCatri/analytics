@@ -1,0 +1,692 @@
+{
+ "run": "/Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261106_082012",
+ "pre_code": {
+  "draws.py": "3c5f9c4779c255d16bf5449a615e892d208dacda925d776fe1329384c4dcf606",
+  "cards.py": "8b0e8d9f6d1b2bdfbdfb79afed4a4b48c383a5641c4a2f41d987cc9ce1ea9249"
+ },
+ "candidate": {
+  "draws.py": "be959adb30252b9e0d0c81d12001614f770cd6c1d54eb7d307a459dff124ed3a",
+  "cards.py": "dd8bf811bd6f220ef99ebb35549625984cc953c512085a211ade0b7a3f1162e1"
+ },
+ "identity": {
+  "git_head": "d5f26277d8765b5ee1c671257df91bb06d33ba6d",
+  "git_dirty_paths": [
+   " M WORK_ORDER.md",
+   " M acceptance-criteria/forward-window.md",
+   " M checks/test_handoff_adapter.py",
+   " M checks/test_handoff_baseline.py",
+   " M slate-kit/facts/facts_report.txt",
+   " M slate-kit/facts/game.csv.gz",
+   " M slate-kit/facts/pbp_crosscheck.csv",
+   " M slate-kit/facts/player_game.csv.gz",
+   " M slate-kit/facts/team_game.csv.gz",
+   "?? out/preflight_2025_w16/",
+   "?? out/preflight_2026_w10/",
+   "D  slate-kit/prices/dk_salaries_2026_w04.csv"
+  ],
+  "code": {
+   "cards.py": "dd8bf811bd6f220ef99ebb35549625984cc953c512085a211ade0b7a3f1162e1",
+   "chain.py": "2ecf8fc4b2347f87b54bb4d2ad5555b96f9178ce0cd085cf6f82107aea661c24",
+   "dk.py": "b3189fc28d90548cbccbae959180cb31e68f0e4170d87288e425e0e72a871977",
+   "draws.py": "be959adb30252b9e0d0c81d12001614f770cd6c1d54eb7d307a459dff124ed3a",
+   "evaluate.py": "8412a233e828285ce160228b62618677b64034f24f9b391790be062db1dc65df",
+   "facts.py": "8da3fb9ed4d0525a13a481dd7c5bdf508c12c49e6bb359875df6672361bea258",
+   "ingest.py": "4f854d3692b7a6f818e41e04e2860675945d87094bddde96775585552ad896e7",
+   "kit.py": "3c3546c89b4f2b46280d3cab935c0b7885538cee462d7a9026663ea32fd99349",
+   "market.py": "b584f314b9f168010b617ce00d8bb0a621463986fb2b2f412f7114203166433b",
+   "optimize.py": "f43b9024f56a391468c6e677096f1232e94b97f6fb52acad00cf48e06d23e74a",
+   "participation.py": "5044363811c1f8aac6b1845d391f1bcc4c8095ced9e875e9e527f47bffc8fb2e",
+   "state.py": "89f891731976908a11740f2a18f9de95b066347eaf3a68521d128b057c7c9d35"
+  },
+  "inputs": {
+   "data": {
+    "resolved": "/Users/cameroncatri/LocalWork/analytics/slate-kit/data",
+    "files": {
+     "ftn_charting_2023.csv.gz": {
+      "sha256": "ca201125ab0b4c7d175c8498c1160815c5d9b187f6c89d671c947da397546c83"
+     },
+     "ftn_charting_2024.csv.gz": {
+      "sha256": "678ba71b6c423ff73d585fb37fdfb9376cd080a0415e96cc65e0b8e2b18b7e08"
+     },
+     "ftn_charting_2025.csv.gz": {
+      "sha256": "90057747aef0b07c895149b6b5c3e94d98c80b448b5ba865bd4e49c75b279c00"
+     },
+     "games.csv": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/games.csv",
+      "size": 2320832
+     },
+     "injuries_2019.csv": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/injuries_2019.csv",
+      "size": 700757
+     },
+     "injuries_2020.csv": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/injuries_2020.csv",
+      "size": 737474
+     },
+     "injuries_2021.csv": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/injuries_2021.csv",
+      "size": 737083
+     },
+     "injuries_2023.csv": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/injuries_2023.csv",
+      "size": 738501
+     },
+     "injuries_2024.csv": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/injuries_2024.csv",
+      "size": 816989
+     },
+     "injuries_2025.csv": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/injuries_2025.csv",
+      "size": 696006
+     },
+     "pbp_2019.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/pbp_2019.csv.gz",
+      "size": 17992849
+     },
+     "pbp_2020.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/pbp_2020.csv.gz",
+      "size": 18143553
+     },
+     "pbp_2021.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/pbp_2021.csv.gz",
+      "size": 19022201
+     },
+     "pbp_2023.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/pbp_2023.csv.gz",
+      "size": 19169807
+     },
+     "pbp_2024.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/pbp_2024.csv.gz",
+      "size": 19362351
+     },
+     "pbp_2025.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/pbp_2025.csv.gz",
+      "size": 19105296
+     },
+     "pbp_participation_2019.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/pbp_participation_2019.csv.gz",
+      "size": 1733354
+     },
+     "pbp_participation_2020.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/pbp_participation_2020.csv.gz",
+      "size": 1666603
+     },
+     "pbp_participation_2021.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/pbp_participation_2021.csv.gz",
+      "size": 1716226
+     },
+     "pbp_participation_2023.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/pbp_participation_2023.csv.gz",
+      "size": 3001311
+     },
+     "pbp_participation_2024.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/pbp_participation_2024.csv.gz",
+      "size": 2980890
+     },
+     "pbp_participation_2025.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/pbp_participation_2025.csv.gz",
+      "size": 3001152
+     },
+     "rosters_2019.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/rosters_2019.csv.gz",
+      "size": 719358
+     },
+     "rosters_2020.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/rosters_2020.csv.gz",
+      "size": 708203
+     },
+     "rosters_2021.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/rosters_2021.csv.gz",
+      "size": 702841
+     },
+     "rosters_2023.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/rosters_2023.csv.gz",
+      "size": 676059
+     },
+     "rosters_2024.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/rosters_2024.csv.gz",
+      "size": 699786
+     },
+     "rosters_2025.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/rosters_2025.csv.gz",
+      "size": 708144
+     },
+     "snap_counts_2019.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/snaps_2019.csv.gz",
+      "size": 448821
+     },
+     "snap_counts_2020.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/snaps_2020.csv.gz",
+      "size": 470274
+     },
+     "snap_counts_2021.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/snaps_2021.csv.gz",
+      "size": 498521
+     },
+     "snap_counts_2023.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/snaps_2023.csv.gz",
+      "size": 500319
+     },
+     "snap_counts_2024.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/snaps_2024.csv.gz",
+      "size": 502822
+     },
+     "snap_counts_2025.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/snaps_2025.csv.gz",
+      "size": 504063
+     },
+     "snaps_2019.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/snaps_2019.csv.gz",
+      "size": 448821
+     },
+     "snaps_2020.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/snaps_2020.csv.gz",
+      "size": 470274
+     },
+     "snaps_2021.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/snaps_2021.csv.gz",
+      "size": 498521
+     },
+     "snaps_2023.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/snaps_2023.csv.gz",
+      "size": 500319
+     },
+     "snaps_2024.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/snaps_2024.csv.gz",
+      "size": 502822
+     },
+     "snaps_2025.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/snaps_2025.csv.gz",
+      "size": 504063
+     },
+     "stats_2019.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/stats_2019.csv.gz",
+      "size": 1155384
+     },
+     "stats_2020.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/stats_2020.csv.gz",
+      "size": 1176924
+     },
+     "stats_2021.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/stats_2021.csv.gz",
+      "size": 1254611
+     },
+     "stats_2023.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/stats_2023.csv.gz",
+      "size": 1237909
+     },
+     "stats_2024.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/stats_2024.csv.gz",
+      "size": 1244175
+     },
+     "stats_2025.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/stats_2025.csv.gz",
+      "size": 1262421
+     }
+    }
+   },
+   "facts": {
+    "resolved": "/Users/cameroncatri/LocalWork/analytics/slate-kit/facts",
+    "files": {
+     "facts_report.txt": {
+      "sha256": "04f6f8c2cab477c37bd0e30e6475651915f1d58d78c707a83e10b5cd908b0dc0"
+     },
+     "game.csv.gz": {
+      "sha256": "6cf58081028bf6e443f3a9c34622c77ce401b9af0c8802a1cad083acf77603c5"
+     },
+     "pbp_crosscheck.csv": {
+      "sha256": "112e85008d027708ae9d06be20124f885ed728a339e009ffc38f1e346bfe5469"
+     },
+     "player_game.csv.gz": {
+      "sha256": "34a5be9c54d31e5635176dfed92adeb897791d31abf5097ec596cbeda5c583f9"
+     },
+     "raw_manifest.json": {
+      "sha256": "5888fd95bc85c8aefbac65ba899558dab0703864d159cd617995da4d402f0cce"
+     },
+     "team_game.csv.gz": {
+      "sha256": "431e2c6294edefa6e5b7198fa52af6f32ca863c5f19b64a03d10727c2cf22b22"
+     }
+    }
+   },
+   "sources": {
+    "resolved": "/Users/cameroncatri/LocalWork/analytics/slate-kit/sources",
+    "files": {
+     ".DS_Store": {
+      "sha256": "253453cdce5ee0d0ecb8e454bb8d34d3abd1a01b04853fc1d1a806cde3b0ffb1"
+     }
+    }
+   }
+  },
+  "raw_pin_sha": null
+ },
+ "live_proj_snapshot": {
+  "a_cells.json": "1a69076e3d050219cc1fd1d2dc23f152b6da20e817e7ee2877e29d55ef336799",
+  "a_report.txt": "d1cf930c32d74386383181f2813dfdb4710e0a64f42dfdbc1ad018170a18c14f",
+  "a_walk.csv.gz": "5686343616f139dc27b6c42c7d0bf3c50e5efdae5e7fb7aada12cefaaa7beea9",
+  "aaudit_report.txt": "c3ab8404c2a8012a6b1ef8b9ab71c4c3c5ae22c5ab70c5215a6c25b75e89f9ea",
+  "adjudicate_report.txt": "da6a472361b8753a18f0080f1463338f98b02cf131eaf63d8c54f5d52974eab9",
+  "alloc_report.txt": "7255372a56c90a865f8b22e81a8b062ef27839843f21ec3138ea32916f580514",
+  "at_report.txt": "cf7d4b12ae1287511d002987444e81d4677ff6ae81e116f76416f68509fa3845",
+  "at_rows.csv.gz": "b65bedf4afc8652d7e30a04f3ebf5b5a046eb740bc1f67478d21f37fa3cc4ab8",
+  "at_t_report.txt": "75af7c219ea1939e2803303f18efb512765b832caaccecf1ff147d6d430554ea",
+  "at_t_rows.csv.gz": "2aa20954cd7810a5add5d2a962fbbfc8735b1d92ce81d1d3390c98b39c373729",
+  "atlas.csv": "5f16ec137093c10799de12c2b66a6c37f1221b817619e9899ac8df95d8838a37",
+  "atlas.txt": "7e40c4c1f9e721e8664e1f2de0678e06543bef13d48a6684895fbb7aa1d84703",
+  "atlas_coverage.csv": "f9170b672c62d6d67fda4426a8b783b1d3ed8122e5b44899dd77beb09a330b71",
+  "atlas_report.txt": "5640fb431401ca6460ea3bdf1f6b31bb085fdd9ab9ee894c9f1fb0445abfed93",
+  "atlas_rows.csv.gz": "1ef2f13ff38856db0c6523ddd376429105856e132f7712fb57e2f519634dc29f",
+  "atlas_rows_batch28.csv.gz": "0e37b8e310c382edffd98997692ebfb58a71702ea6d13f538a09833eec60b8a3",
+  "atlas_rows_batch29.csv.gz": "88b783a207ddcee9156fc8b0320fa2dd0101a5c5250c11c6dd54386565b07512",
+  "atlas_rows_batch36.csv.gz": "ffc430e49361d4aab58efe87f7be1b39270a92d937d71d0a3493a0a3a00d8c7f",
+  "atlas_rows_batch37.csv.gz": "efbafaf93e1655354ef0fe4f5253f89a917a651631a6e761607a192f844d5f35",
+  "atlas_rows_batch38.csv.gz": "495bf348d87948e317f5dafdfc209428e0e69b6cd5146f05666f5c7d815fee6b",
+  "atlas_rows_batch39.csv.gz": "63994f03ba663103f10abd94dc896fb36e381c3ca22dd1e6c89d7efde0414243",
+  "atlas_rows_batch40.csv.gz": "95ffd084e8186b32d8596e2d088fc70a5704452c9dfccdd02ef9d8878e83fc48",
+  "atlas_rows_batch41.csv.gz": "be8865c620aa3749b15834f0849da4b3465cb9c2427b239e641386f447a3d3ae",
+  "atlas_rows_batch42.csv.gz": "bdff85b33bd770688b4b026b08f471529da56d56b54f7d49b1fd38bce1f38122",
+  "atlas_rows_batch43.csv.gz": "885c1cbfc48c6c446a657966b11d3b89d23d5d4fa7edfef60cbe9f867264a8a7",
+  "atlas_rows_batch44b.csv.gz": "228676d02f8868fa972281fceec5d61f5431d139da9dd6be2828fb2998970d87",
+  "atlas_rows_batch45.csv.gz": "11d291025972c785f89720c064068d17149df6029e1676f1700a92c07d28c4c1",
+  "atlas_rows_batch47.csv.gz": "b3637efc31599fe7429cb2612a437cdbf90a2355005d847633a9f3ff77678ecd",
+  "atlas_rows_batch48.csv.gz": "350668e4df7e3574b974d7ea82c07fa096cd590166fafaf56ef2b7a0087d2299",
+  "atlas_rows_batch49.csv.gz": "1f29b5af04e0010d64cb6fd9eb1bd42f0aa03edc3df8e62d3726ecea2c4ad031",
+  "atlas_rows_batch50.csv.gz": "101b5fd02f9be686de6f7d741418da873457eaf2548211d21d59e63c872cf991",
+  "atlas_rows_batch51.csv.gz": "23cadac029ca60a804289f03c044719ee6df692ff7f4ab9497315a17c2e43b71",
+  "atlas_rows_batch52.csv.gz": "de5e859d7296320053730596d7bf71e20dce7577083f4175f646b64d1cf8d883",
+  "atlas_rows_batch55.csv.gz": "d7c3e77d8883af26adbdc9056238d16d192702d2af03c5812c0c1f62685cc3cd",
+  "atlas_rows_batch56.csv.gz": "19050b229d7e8b9b1c1dc6277dfa093bdf86ecd0e398e56318a4b7ab0f289616",
+  "atlas_rows_batch59.csv.gz": "ed541bfe1f2f7331640971e2d35ab53583ea393fc9ae49480eb712a7f71b92c7",
+  "atlas_rows_batch60b.csv.gz": "6734ada075f05d56e65e6afbcaef86c5061f330ab6d1540d82268ccbc3461bc0",
+  "atlas_rows_batch61.csv.gz": "9a0b031bf0ee6323e7ab2c83e792942962b709ced9d90b9a10aadc92823214d9",
+  "atlas_rows_batch62.csv.gz": "f4530655fd4ea50aae078de53bdb4ce26da9842ce3f50d428de1960b3bcbe92f",
+  "atlas_rows_batch63b.csv.gz": "d7ebf08ab9870776fd73fc43933021699d11e8ede7fb4cf35d8e64e53cd57aa7",
+  "atlas_rows_batch64.csv.gz": "a7c4beefa5a56add6c6f4c40439d76d848ea3a50b74f3a063004cb04d811df13",
+  "atlas_rows_batch65.csv.gz": "7f12d324ccbffca6b467035a6343d6498a0775b550fe12a370a1cdfe0ab62f04",
+  "atlas_rows_batch66.csv.gz": "92408579e4ff1a85b9ad4e2652cadcf599be780bdf3d60b1d8d0e91ed53f1809",
+  "atlas_rows_batch68.csv.gz": "3ee7baef12c2b0ec3b514583d5dbd5f1790341883ec39bfad3c91067c727e151",
+  "atlas_rows_batch69.csv.gz": "506611e6bfbcd142c581991a78cdc0f1a7fb06bf8d8adf9bea20e4d34bdc127a",
+  "atlas_rows_batch70.csv.gz": "6cbdd7600845265fd56551b488da02a8efbaa210b1ce4d66c69493482b05e9d8",
+  "atlas_rows_batch71.csv.gz": "1e1fea430eedbe4e3328fb85243910ef09e8d5d00b45ea96ed7c49c6a5456dbd",
+  "atlas_rows_batch72.csv.gz": "37c4a543d24e1200e58b24d2f417a7da4912ebc7cd07a755b651f07826bac545",
+  "atlas_rows_batch73.csv.gz": "31667fe7657031319f360e6e766c65e21351a6c3c6e023fdf29d6312c28dead9",
+  "atlas_rows_batch75.csv.gz": "8dee99b2f6831aa4dc9bb2b1a9b3d79f722902f90addea2720e985fe188cfcf9",
+  "atlas_rows_batch76.csv.gz": "8eb1b1f660e8a4a786363e0590fc8145c445150fca646f2b3cec5d476ab7749b",
+  "atlas_rows_batch77.csv.gz": "7f50d7d3bf05cf967ed636d761451118723ff96bcc2d1edb6cc70b70634a6881",
+  "atlas_rows_batch78.csv.gz": "0a713633aa6b067a86ef292ced12f991c0709c8a9bc5f85a890f652384dac04c",
+  "atlas_rows_batch79.csv.gz": "a5f8ddedd0d58e480c2546c3a961417e0eebade207bb75ed31b0e5cb026eb8f9",
+  "atlas_rows_batch80.csv.gz": "63e705e5433a6509eb4c498d8417596348d261c19835e8b0798bbb55a0d78d56",
+  "atlas_rows_batch81.csv.gz": "066118a54f1b2dd05784085cf9428cfe576f0ee8be504c26e42d17a44aaeec80",
+  "atlas_rows_batch82.csv.gz": "062c5ac162c24ac070436fb34950c960ac7d2bac1d6a14d253b4f344eb018a8e",
+  "atlas_rows_batch83.csv.gz": "a5457db2307ef729c6603e7a0073002d52e6b71c79468851c8c92e0dee2f1c83",
+  "atlas_rows_batch85.csv.gz": "8354260924d17f4cc9bff0669b2c9250960915a44885c263fbc91cb4bbdbfb56",
+  "atlas_y_benchmark.csv": "932f18c002b9acebaafc0669a72a747fb22f03ab2d774f022149998bf315fe9e",
+  "avail_report.txt": "17045b55bc5fe37d4828d9cfbed3febadf4c44cb60e74388b7b4515c681d4486",
+  "avail_rows.csv.gz": "4783ab8a9f5bb479e6f14f613511e4779e62989ef5e20321ccb1b147f96367b2",
+  "availability_report.txt": "6342e53d543b64d684adb9e3eaff716426bad28a62c487f37dc2ecbea321a765",
+  "availability_rows.csv.gz": "a2f07d0083e2675c8902bf7f24cfae1cab3d65037d9b1ecebf2368f855e01b40",
+  "c_report.txt": "ddd4c1898684c4b4f966fc45f89801ab3f6b9d88beb325b1c601fb34384ef034",
+  "catch_report.txt": "57d7a2e24ede12a7d579761da53914752eb5908f39f3dfb9b925a9ca783aee28",
+  "catch_verdicts.csv": "ad278ef91475ad85e7f7bfaa8345ce6c3aadcbcbd76c3f6c1f51a9b0fb32f42e",
+  "center_read.csv": "097f8dee4d90dcb9020da280e05a958c2b0cd3f3d8e59d6a8bbc54831f1120f8",
+  "center_read_report.txt": "19f18e3700fd460269a9641d92b2ef4fd0b0e5c4e88877c470863bd720950d71",
+  "chain_report.txt": "7367b7a57108a2c3a006a784a98ddefb2ff004982ee6e20881d49e8800972860",
+  "chain_unit_verdict.csv": "f5f0d51c0a20c1388c971c5bf28cf70576a8a7befa21ddced7d59a5302305b2f",
+  "chain_verdicts.csv": "4a437f152cb86292dd7810a17fe0d04c3c561b5ab21a66619b4b96a0ff3feddd",
+  "charter_ledger.json": "2640ce3a3367d6be6d56564a0c3d819e17233af216130a8d9316bec7d4a84ca9",
+  "coherence_check.csv": "c85a3e78b11367c454b39f87ac69c3ed506f22f0fd88f4c566a26b71525e6bd8",
+  "coherence_check_report.txt": "7fd5ad6a2ceaef829f4436a8563ac27f06f956817bbce50966a8313907b1e3b2",
+  "coherence_read.csv": "35036f185a847cf9a200686b9b919c429822b73a4a643d86d182c4a3a3ab7fde",
+  "coherence_read_report.txt": "0575b009fae07b961b57bb7a218c0aa5960a41cef9712b399609075741fd6c36",
+  "compose_report.txt": "c4be262be829a8f5176995faf2ca94ccd0764f1adaf43bea3e87a822720c9d9b",
+  "compose_rules.csv": "cd9172281486b30378134910c80f3270916794da1a3ee660ecf463fdae6c3100",
+  "composition_read_report.txt": "8ed4be21e495291052f838894c495e2fcb954f58538a41d4690b0bfc0e8c0c59",
+  "consistency_read_report.txt": "62a14808794a239208ed4cb67f7082c2bd5a33b656dc4cafaf7544ef5d3c0312",
+  "conversion_report.txt": "140a416d92e0e36e732bd47bd0ebcb8df9e7894b848f5a6de4384fc2f5b057a9",
+  "conversion_verdicts.csv": "1b94be0c01fa05706ab5153812919798b103f2ce85198c0be44d52b4890a4b2b",
+  "coupling_report.txt": "0cf553a7cfee38a9c0a09e5161407215089f570ea8027c690734d4c106136ba7",
+  "d_features.csv": "790b0b1ad23ac496e07f19ca0f8c8234c910a179ba02353e9495336e9d077e5e",
+  "deep_report.txt": "f87c7e8e1b9ac6dc6c04effd60e8be210992ffd5e6eac0b6f88a087bbe7fd948",
+  "deep_rules.csv": "849921ccb78970c2fafdef18fdd514f600b0f545aa77c6772848d40a73d6c9e5",
+  "dispersion_check_report.txt": "ae47ad590215a0210c896682873f9040d2d755c52dc5025ac4f7d8799861a005",
+  "dispersion_report.txt": "310e3ef966db6021d042e20aa4cc6d52728b70939945c957b63877d6efd28542",
+  "dispersion_verdicts.csv": "15fe00161c5a8527cffb81416c77c1fd8502269cf01f48218c8ecdc52f313f08",
+  "dk_rows.csv.gz": "5acbcfed92c2d04fae98acec99a093cd4cea33130e0d6b7b5b3cd8e8c3be6de2",
+  "dk_rows_batch73.csv.gz": "6e3a4f4d44971f8d1847e78fbccbc6ab425972c8c9fdf52c60ce8edf1232c5dd",
+  "dk_rows_batch75.csv.gz": "97cd89dc119223b75a1bf1a5e42e509517d3c2a0b995383f219c60bc721d6a9f",
+  "dk_rows_batch76.csv.gz": "606b4af5bb05484d092950d280cb0d5d4b5d1066fce97c21cbcc4ba77ee9e117",
+  "dk_rows_batch77.csv.gz": "1e82608b9c235b54058c0e114ad107790d7df035f2319d9512bc5afdad254088",
+  "dk_rows_batch78.csv.gz": "04abad14dc26d560cfdef2de94ff6bc8cdf080b071508b25af04fc6ddc4b9755",
+  "dk_rows_batch79.csv.gz": "ee29b549225449dd1a9f154f6be86ab66d4af6383610fe86992cad851a2fbf6f",
+  "dk_rows_batch80.csv.gz": "f514c152a48a4911d69e2434c9a30a9212d1d68f60271c6c08e84539ab251069",
+  "dk_rows_batch81.csv.gz": "c3a018e281dde1293236e7755497eb8287bea90d6c24e767a0455eea64a5329b",
+  "dk_rows_batch82.csv.gz": "42621fc9773a4e7a35439585544f7e727349cff93e2602e12b263151057373cf",
+  "dk_rows_batch83.csv.gz": "426f01682cc046abe291a7afbbf5699b83eb51b4c06d197fe707bc3cbc21900d",
+  "dk_rows_batch85.csv.gz": "106a755f54ff341a0e65a3cf7f2923d6d63c28790d938804dca2f6af553f614a",
+  "draws_check_report.txt": "970e3b539fe7598bd70b133a6202a64cfb7ee72d03a336845eb3a7a16edf4138",
+  "drift_report.txt": "a58e096076d35908439d31aac30dbfa186f598709919b40cc98e9987680c0977",
+  "drift_verdicts.csv": "e87f9a67f605c4e83adbd94ca1b6b46f1030853bc8d297ecbe6f503f37eb495c",
+  "dst_check_report.txt": "b3776bafb049a60f118e275ffd4b59ec14793f25bc6c40f03af6af8d389d1566",
+  "dstick_report.txt": "ae6ef38e7dbcd70b2bc51d8611020372b41b58df65cc24949ac6465fb453554c",
+  "dstick_rows.csv.gz": "ad1e5020f526b5a9c5c549f544dbb357072f383939326ba8730b9bd52a426710",
+  "efficiency_report.txt": "3df8fc1c47292a1bb9fd9919b8305695f5396b1459b57d1be14078757bc14e56",
+  "efficiency_verdicts.csv": "a6dd5d85e3099ab344b3df1ad9948e49192e50614b1be99a46343300d2d6f43a",
+  "empirical_zero_state_report.txt": "b22925506735578194cca23ebc4d0e41af4e767f97dc09dcc9dbe05ea0c9b326",
+  "empirical_zero_state_verdicts.csv": "942fc598d9cc74b7411c1e79c283403240ba7b4f10fec0381420b8413d375c11",
+  "events.jsonl": "35bbbf18afbaa8264d07d3597d12bc6de70a66b23bf43eae6e6ebfa7d9e7015f",
+  "f6_count_report.txt": "883cd609eedc1e7cdfb19821c9988e398507e62618c640bcd717c4bd268fdeb1",
+  "f6_dependence_domain_report.txt": "e3d133a5642e6fc8141fe8703503ec0f8d4e32d6108f0d71f3aef0b44530a454",
+  "f6_dependence_domain_rows.csv.gz": "f101ed7402cb81bbe61ec46c6ab5adf0c3543c0bf6568f006e46a94f8e83f140",
+  "f6_dependence_lower_tail_copula_report.txt": "7fd8e6ff9c72484398ff652bcbc2c95eb5a934bb3b5ffbaedf7d32ff9cf0ba49",
+  "f6_dependence_lower_tail_copula_rows.csv.gz": "5171a8ee13c1981f5a956d1cd43d7efe02e2490778e78c45f3eab305258fff4d",
+  "f6_dependence_opponent_report.txt": "afd0f79768860fe9f26f25dbe402846b3d0d3b955ae2d59be3e40d4b0d934947",
+  "f6_dependence_opponent_rows.csv.gz": "29acfc09fb406edbad49c6f594bc202be0fcdc0ba6095ffdd87852d42c6aba3a",
+  "f6_dependence_opportunity_chain_report.txt": "1d59b2ae40635e528b8f3db3fcabc9efb6a68d04885dbfe244e2d8d4a819b32c",
+  "f6_dependence_opportunity_chain_rows.csv.gz": "b3240c829f443f1baa8f24aa0d8ae04f3e2dd22a6831c04aa698e79a82f87e4b",
+  "f6_dependence_tail_copula_quantile_rows.csv.gz": "a90259441285fdeca06ff1717d6f69c009e1595b12e81c0c092b0f54f21a7f15",
+  "f6_dependence_tail_copula_report.txt": "cfe2bde0bed836e2d8d927fe701db41daaa40501f4c839b1cf0a3ec204321f1b",
+  "f6_dependence_tail_copula_rows.csv.gz": "a1fd480ac375bffec3160b3c6c549e3dee2df81950d320ef73ece7476ac18156",
+  "f6_dependence_team_report.txt": "050d25efba05b0c024380679b518039fc18bb5e969efd9f88bb8129c9813c5be",
+  "f6_dependence_team_rows.csv.gz": "976e5e1edc1cc2526e45e9cdb42d4858637a4459e8431be5d7b6a4786b4c4c75",
+  "f6_dependence_yards_report.txt": "76bc5818a8130d4bfbe74d94a4f83bd279cb380a41c86749d73d67b5c2452f1f",
+  "f6_dependence_yards_rows.csv.gz": "e66492bd9122c017d43540f88ebdbb000b09bcf175ea1fdb3a19f8f878f846f8",
+  "f6_hurdle_report.txt": "2e3c1961edbabd44ee60ea43c72dff2b22fc54dc9eb253e04b65fa44c69b18c2",
+  "f6_marginal_support_report.txt": "a4c7815eff76372ba24e524df53f93fd18ec8e786887024ce26c7f04f2016747",
+  "f6_q1_dispersion_report.txt": "115f637b44ea6c35e0061afc0042e4c6da67267b62dae00d84ddb5cba3d336ce",
+  "f6_q3_report.txt": "b1e0cee6e7e51fd0d32c1590df5469a8fee85a423f07b2a2d0a5992b1d9f4e6a",
+  "f6_q5_mean_report.txt": "066ea43abee47f0d2772b9beb7246b0b96ddcd029c557307e0b600735fd8a00a",
+  "f6_rec_report.txt": "6a33bc6abaa0520b3fa60adf19e893a2c0dcf5b97b5666dcd4e0b6c44e066ea3",
+  "f6_root1_owner_map_participation_report.txt": "f72b0a0ea4f338cf525b9a4aebf2aa39b08d72d77c0680c1f5728203d514eaa0",
+  "f6_root1_owner_map_participation_rows.csv": "b2ec008c1b1eb5e22300e8786ba8b3c22c17e63949cac1801099cf68d1a5406b",
+  "f6_root1_owner_map_report.txt": "b3cf9573840c8b918d20b4df31f210a45537168024f1ce6369fe4ee6040e82a4",
+  "f6_root1_owner_map_rows.csv": "51311f30f80e5991d2fe64ad9dc05c64914678f3f7ecba81f672462d556a5a38",
+  "f6_root1_owner_map_te_opportunity_report.txt": "adc6ed27158ad75d9fab21a8b7c21f7f8e8abcebf995b5b6e0904255b8b91776",
+  "f6_root1_owner_map_te_opportunity_rows.csv": "7fb723ec1858410ff294ea1c598ce071806c9ff5737f9e0f00adbe32a67362d7",
+  "f6_root1_owner_map_te_report.txt": "ed708e4849f8ccbeb3be92e7eac87edb169f160c58f399675c9152399c749218",
+  "f6_root1_owner_map_te_rows.csv": "e07e59561911f65abc571fa212d9b839a59e54eeb6b34488c7140c45dba733c1",
+  "f6_rows_count.csv.gz": "6c0ddb2f0fcab421c6c3c47ae3d0fb5af988347d5b22b5be5942d47fc74aee0b",
+  "f6_rows_hurdle.csv.gz": "aa608e2456479cab38931162990d1cbdd0642129ec36fdc3193beacfc4cd371d",
+  "f6_rows_marginal_support.csv.gz": "17099795f480232990fd1010b960ea971be882041580dd13367d83127456b771",
+  "f6_rows_q1_dispersion.csv.gz": "19b3af539c8dbb8796b8e46129ac2c80dcfa715cdd6a2ac9a5e66d33b8e616de",
+  "f6_rows_q5_mean.csv.gz": "a9ca91662712c56a617fcbe97513f2834186d3017b44ddf8b7a8bbba89212c4d",
+  "f6_rows_rec.csv.gz": "6c67bc6e7d5486a44b4f7ed25cbcf1bb44c77af531e51952d4ab1fbdc6db046e",
+  "f6_rows_share.csv.gz": "3801d6966ff2f61dedf99b8c4ea30ef155c9ab8e722941b965a67eb4b262964e",
+  "f6_rows_support.csv.gz": "5b44b3c424a605b8ed1819a37a5763bcdacd870aa24f2b8fec89b84603e8b8f7",
+  "f6_rows_td.csv.gz": "3854741f8c156d03ffabe0e6147afe98d54e431acfd998f92864992b2c5543c0",
+  "f6_rows_td_volume.csv.gz": "8ef6c455a676e385c04939d81fd34c4dae527236c386e2cf7431c4dd96ef9700",
+  "f6_rows_te_receiving_yards_location.csv.gz": "354a40a7d68533a57d777e922cec0d49ec416ee81e302b456502068f9582800e",
+  "f6_rows_te_receiving_yards_skew.csv.gz": "a5e04308c34c0f7e379a3f23f1d2af438e4f80ad37b35177836dc9ddc4546daf",
+  "f6_rows_team.csv.gz": "4366ba91bc9a8d0dd87da762efba792a393f786d9270fe9e8eeea61cccad7e1c",
+  "f6_rows_wr_receiving_yards_scale.csv.gz": "a8d0785f56cea5c6918cfb77425cc8d41d328173db3f32fe116554df0f54fa0b",
+  "f6_rows_wr_receiving_yards_scale_spline.csv.gz": "be4e17f380d1232ba0f6866a580662f18f40597bab6a5418edd48247e72dfba1",
+  "f6_rows_yards_pooling.csv.gz": "3e976a3d75f8d7d38a74c643312e8ccce6b6df5d1ecc1e460948d93ee8bebfb9",
+  "f6_rows_yds.csv.gz": "ed6763103f6c07695e318faeff6392f7ac56656b58ebea03f5d88f6972ac5d2e",
+  "f6_share_report.txt": "489b9974ecb04db9461585b1411fabba3b59a5c43d137e9b27bc06e9b166f19d",
+  "f6_support_report.txt": "bd1556a3b75521f34eb5338af6b1f339a69ffa585d3b3d6a503f7ec30c727751",
+  "f6_td_report.txt": "5e12c1c68549d3b49d2dae40fd22d8e78fe8058548447ae5a9ffa90e6657d931",
+  "f6_td_volume_means.csv.gz": "0547539969677618aad723d7c23ab811cf8e4a8bcbb22e8c51013dc3ff69043a",
+  "f6_td_volume_report.txt": "158cbd5c8e4c0a6002c9a2e7491f89bd099d99a8bca961b9b4be0776dd45359f",
+  "f6_te_receiving_yards_location_params.csv": "d9705182eafb6077f418826dc699eccdf91b8f7a4853f8a3baa066ab2a107bdf",
+  "f6_te_receiving_yards_location_report.txt": "c1809d6d626409089c8c81f35f0b3df76b0753cbd84ab275e0284abda80c3372",
+  "f6_te_receiving_yards_skew_params.csv": "7419ff6334e58aaf8ea35e77dc2ce85e3fc0b57694a1625e8ebfef3b01de48c4",
+  "f6_te_receiving_yards_skew_report.txt": "e708fa21bca35219746d7a4cf662c82ea7344f0253f53054912b5a40b9ae7ce2",
+  "f6_team_report.txt": "1dc9f9a76e89f5245c095b91df349081ccf2bdf78fd727e5b00b3a8b5e42b532",
+  "f6_wr_receiving_yards_scale_params.csv": "af619cbc3edf2fded8111327b7c4f1b6219debaaace7a67db6afd4c76df602da",
+  "f6_wr_receiving_yards_scale_report.txt": "17e4d74a59da9b83a2b64e4525914abd3f180d64116372a71695f8cbd13299e3",
+  "f6_wr_receiving_yards_scale_spline_params.csv": "2bf89ca86862e9804eb8734f00a4a74424ca1f5680729152789120a002820145",
+  "f6_wr_receiving_yards_scale_spline_report.txt": "327e1e104089e3dd223fe6cf2bf6648aac83870837306bbc3b52da96635040f0",
+  "f6_yards_pooling_means.csv.gz": "1033a9d237c23e6751eb90b0954296999d48f741b4da4fc63ff931d55079f2c7",
+  "f6_yards_pooling_report.txt": "6e68ff3954f15bda76c0a145b897ae2f556b0944e173edd1c0187dbfabb95b56",
+  "f6_yds_report.txt": "204f6b0fb4a5fd82322382ea924e7398801bb4ef2519e8cc8a6c3f8e561ca09b",
+  "f6_zero_history_hurdle_integration.csv.gz": "2d5c0182abca50cd269d402daa6a34e379e997837d7daf5475792ea8e82dc917",
+  "f6_zero_history_hurdle_r2_report.txt": "d92b71757c12a859b6ad09fbd5478e11333baacd7608676fd9e8ef2bb199475b",
+  "f6_zero_history_hurdle_r2_rows.csv.gz": "e9e15964f30d3f403d7b2756770ca6e1b850ef4cf03dd896dc8481917bf61941",
+  "f6_zero_history_hurdle_r2_verdicts.csv": "f824a5c8bde5e7fa274f7f167ba80485c4dbc3367f5055f3720189b9f4af0d18",
+  "f6_zero_history_hurdle_r3_report.txt": "be51a564fc1e568d1633401d25839e8d75cb4496e870c1c02c4f6b90fb1b6f98",
+  "f6_zero_history_hurdle_r3_rows.csv.gz": "66d965e43901de27eaa30ed3fd0b0539089a3ed85f6b870ee468c5af5acf39ca",
+  "f6_zero_history_hurdle_r3_verdicts.csv": "5ddef95cba44c8624523828827a384fd39be055720ab06d9739547549e2d07ec",
+  "f6_zero_history_hurdle_report.txt": "485371e7f3d1753e35518ed9bdc2daee8fb6eceef880263368ab869c0a183b6a",
+  "f6_zero_history_hurdle_rows.csv.gz": "3431e1b6be1dec9d392193c714675d5c034dcc7e32571d26f4e4e3e92f832aa5",
+  "f6_zero_history_hurdle_verdicts.csv": "0704b29b9ec0d6d999cde235e2eaddb6412e021a53bc1ff43e95e20475a3e0b9",
+  "f6_zero_history_replacement_report.txt": "8c6cf72de56d5a66168f1d0f41c48604dd20e5c750adce143714f380b560a2a0",
+  "f6_zero_history_replacement_rows.csv.gz": "f90e271df38b350ba47c8e040bafde2ebb0f85f5538601d43c39edf091dfa6b5",
+  "f6_zero_history_replacement_verdicts.csv": "6aa7fe618f05b2ea7d6f730accdf1057c5dc737756724cf4b347e03d4304b128",
+  "f6_zero_history_report.txt": "b1b75316e2dcd9c452a926ec23f6677c89eeb7e556d453cd9df2113d1482dc5f",
+  "f6_zero_history_rows.csv.gz": "bc0c5ac37d5ebf569983534e1e13a62bb9d61275a022e1979021a20c62104a2d",
+  "f8_copula_rows.csv.gz": "08083b03958e63fb21f9c6b5a0097864d7a21459f42c32adf63c5fecadb3a4c9",
+  "f8_lower_tail_copula_rows.csv.gz": "b6324b334c1ef739fa1936cab2e051a4cf449af0ee0aac361d00fe1d6de0276f",
+  "f8_quantile_rows.csv.gz": "54454c85e0b8146f3691f5cb4190869457a1d9d6d9226769f30f7dfeac9549ec",
+  "f8_rows.csv.gz": "37b7af4b3610b61b993cff62410d4b6488b5ad2350c1ec432f07d04518103838",
+  "f8_state_level_diagnostic_report.txt": "5400256329ecdbcee00a911f22f5ffe3f161b4c66772144ba9e916f50100dd1e",
+  "f8_state_level_diagnostic_rows.csv": "455d292a29c0bb2f2f7d5f2c28631782c9ab9c3823a6a658563a2862b0067f17",
+  "f8_state_mean_diagnostic_report.txt": "c00b6c4ffc979556e1be7b5245aa7b6563462fad6ee4d518fe5694b70e9bcb43",
+  "f8_state_mean_diagnostic_rows.csv": "5b0e7dbcf43452c935c385dd2066030c271616b2d3a7c06028ac861a5dc763b7",
+  "f8_tail_attribution_report.txt": "e26a44b4f86363000b05dfc5bd5d1a7833791eaf2bcdec859fdd7cb6b7017a8b",
+  "f8_tail_attribution_rows.csv": "df9516111ac5b9b0a09355cab86b5817f1aed41d36c6f4367714abbf3bd329ca",
+  "f8_tail_calibration_report.txt": "bfc5a8258929684a9b717083446c3df8fe6ff09c379d0248b58adc0d4143a736",
+  "f8_tail_chain3_attribution_report.txt": "2a50ecaf8d7926c141daa49bd0eb3044d5bf1a22b84e6f0144ce9a74e842ffc9",
+  "f8_tail_chain3_attribution_rows.csv": "230044cad62dabbf9a6266b7df078d4bbf92f5e7f2b35d6ea1b4c184d46fa2bd",
+  "f8_tail_chain4_attribution_report.txt": "aa8c5c604dc8f44e988551ec7d17bb19c5e3d4bfd9641427511fb5c1fbf428ba",
+  "f8_tail_chain4_attribution_rows.csv": "357fafa0bff4b23d69a7f07f43bc874627784e7d6c1c61db92a158ad336de2aa",
+  "f8_tail_chain_attribution_report.txt": "912a29821eade5f296efa60fca03d643fdf41a2da339a07b0f5cc85f9a12cd61",
+  "f8_tail_chain_attribution_rows.csv": "98363b1ef8b6499afc4886806dc229b8ff19ef9bd4299e5699c1da5bf8bea700",
+  "f8_tail_coverage_band.csv": "5114c8f8be0d4d795c6b1e7bf34abdcd0d5fbc013604ac27485a22c7169db415",
+  "f8_tail_joint_downside_rows.csv": "d5ccf15758fe2a7451ba0d64409084bce9d99fde64b497c6aab95c9d4b97dabf",
+  "f8_tail_pattern_chain3_rows.csv.gz": "256a8181fb562f8d4709ad3715fd22508e0d83378d14bf65ef21868adeb060df",
+  "f8_tail_pattern_chain4_rows.csv.gz": "7f1dec36af33ebbf68dc3c490aed44d43fa681f5833ffab8c62ed12ed99f2d53",
+  "f8_tail_pattern_chain_rows.csv.gz": "fbc446a06f00b48fa122c27c194b440fea0a42f96baf04a2abbff651e213a75b",
+  "f8_tail_pattern_model_rows.csv.gz": "fbce9b0d7f91416e92a13e2c83981f91ecb40bd518000469313e52ebf65393fb",
+  "f8_vs_y_report.txt": "85a9675674420d7d586915c17122feea4bac526288aa943da97273e66b512d99",
+  "fit_contract_manifest.csv": "48463e208508b6a124ca3d927602c63536697e22b61f5248b514e9a77db6e381",
+  "fit_contract_replay_report.txt": "9d8c0afe6d0da7e4474237a68ed22aa0a4f0a46c736f0e38d7ab0d9de56cf200",
+  "gatesim2_report.txt": "fb1151b391d7196545fc10941567d81fa49f37603d25a3261c0a3b476fb7712b",
+  "gatesim_report.txt": "175868b4f727e459aa24e864304f7df29a9f44a4a02442fdb1f3321897fac2c8",
+  "guard_last.txt": "ddebe9bde026e40d721778611086ff69870e17c1601577e7caa33dc8cafac37c",
+  "harness_dependence_report.txt": "e0b25121a719e78d7e113d866eb2433b9ee0467d04f4f141b267980248967cfb",
+  "harness_dependence_verdicts.csv": "a6cf9a19bf6fbcdcdb08d67ccbc5904c88e8a0ac2b3f0a07b7cbc79cf817bc63",
+  "harness_exact_report.txt": "40b59ca3d9e09e3c1487e86319b9ebeb34cf3ce4e49c4fa8b6771f2377694d61",
+  "harness_f6_report.txt": "2151cc0a405d938e2a71733066cb840c1ac9a0b965b72e7bb831038a3577bee8",
+  "harness_f6_verdicts.csv": "9cb79704ad2114c36887fbc1acfd42e50abf27efb39f3339d43d9a406524ffac",
+  "harness_report.txt": "52f35d5fb480f1c2ce2afaebfce0d254ed45950bd8ba41a884311f98c72a965b",
+  "instrument_v2_report.txt": "d2cf5692489fad7e53538d7c7b8d5e001b24a980fed0b35a54edb5f5e4d7433c",
+  "issue_check_report.txt": "58347e5088a81e78a18683edb693bbc4b5ba75eb646affe90ed182b91f3fb102",
+  "j_model.json": "11321bf3c6fa911386edde229daa2b6c668924636c1cd8336e17fca07dce7898",
+  "j_report.txt": "53e3d399cf6a092157c0d9859190cb7bf97a914e3a399a24460f43753368c196",
+  "jexpose_report.txt": "52202955381bc7e4990997f8b52c0f25dfc1c8336829a2cdff0ca95379a064ad",
+  "jtail_power_report.txt": "e2148738bf30dd93c44fd27ce7f2bccab95790643333cb37657f805c7367bc3b",
+  "jy_dst_report.txt": "e772f1a8328e536ce907f91b599c4c73bd14f29891fdd387bd2b45483e59d58e",
+  "jy_report.txt": "de98bcff45ca1b81bb294a90163e5671ed6af959206b49ca6c2fc9908665b1da",
+  "l_freeze.json": "8921f0859c5ed1ff4b8be76f5b46629393dbd69b00e05deb48d3d6e606c3f737",
+  "l_freeze_v1.json": "8414f0fb3496f04a9bf2bc93afceb0ffcfb2079943d7e8005d1c02982e72c710",
+  "l_report.txt": "4614bf9f44cd725ef73a60272206c2316151e90212c7c79f06af77b240a6420f",
+  "l_report_v1.txt": "675fb7cdf9d5598e58eeef5686b2971deb1c75cd96b32aa099d89c28a2d3df80",
+  "l_weeks.csv": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+  "l_weeks_v1.csv": "37b267d7b8c12cf2658cf5fb965aa1f2b1e95fa33ce33b3275f5b8409fff9189",
+  "ladder.csv": "8501ef7730fc592ef97c3d077a96374388d3ea4a7f23c2d253ee0b1163e25d84",
+  "ladder_report.txt": "44539c3c16721d9aa85e07ae7607dc9ece959c67621964bb5f5e520459d051ff",
+  "ledger_shuffle_report.txt": "87c84d80293886f11ddf18152e758b862aa9c4c0e961519a7309cf8d19bad688",
+  "level_report.txt": "f7135861fb23f7fcbfd131cfb428ccd8c9fc1d01faba2cd674f38097e3a71c31",
+  "level_verdicts.csv": "64df1c87a19d3ff24c13344ffe68c959cf0d29e56188c83cbe462cbad4207469",
+  "m_report.txt": "fd315eb9c2faab43a6121462a5fea98b48d212bee589001376f1d2619ea6a1c6",
+  "native_law_rows.csv.gz": "1bc575481abbfff78e10392913f0827bbd3747a0af183e1f63e840b3cc88dad5",
+  "native_law_season.csv": "f7a68399f9a6bd310542e05d57a997aa61b2635922a686f8919dd4de9b7787a1",
+  "native_laws_report.txt": "b7802683f2def024da95da1bc7a004e4ef238528b522ca4c6d655d8c3e811515",
+  "opportunity_report.txt": "9a6e46e0ff0d90d05e96c4c755e45ba54b06b044fe6e304c2a776efa6dfecf89",
+  "opportunity_verdicts.csv": "2d996c42b59cbfee78e93752cd1018afe9945b77b8687f6b240e950653befc6f",
+  "p_coef.json": "2d75c1383f7fe2b12d33d951518fe0f547a93acf6bd0051deaa3cd83967be6b4",
+  "p_report.txt": "f6ebf3145f7f4cf6c31eede2c8efbd9c5ebe0702f952bae21a3777ad0dce66d2",
+  "p_walk.csv.gz": "cac4f8536ef458e7ad4e228b143a9772a91cbebc7375727620f0a4a0b5ebf0a1",
+  "participation_check_report.txt": "aca84b58c1676c83c505e0fc0cb8638e5ce551eb86a44a97e716306b137ece87",
+  "pass_ledger.csv": "243c715044e7ae5127c44ce07c9155a3c6dead44e8c486531c7ab40031ba712f",
+  "pass_ledger_report.txt": "2d05056d7729e3b9bcb9a15892e59e879ea9b609bc5d178fd374da9b5cd990ab",
+  "pgate_audit.csv": "4a35a2a0c022469bdc835f0b31bf9dd837ed8b2e418b7e014ee9ccd82a26ca12",
+  "pgate_audit_report.txt": "656ee09ba2d9b5312e860685abe73ce9ad593ed7749b1db4381c2c79a0976e3c",
+  "play_report.txt": "768d5bb48d05e021565f75efd43b73457b989450f287bec547a6902df86991ef",
+  "play_verdicts.csv": "378db03cd7450685bc1e4a46ccbeba20ddbc530c2ff20cb474f5cecfb26d6ebb",
+  "playing_time_report.txt": "4f8dddad0f2eaa88f8ff576fd18ae8f3e62b385eef39fcdba9d69acc94ebfcdc",
+  "playing_time_verdicts.csv": "0eab3143b070efcd959a8b4b1aa0713833c477361a617d5a49fa130c6bec5cc1",
+  "poisson_dispersion_report.txt": "129e569f05fd3373970420f95467c034dc7ca612cc9a31320a27667dc55198b5",
+  "poisson_dispersion_verdicts.csv": "b251c7d0540a024e734a642027ce1e369e3514c66bc325c0398388db49e56f85",
+  "procedure_bench.csv": "5967fd9d684f42d0b80bb651ef8cd3fed994b3faccaecba7380ea1ec52433d56",
+  "procedure_bench_law.csv": "478d40cc41360dfbfdda0be8e7220073d2be9aa409a1607ac3a8a8d69bb4a611",
+  "procedure_bench_law_report.txt": "b0ff9e30f74a33eca03bdf417dcb59133696816a54d44c3e0c081a9f99830c5e",
+  "procedure_bench_report.txt": "e013d1d4a3e2f8873ac57a1316a5959611fff35a68f9538893f58ac193ba3442",
+  "procedure_choices.csv": "0cd26c78b38af3c75520d6ad4a4ed905f96c487e1e753def594139712792dda2",
+  "procedure_report.txt": "7ac84fe6b8782b80d754768ca9492465f28b75df1f892bdd64554d504befc344",
+  "procedure_sim.csv": "85f47cff5422dc173bb123f7450d8a18347c3fdb088e3721c6a196d079e2ba34",
+  "procedure_sim_report.txt": "e28fc2943162a9c16177c311a0d0669587be3d683be6e3b25eb0661f56393f01",
+  "procedure_verdict.csv": "5ae7b755050349cfd1db4353cc3799b8baae3b379b8178a44d3372a3ab8ba924",
+  "product_judgment.csv": "0d357a370301d8ef4e31e5db6bc126164b3c757c1176e44c6a64783890cda5db",
+  "q1_snap_check_report.txt": "76974f0cf5a5589b124f2ac469e35d951347f5eb39538bfbf404c9b5ae742f43",
+  "q1_snap_report.txt": "9c54cd554073b36d5aec6d6e5cba477e757811f210bd568a2d7ed30a89be0321",
+  "q1_snap_verdicts.csv": "0cb789f523cc5ef33c078380c7bf8fdda31ae22aa80c77267af3a8574a0b7b74",
+  "qb_control_report.txt": "14f9842f94b3b99a043cbf8963f30cef4e8af03aa0f5579c2206878bd670937f",
+  "qb_control_verdicts.csv": "5c0aea69a685b557fe3d8ed72b85aa6539f999049d7a3d458173245cd7f2a607",
+  "qb_f8_attribution.csv": "6ed4621bc6f32ada7e0d670fdaa962c874ef648d5edba4e09fdb42f38d401738",
+  "qb_f8_attribution_report.txt": "bbfb4d512b4b3dc9f07881c03ef07da6ad31a46e3b2731912e96c28d2544ae8b",
+  "qb_td_link_report.txt": "61a4c11ff586628a82fd25e3ad4524ed75a2d1523d79521b5c77cc65447f3de0",
+  "qb_td_link_verdicts.csv": "578167e13c92e6007429958d57edfd769eaf085d6e11e9d50c32915b7b78f2d8",
+  "r_families.csv": "24fa6fc4904c1cc1b2409045d278d06b84b1476fab5db52a3e85d08a9ee37120",
+  "r_report.txt": "1b908d78dfc60979fcded80112c300c05052c80ee244a216680ce34f82e0a19e",
+  "rb_control_report.txt": "b178ee212ecb45969cf221f1a85c6309fbf89bf8e1d7946a8cf46faf18ed460d",
+  "rb_control_verdicts.csv": "458990962550319867c3c7e1f8441e1afbc5c36b9354731ebfe4a603002d4c4e",
+  "rearrangement_report.txt": "43128092585bcfc9bb56d40a8bfd117d74df660f97e5cb54382d099f383f79d8",
+  "receiver_yards_link_report.txt": "0f69de748a78adfff4a41bfb2af75b45fd833984a5587dff0e9bb316bd388818",
+  "receiver_yards_link_v2_verdicts.csv": "52b9aba98740097912f4966c67009cc2437c876c15d4a330ea399bfebe07c754",
+  "receiver_yards_link_verdicts.csv": "80ea51535a1db793a70488edc60ff7833796d568d952395daf2a6ca125c618ea",
+  "regime_report.txt": "f4b7000e0266c6b593a78402e77440eb5ae4ef39870faf92adf8ed157b79db5a",
+  "replay_report.txt": "39eb0184bc0d233415af8cb56da24748b3e828a0eddac8469e69f897775afe60",
+  "role_atlas_groups.csv": "d2d74dacc267a64dbc392c8857c0cb1282815cdc2c07eb6881b51b111180442b",
+  "role_atlas_report.txt": "d0274f2d19f31ed8bcdc8e14f2a589fb2087ceb69a7d643e3da7daca32e9b755",
+  "role_group_groups.csv": "84008002dbd04b741a96ed1fb6af8f22f91e193a1e0893488a4fb31e9cdf9bb1",
+  "role_group_report.txt": "7079605193f5c667d36b3eb5b46b2b420a34a46c248612da6575a12487186e1a",
+  "role_group_verdicts.csv": "3da7045c52bacaa85f31448ac55e22555f4ad4c2a54ca3903a7ae560ccca66f4",
+  "role_report.txt": "22c750b4d958778068ec1d55d9c78a33f16cc3c0f10d2369fa1a2edbbf801a49",
+  "role_verdicts.csv": "7dc8a1c0399c26aad9e58921dd85344239f734b8e357a1aad044c9657a668747",
+  "rushing_parent_read.csv": "e0be78069f7e79828129cf672afec1a333e2e6e171ce7c708b3065f8d56645fc",
+  "score_witness_v2.csv": "61c7cbf7e26c62afe9da02b4f2a9f186343559470e658363a12a02b8261b4ab0",
+  "score_witness_v2_report.txt": "63a145d9e998e0cce947e7f1e2af8029b3a1e2e071eed534edd0f5fa12c0320c",
+  "season_gate_report.txt": "dcf2f05b801f3fd3deedfc07e3f1f37887355922f3a911c925e5dd3fa11853a5",
+  "season_gate_verdicts.csv": "c048f0bdbb4a0de553f7b6bd56078059ac02cbebb67c2d71f900ceeb198d9da8",
+  "selw0_report.txt": "bde4ae48b749cddd07dce9418d0bd67c1d25255db7b1aa306e8869639c0a8715",
+  "selw0_rows.csv": "51c9c3699f3a52517560271200292367c8cbc8b8762e7580b53db4d4440db500",
+  "shape_report.txt": "4868b35f66553bae2ab5659c375c28a4126f8fb09d87e738607273b9fc4f38df",
+  "shape_verdicts.csv": "d3ce868df1bcb549fc4e5292539e5eb62d8fdc00cfc4b98de2861f4e24db799e",
+  "share_report.txt": "0ad052e389bf17867e13190f432544d88d9f5989d3c10a76a8bc6e30dab3bdfb",
+  "share_verdicts.csv": "7564b76b6581324efd9034de1484cc72d7d3d04dabc28e53f5ddaf9afb0e3be2",
+  "shorthist_report.txt": "105ae4360e1d6ec7a6ae3c297d0c50a434a2dd361e0312a341d2024d07e33bfc",
+  "shrink_report.txt": "041c37303699f0f29db34289f997ae25491d65b63c52bc46b0c031353f7ed0b5",
+  "shrink_verdicts.csv": "dd633074c2503a950f72b50c8494b7ce654744323fe5914c8a2a73067d7725e9",
+  "spine_compose_pairs.csv.gz": "581aece527cad682789b33d344f692b71828445c5f11bf3e14d5bf3fb6bcb07f",
+  "spine_compose_params.csv.gz": "fafb2361ea8348121a69e5384d1421c7eb7339f67a55f361b7377691a8564cdb",
+  "spine_compose_report.txt": "4930778f953a040be67bfeef7e88c94e891b3202bb0861f2f75216104343bc24",
+  "spine_compose_rows.csv.gz": "e7abd46ad57519b3bda3e1fc13a291ee71ee22ed997187947007a797577509c7",
+  "spine_f2_report.txt": "6acad8aea774c1d8e42b8d9eeae0154a20116d3d9e00db9d813c61807c83ecd1",
+  "spine_f4_report.txt": "b6a2727feec49ff9818846d7d05a65b048a21c3955517e5abe6456c8c5bbc82a",
+  "spine_f5_report.txt": "fc068e6ecf153113994ff17c6723127d537aac4dcad98a045eeea93f83a4a24d",
+  "spine_qb_att_report.txt": "9c3d5258f872a5850951c6a50a682560099444ce16182e9326b63896667ba8aa",
+  "spine_qb_r4_report.txt": "7bb23f316a3066143e9bf2f74be1386904b9f96d3958c1994b9bcda6e07b07a0",
+  "spine_qb_rate_report.txt": "9b4fbe4c6e19450feaf637fea5f87357f33beaa1a174c9850aebe7e3c45f50ca",
+  "spine_qb_rush2_report.txt": "f17abf27d74dac0a4b50167c2785453578dbf61e38c115d63088e450f5f65f71",
+  "spine_qb_rush_report.txt": "a6527f29bc643b176858085dc1ff05fbf3e72db6632253f57d2e9754b780480a",
+  "spine_qb_shr_report.txt": "59cae6acb1e0541cdc3dcabd62fcdabb4591224a6024ad7b8b361be9cdf3dc31",
+  "spine_qb_state_report.txt": "7861b52a6d62fc96aa6ef3e9be07fcb1941d3492ea7ab6361b17d62eb386e3cf",
+  "spine_qb_td_report.txt": "ae1e8197e08857bcfd0dd67c738f536ad9e8ebdcecdb43f8c0985d54a0b6875f",
+  "spine_rec_report.txt": "586615b04714a6f12342a3ec03112502a2026019b3ebe804e027e5f9c867d63f",
+  "spine_report.txt": "dd20555983da92f7b47ce28b3457fd63a1e2bdcca3d8e05840fe16b23e93cb65",
+  "spine_rows.csv.gz": "7b939592aebe1a15ba0c5c6ad4f221d473533d31de4d742660465cf29e22cf57",
+  "spine_sufficient.csv.gz": "db7a740775dff2a880e4fd5a79491e8059cf6cefef507b6f18c5c8a94cc90fa3",
+  "spine_td_report.txt": "4dc6d96ada1526bdc85b348444cf84f49f5649771c84abe7755c230e0930c79a",
+  "spine_week_2025_w10.csv": "b92f594320fe2b433478a5be0efaa8acfc31d891a269078f708f18710fa7832d",
+  "spine_yds_report.txt": "0c28c3e11ead4b84a87e8e4cc7219fc690d5b69a23f90bce739381f576e1a7bc",
+  "ssot_report.txt": "965ab1377116798092da6cc81d4989401e2fac3f98ead5d962f246d7cc016a80",
+  "ssot_residue_apply.txt": "e7578dbc98a71794a76796284c51c0844e0fcbd133cd1904735337a3b43fb761",
+  "ssot_residue_apply2.txt": "676b787968c39e03de1663d972c44c2201ee2e7d8bd4cb07b36cea9430048d10",
+  "study_classe.txt": "1f84260e7b536560815fd3022b4a411b6c32d9e59398de2e1e007b07d45cdc17",
+  "t1_cells.json": "cbee6702d3a3c96eab7c8dda0c110b2afba0872058c081986414f4edac0261b1",
+  "td_yards_report.txt": "e8f21f8713c4849c9c8f21bc0afc503dda25bdfc732cafc61e029cd53b895c42",
+  "td_yards_verdicts.csv": "55fd46d07d2d7acf0025d20079c62dd3482485ca37ebc1496ff15980221f5fb3",
+  "te_td_link_check_report.txt": "9e869b8fb7fa75a33b22b2bdb26bc41dbef34762a9e1d508e079eac1ad054de5",
+  "te_td_link_report.txt": "818ed6deb50b27688ce62bb2aa71c4bc94fd4fe4f941a585f12db1359cb927c6",
+  "te_td_link_verdicts.csv": "586aaea2228316f2e6085d4858b76549186c89235818ab90af2445493d97a5b0",
+  "team_center_report.txt": "c42179033305e63b41c77d7be4adf3d5c41e5c1b581e0c75d49d1e049050cf19",
+  "team_center_verdicts.csv": "c41fe37c9005b7ce8a1125f7c55250d35dbfb6d7170c68ef83269676c5133d81",
+  "team_ledger_shuffle_verdicts.csv": "46580fd4eac189e4b29ee5f45112d5414d4051922ce45c55f00e865e03f260a3",
+  "team_pass_report.txt": "26497bda4061b3464bf595965d6cc4de3bea439765bc867f971b18e005c979be",
+  "team_pass_verdicts.csv": "5acb414f44cb018394b7c9837f2cb724445b628fea2b39aed30dabbdeae01208",
+  "team_rearrangement_verdicts.csv": "2ac6129b7ee944f59c697fa2d206dcf81c1abb48752ac246bc8735a4b86e2671",
+  "team_shuffle_verdicts.csv": "d9e9412699a6e2a5d18528090659ce68dc94b17e9725ebe266034907463be84f",
+  "term_skill_p_report.txt": "8fc5a01056c344d536b89024f17e81e145a47b68080de9323ca6b6fbae486cb2",
+  "term_skill_report.txt": "d138eee2785a43bc9b524ffbe92bd4a0c45510fd87169b96a772beef0e5dad0b",
+  "third_cumulant_report.txt": "947dc87398a23b1eabaf0114f7d8e21cdac5949f2f22345988b2146014076d80",
+  "third_cumulant_verdicts.csv": "c4b184c9370a70c386ba8cef4f48a9563a6ec5ee1b9eb1a4be36032ae6c40783",
+  "variance_read.csv": "cf9bb5b21e11a6eb9d96922ee11debff5d12080bb51876f2603aad1a0b067cf0",
+  "variance_read_report.txt": "7f76c3e1bc85ebe04f3a6f4d3af2d764d27b556abae0d41c32e4bbb901d393dc",
+  "wp1_integration_report.txt": "c35bae058e0bfaf0d44e1d559dd4f2256284c23980c5ae96bca34f875079f903",
+  "yards_count_check_report.txt": "7c41373ccfcce58ccaba85c7c33db35bc1ec9bef192ce463ac27e4e276238e5c",
+  "yards_count_report.txt": "b148e2dc180793d3d85921d56da26ef265d70898ec62a336272deb9d8d218d73",
+  "yards_count_verdicts.csv": "b9981fba1eef0518911562d09999614829132f778c9c8ff8dfd9efa8db8f287c",
+  "ystick_rows.csv.gz": "94547e0f1cd4f200ff9271f4cce7efebb083e37e05edd9b0923cd837966f0cf7",
+  "zero_kind_cells.csv": "c342bafd2e8891b79d7767e2a1577bbc0f9fbfd963cef10a79531a5d04a804b0",
+  "zero_kind_graph.csv": "a84d37536ac002efa4946773e656ca8f8d86c57ef3847aca83148bac75a9ba0a",
+  "zero_kind_read_report.txt": "9237ec7b9a74e4bc5a873883a0653cdfd0caefc514af2e636f1523535a02d2cb",
+  "zero_report.txt": "e6322f05c533418d29a31113d75363fc4f0242b151d085b6d4e28c6e4e5e1f35",
+  "zero_state_check_report.txt": "81ff0bb515f9600550a3143d4c32d70109090088db207e6f5db7145e2808ece1"
+ },
+ "removed_before_run": [
+  "atlas_rows.csv.gz",
+  "dk_rows.csv.gz",
+  "atlas.csv",
+  "ladder.csv",
+  "product_judgment.csv",
+  "replay_report.txt"
+ ],
+ "emitted": {
+  "atlas_rows.csv.gz": true,
+  "dk_rows.csv.gz": true,
+  "atlas.csv": true,
+  "ladder.csv": true,
+  "product_judgment.csv": true,
+  "replay_report.txt": true
+ },
+ "outputs": {
+  "atlas_rows.csv.gz": "563979078627bc913a25841349c9a4868f6d16977f17c9921629be6708eaad7c",
+  "dk_rows.csv.gz": "bbab6482b192c8f733240216e4fe7a1bee09797085a0b9f46ac816995a5edd22",
+  "atlas.csv": "60d9b5d6a1cea9fe562a72126d229171137787acad2473e63417055805ea9ca6",
+  "ladder.csv": "0ee25a69807971e152f801c0493f0d6d3c7ba9e2a0f7fe25076f0819c1a07fa3",
+  "product_judgment.csv": "e3c9f7714a36a6887e8a2626b089416f301ca42d3627adf88bef5cecce0547fa",
+  "replay_report.txt": "f8d4f27ead48188d7e7094be1dd76b8e4d896d899d935fc090bf1802d4a327a8",
+  "card_2025_w16.csv": "0b5663dfbb453e76dad4b4b736dae94747c17be7115e2ae19fb2a2a2c0f9eff4"
+ },
+ "verdict": "PASS",
+ "lines": [
+  "run /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261106_082012\npre-adapter code  draws.py 3c5f9c4779c2 cards.py 8b0e8d9f6d1b  (from /Users/cameroncatri/Desktop/kit_prev_facts)\ncandidate code    draws.py be959adb3025 cards.py dd8bf811bd6f",
+  "  pre-adapter and candidate code differ in both files: PASS",
+  "identity: git d5f26277d876 with 12 dirty paths; inputs data -> /Users/cameroncatri/LocalWork/analytics/slate-kit/data (46 files), facts -> /Users/cameroncatri/LocalWork/analytics/slate-kit/facts (6 files), sources -> /Users/cameroncatri/LocalWork/analytics/slate-kit/sources (1 files); RAW_PIN None",
+  "\n=== live proj/ snapshot (the inputs both copies start from) ===",
+  "  371 files hashed",
+  "\n=== kit_pre at /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261106_082012/baseline/kit_pre ===",
+  "  copied ['.DS_Store', 'CHARTER.md', 'README.md', 'TAXONOMY.md', 'TAXONOMY_short_names.tsv', 'cards.py', 'chain.py', 'dk.py', 'draws.py', 'evaluate.py', 'facts.py', 'ingest.py', 'kit.py', 'market.py', 'optimize.py', 'participation.py', 'proj/', 'state.py']\n  symlinked ['data/', 'facts/', 'sources/']\n  removed from the copy's proj/ before the run: ['atlas_rows.csv.gz', 'dk_rows.csv.gz', 'atlas.csv', 'ladder.csv', 'product_judgment.csv', 'replay_report.txt']",
+  "  draws.py and cards.py replaced by the saved pre-adapter files",
+  "  kit_pre holds the pre-adapter code: PASS",
+  "  replay outputs absent in kit_pre/proj before the run: PASS",
+  "\n=== baseline replay (pre-adapter code, kit mode) ===",
+  "  cwd /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261106_082012/baseline/kit_pre\n  /Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -u kit.py replay /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261106_082012/baseline/previous_for_command/atlas_rows.csv.gz /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261106_082012/baseline/previous_for_command/dk_rows.csv.gz\n",
+  "\n  finished in 478 s, exit 0",
+  "  baseline replay exit 0: PASS",
+  "  replay freshly emitted all six outputs (absent before, present after): PASS | {'atlas_rows.csv.gz': True, 'dk_rows.csv.gz': True, 'atlas.csv': True, 'ladder.csv': True, 'product_judgment.csv': True, 'replay_report.txt': True}",
+  "\n=== baseline card 2025 w16 (pre-adapter code, kit mode) ===",
+  "  cwd /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261106_082012/baseline/kit_pre\n  /Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -u -c import sys, cards; sys.exit(cards.card(2025, 16))\n",
+  "\n  finished in 61 s, exit 0",
+  "  baseline card exit 0: PASS",
+  "  kit_pre/proj/atlas_rows.csv.gz: 563979078627",
+  "  kit_pre/proj/dk_rows.csv.gz: bbab6482b192",
+  "  kit_pre/proj/atlas.csv: 60d9b5d6a1ce",
+  "  kit_pre/proj/ladder.csv: 0ee25a698079",
+  "  kit_pre/proj/product_judgment.csv: e3c9f7714a36",
+  "  kit_pre/proj/replay_report.txt: f8d4f27ead48",
+  "  kit_pre/proj/card_2025_w16.csv: 0b5663dfbb45",
+  "  baseline outputs present: PASS",
+  "  live proj/ untouched: PASS | changed []",
+  "\nBASELINE (pre-adapter code on the same inputs): PASS"
+ ]
+}
