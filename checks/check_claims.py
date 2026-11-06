@@ -8,9 +8,10 @@ for p in sorted(set(re.findall(r"`([A-Za-z0-9_./-]+\.(?:md|py|sh|json|txt|csv)|c
 pending = [r.split("|")[1].strip() for r in rows if "pending" in r.split("|")[2]]
 for name in pending: ok = False; print(f"  PENDING sentence: {name}")
 if len(sys.argv) > 1:
-    resume = open(sys.argv[1]).read()
+    norm = lambda t: re.sub(r"\s+", " ", t.replace("’", "'").replace("‘", "'"))
+    resume = norm(open(sys.argv[1]).read())
     for r in rows:
         cells = [c.strip() for c in r.strip("|").split("|")]; claim = cells[1].strip().strip('"').strip("_[]")
         if "pending" in claim: continue
-        if claim not in resume: ok = False; print(f"  NOT ON RESUME verbatim: {cells[0]}: {claim[:70]}…")
+        if norm(claim) not in resume: ok = False; print(f"  NOT ON RESUME verbatim: {cells[0]}: {claim[:70]}…")
 print(f"CLAIMS: {'PASS' if ok else 'FAIL'} ({len(rows)} rows, {len(pending)} pending)"); sys.exit(0 if ok else 1)
