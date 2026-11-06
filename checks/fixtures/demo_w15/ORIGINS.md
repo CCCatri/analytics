@@ -11,4 +11,6 @@ The smallest input set with which a clean checkout issues the 2024 week 15 engin
 
 SHA-256 of each file is in `PINS.json`; `checks/demo_w15.py` refuses if any moved. The raw play-by-play (45 files, pinned in the engine's RAW_PIN) is NOT needed for this demo and is not in the tree.
 
-Redistribution: nflverse publishes its data releases under a permissive license (CC BY 4.0 to the best of this record's knowledge); confirm against the nflverse-data release page before the repository is made public, and keep the attribution line. The atlas, ladder and engine fixture are this project's own outputs.
+Redistribution: the injuries files, and the stats, rosters, injuries and snap-count releases that `facts/` is built from (`facts.py`; no participation/FTN data is read), come from the nflverse-data repository, whose license is CC BY 4.0 (confirmed 2026-11-06 against the nflverse-data package metadata). nflverse's own notice applies: NFL data accessed through it belongs to its respective owners and is governed by their terms of use. The atlas, ladder and engine fixture are this project's own outputs.
+
+Attribution: Data from nflverse (https://github.com/nflverse/nflverse-data), CC BY 4.0.
