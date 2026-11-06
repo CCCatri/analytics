@@ -1,5 +1,14 @@
 # analytics
 
+## The result
+
+One saved simulated game was changed by hand: Las Vegas's pass attempts in engine draw 0 raised from **36 to 60**. The slate kit's projection for Desmond Ridder's attempts moved from **6 to 10** at the traced column; all 67 kit columns mapped to that draw moved and none of the others did, in his attempt calculation and in the team root. With the adapter switched off, the kit is unchanged against its own pre-adapter code (card equal; 192,330 and 26,722 graded rows equal by key and value). Saved verdicts: [`cases/evidence/`](cases/evidence/). The engine's simulated team volume reaches a named player's projection; whether that improves the forecast is a separate, unrun test (`acceptance-criteria/forward-window.md`).
+
+Two ways to see it: the **short demo** (`python3 checks/demo_w15.py`, clean checkout, saved engine output, ~100 s) reproduces the trace and the controlled change; the **full replay** (`checks/run_handoff.sh`, ~20 min, needs the raw files and the saved pre-adapter kit) regenerates the upstream evidence and the switch-off comparison.
+
+Each document has one job: `README.md` directs; `cases/` explain decisions; `acceptance-criteria/` define acceptance; `checks/` produce verdicts; each directory's `README.md` says what its files are and what reads them.
+
+
 ## Start here
 
 The directories, in one line each: `cases/` the stories and their saved evidence · `checks/` every check and the one-command demo · `product/` the engine · `slate-kit/` the player-projection component · `acceptance-criteria/` the reference layer (some files pinned by code) · `out/` stamped outputs the product reads back and the Week 15 fixture · `rules/` the pinned rule books · `incidents/` the two revision snapshots behind the regression case · `WORK_ORDER.md` what remains open. Each directory has a README saying what writes and reads it.
@@ -10,6 +19,7 @@ The lead case is [From a simulated game to a player projection](cases/from-a-sim
 - the handoff and its gates: `acceptance-criteria/engine-to-kit-handoff.md` (section 6 is the integration check the lead case reports)
 - the three earlier cases, each one part of the lead case: `cases/clock-check-passed-a-corrupted-game.md`, `cases/regression-test-needed-data-that-could-trigger-the-bug.md`, `cases/two-components-had-to-agree-on-what-counts-as-an-attempt.md`
 - the two ways to verify it, below
+- the fields that carry the claim, and every column on disk: `DATA.md`
 - what remains open, as a work order with done-criteria: `WORK_ORDER.md`
 - the test that would decide whether the join forecasts better, designed and frozen before any outcome is read, not yet run: `acceptance-criteria/forward-window.md`
 
