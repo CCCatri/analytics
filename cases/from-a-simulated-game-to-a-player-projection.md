@@ -68,8 +68,10 @@ The joined model has not demonstrated forecast improvement on predictions record
 
 ## Role
 
-Cameron Catri set the acceptance criteria and the order of the gates, decided what counted as a pass and what had to fail first, ran every command on his machine, and read every result; the code and the harness were written by AI assistants under that direction, including the mistakes recorded above. The repo is arranged so that a reader can run the same command and get the same lines.
+In Cameron's words, spelling corrected and nothing else:
 
-## Run it yourself
+> I propose an idea to the agent, they propose an action, I say if they can predefine what would prove them wrong. I confirm the action to be coded by them. Then make them check their work against the predefined pass/fail. To strengthen this over time I split the builder from the judge. The judge sits in a new thread so it can prove the builder wrong.
+>
+> If the model had to break a rule to create a simulation, like a fifth down, that iteration failed.
 
-From a clean checkout, with Python 3, numpy and pandas and nothing else: `python3 checks/demo_w15.py`. It issues the engine-mode card for 2024 week 15, shows the trace above, makes the 36 → 60 change and reports where it did and did not reach, and refuses one broken input — about 100 seconds; result in `out/demo_w15/<stamp>/RESULT.txt`, exit status equal to the verdict. The inputs it needs are in `checks/fixtures/demo_w15/` with their origins and hashes (`ORIGINS.md`, `PINS.json`); the raw play-by-play is not required. The saved result of that run from a fresh clone on 2026-11-06 is [here](evidence/demo_w15_clean_checkout_20261106.txt). The full regeneration (`checks/run_handoff.sh`) and what it additionally needs are described in the README under "Two ways to verify".
+The code and the harness in this repository were written by AI assistants under that procedure, including the mistakes recorded above; the checks named in this case are the predefined pass/fail. The repo is arranged so that a reader can run the same command and get the same lines.
