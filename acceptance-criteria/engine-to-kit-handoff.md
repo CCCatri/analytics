@@ -40,3 +40,16 @@ fits the result is reported as IN-SAMPLE AT THE ROOT and is not the integration 
 ## 5. What is not claimed
 No forecast-accuracy claim for the engine until gate 2 reads BETTER on a window whose exposure is stated and clean. The first priced slate traced to engine
 draws (gate 1 passed, the file's manifest in the card's provenance) is the integration milestone; it is not an accuracy result.
+
+## 6. Integration checks (pinned 2026-11-05, before the adapter is written)
+Fixture: out/handoff/root_draws_2024_w15.npz, draw_count 30 (the kit's root draws 2,000). Pinned rule: kit draw j takes engine draw j mod 30, so the two teams of
+a game stay in one world; the manifest's draw_count is read, never assumed. Before the switch is wired, the downstream path is shown to accept a 30-column root
+and to carry draw identity across both teams of a game (one game, both teams, draw j on each side from the same engine game).
+Check A - kit mode: ROOT_SOURCE = 'kit' reproduces today's card_2026_w4.csv identical by (season, week, player_id, term) in every value (the comparison that
+read 0 changed on 2026-11-05), and the replay's paired rows unchanged.
+Check B - engine mode: a fresh card for the fixture week carries the draw file's sha in its provenance, and one traced row (a named player, one term) shows the
+root draw at index j equal to the engine file's value for his team at j, with the opponent's root at j from the same engine game.
+Check C - broken handoff: a missing draw file, a manifest sha mismatch, a team absent from the file, or a draw_count that does not match the arrays each produce
+an explicit refusal naming the cause; no fallback to the kit's own root draw in the same run.
+2024 w15 is an integration fixture only. The forward-evaluation window is chosen separately and declares one hold-out (the kit lists 2022 as readable; the engine
+holds it out); until then no comparison is run.

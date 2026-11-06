@@ -4,6 +4,8 @@
 
 ## What it demonstrates
 
+Cases a reviewer can read on their own: `cases/clock-check-passed-a-corrupted-game.md` (a passing check gave an incomplete answer; the stopped-clock check caught the planted fault).
+
 | Practice here | Industry term | Where |
 |---|---|---|
 | Acceptance criteria written before code, with expected counts; outcomes recorded whether they held or not | Pre-registration, prediction logging | `acceptance-criteria/clock-check.md` line 72 (FASTER counts expected before the run, met in all six seasons today); `acceptance-criteria/downs-check.md` (OTHER expected 0, met) |
