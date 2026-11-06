@@ -11,3 +11,7 @@ slate-kit/archive/
 slate-kit/sources/
 slate-kit/__pycache__/
 out/demo_w15/
+out/handoff/stage/
+out/handoff/games_2024_w15_P*.csv.gz
+out/handoff/runs/
+.DS_Store

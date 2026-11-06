@@ -2,6 +2,8 @@
 
 ## Start here
 
+The directories, in one line each: `cases/` the stories and their saved evidence · `checks/` every check and the one-command demo · `product/` the engine · `slate-kit/` the player-projection component · `acceptance-criteria/` the reference layer (some files pinned by code) · `out/` stamped outputs the product reads back and the Week 15 fixture · `rules/` the pinned rule books · `incidents/` the two revision snapshots behind the regression case · `WORK_ORDER.md` what remains open. Each directory has a README saying what writes and reads it.
+
 The lead case is [From a simulated game to a player projection](cases/from-a-simulated-game-to-a-player-projection.md): what the engine and the slate kit each do, where they meet, what the join had to preserve, and what one combined run produced (run `20261105_220733`, PASS; evidence under `cases/evidence/`). Everything below is a part of that case:
 
 - the engine's acceptance criteria and their limits: `acceptance-criteria/engine-vs-record.md`, `engine-legality.md`, `rules-level.md`, `PROGRESS.md`
@@ -32,7 +34,7 @@ Cases a reviewer can read on their own: `cases/clock-check-passed-a-corrupted-ga
 | Every read pins its inputs by hash | Provenance, reproducibility | `product/RAW_PINS.json` (45 raw files), the criteria sha in each record check, `out/engine/MANIFEST.json` checked file by file when the engine loads (stage 4) |
 | A rule is a sentence found in its pinned source document, or it reads UNKNOWN | Citation grounding | `product/rules.py` `season_rule_quotes`, `find_quote`; `rules/RULE_PINS.json` |
 | The 2022 season refused at every read; earlier iterations had tested against it and their records were deleted on 2026-10-26, so it certifies nothing (the version-4 plan of that date) | Leakage control, temporal holdout | `product/record.py` `held_out()`; revision 16 tests `boundary` and `quality_gate: hold-out access is tracked by dataset identity` (stage 3) |
-| An incident becomes a rule, with the row that caused it | Regression from incident | `policy/incident-derived-rules.md`; `checks/fixtures/regression_cases.csv` (9 cases) |
+| An incident becomes a rule, with the row that caused it | Regression from incident | `incidents/predecessor-index-mismatch/incident-derived-rules.md`; `checks/fixtures/regression_cases.csv` (9 cases) |
 
 ## Run it
 

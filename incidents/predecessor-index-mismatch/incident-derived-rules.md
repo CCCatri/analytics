@@ -1,5 +1,8 @@
 # Incident-derived rules
 
+> Moved from `policy/` on 2026-11-06. References to `.core/run_log.json`, `expect.json`, `Healix.md` and `NFL.md` are to the predecessor repository and do not resolve here; `quality_gate.py`, `run_log.py` and `tests/test_product.py` resolve inside `revision-16-with-regression-test/`.
+
+
 **How this was built.** Version 1 of these rules was authored top-down from the doctrine. This version is derived: every clause below is a pattern that occurs in *both* product documents (`Healix.md`, `NFL.md`, read 2026-10-23) and in both code trees, with where each instance is stated. A pattern held by one product only is not a company rule; the seven such patterns are listed at the end as the enforcer's own obligations, which every target inherits by running under Healix. The former failure catalogue (families A–K) is not a separate section: each family is the negation of one pattern and sits in that pattern's "refuses" column. This is SYNTHESIS applied to the contract itself; an amendment enters only by the incident rule in §4.
 
 Healix reads this file and cannot write it. A change is a reviewer event, dated, prospective only, never altering an existing decision.

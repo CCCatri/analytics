@@ -1,0 +1,3 @@
+# product/ — the engine component
+
+`record.py` (what is true of the raw files; no fit, no fill) → `check_possessions.py`, `check_clock.py`, `check_downs.py` (the three record checks, each to its pinned criteria, each writing stamped files to `out/`) → `rules.py` and `measure_season_rules.py` (the rules module and each season's measured rule) → `transition.py` and `engine.py` (one transition; games played out under the rules) → `rules_level.py` (the rules sentence from measurement) → `handoff_root_draws.py` (K draws of one week handed to the kit). `policy.py` is the contract (one name per quantity); `RAW_PINS.json` pins the raw files. `run.sh` at the root runs the stages in order.
