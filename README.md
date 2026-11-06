@@ -4,7 +4,7 @@
 
 ## What it demonstrates
 
-Cases a reviewer can read on their own: `cases/clock-check-passed-a-corrupted-game.md` (a passing check gave an incomplete answer; the stopped-clock check caught the planted fault) · `cases/regression-test-needed-data-that-could-trigger-the-bug.md` (twelve tests passed for eight revisions on a fixture that could not express the fault).
+Cases a reviewer can read on their own: `cases/clock-check-passed-a-corrupted-game.md` (a passing check gave an incomplete answer; the stopped-clock check caught the planted fault) · `cases/regression-test-needed-data-that-could-trigger-the-bug.md` (twelve tests passed for eight revisions on a fixture that could not express the fault) · `cases/two-components-had-to-agree-on-what-counts-as-an-attempt.md` (467 disagreeing team-weeks traced to a definition, then 0 of 3,200).
 
 | Practice here | Industry term | Where |
 |---|---|---|
