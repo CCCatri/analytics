@@ -4,6 +4,8 @@
 
 ## The result
 
+Predefine the goal, every sprint works to landing the shared root of that goal.
+
 One saved simulated game was changed by hand: Las Vegas's pass attempts in engine draw 0 raised from **36 to 60**. The slate kit's projection for Desmond Ridder's attempts moved from **6 to 10** at the traced column; all 67 kit columns mapped to that draw moved and none of the others did, in his attempt calculation and in the team root. With the adapter switched off, the kit is unchanged against its own pre-adapter code (card equal; 192,330 and 26,722 graded rows equal by key and value). Saved verdicts: [`cases/evidence/`](cases/evidence/). The engine's simulated team volume reaches a named player's projection; whether that improves the forecast is a separate, unrun test (`acceptance-criteria/forward-window.md`).
 
 Two ways to see it: the **short demo** (`python3 checks/demo_w15.py`, clean checkout, saved engine output, ~100 s) reproduces the trace and the controlled change; the **full replay** (`checks/run_handoff.sh`, ~20 min, needs the raw files and the saved pre-adapter kit) regenerates the upstream evidence and the switch-off comparison.
