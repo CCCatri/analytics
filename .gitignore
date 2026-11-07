@@ -15,3 +15,4 @@ out/handoff/stage/
 out/handoff/games_2024_w15_P*.csv.gz
 out/handoff/runs/
 .DS_Store
+out/experiments/

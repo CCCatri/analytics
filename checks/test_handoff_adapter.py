@@ -93,20 +93,9 @@ if pid:
 # ---------------- B2 ----------------
 say("\n=== B2: the value received at the boundary, and a controlled change of one source draw ===")
 if pid:
-    rec = [b for b in boundary if b["who"] == ("Q1 attempts", "QB", pid) and b["cell"] == ("Q1 attempts", "QB") and b["matches"]]
-    bound = len(rec) == 1 and rec[0]["parent_cell"] == ("F2 team attempts", "TEAM") and np.array_equal(rec[0]["parent"], week["draws"][(HOME, "F2 team attempts")])
-    verdict(f"B2 draw_link for {pid} Q1 attempts: one call, cell matched, parent is {HOME}'s F2 team attempts root", bound)
-    src0, src29 = float(src["attempts"][row_home][0]), float(src["attempts"][row_home][29])
-    verdict(f"B2 received column 30 = {HOME} source draw 0 ({src0:.0f}) and column 29 = source draw 29 ({src29:.0f})", bound and rec[0]["parent"][30] == src0 and rec[0]["parent"][29] == src29, f"received [30] {rec[0]['parent'][30] if rec else None}, [29] {rec[0]['parent'][29] if rec else None}; returned column 30 {rec[0]['out'][30] if rec else None}")
-    before, team_before = mine.copy(), week["draws"][(HOME, "F2 team attempts")].copy()
-    def bump(data): data["attempts"][row_home, 0] = data["attempts"][row_home, 0] + 24; return data
-    bumped = fixture("bumped", arrays_edit=bump); set_mode("engine", bumped); outdir("B2_bumped"); boundary.clear(); pending.clear()
-    week2 = quiet(orig_week_draws, 2024, 15); after, team_after = week2["draws"][(pid, "Q1 attempts")], week2["draws"][(HOME, "F2 team attempts")]
-    mapped = (np.arange(2000) % K) == 0; moved_team, moved = team_after != team_before, after != before
-    verdict(f"B2 team root moved at all {int(mapped.sum())} columns mapped to source 0 and nowhere else", moved_team[mapped].all() and not moved_team[~mapped].any(), f"mapped moved {int(moved_team[mapped].sum())} of {int(mapped.sum())}; unmapped moved {int(moved_team[~mapped].sum())}")
-    verdict(f"B2 {pid} Q1 attempts moved at >= 1 mapped column and at no unmapped column", moved[mapped].any() and not moved[~mapped].any(), f"mapped moved {int(moved[mapped].sum())} of {int(mapped.sum())} (a binomial can land on the same value); unmapped moved {int(moved[~mapped].sum())}")
-    rec2 = [b for b in boundary if b["who"] == ("Q1 attempts", "QB", pid) and b["cell"] == ("Q1 attempts", "QB") and b["matches"]]
-    verdict(f"B2 the changed source ({src0:.0f} -> {src0 + 24:.0f}) is what draw_link received at column 30", len(rec2) == 1 and rec2[0]["parent"][30] == src0 + 24, f"received {rec2[0]['parent'][30] if rec2 else None}; returned column 30 before {rec[0]['out'][30] if rec else None} after {rec2[0]['out'][30] if rec2 else None}")
+    from perturb_handoff import perturb_handoff
+    b2 = perturb_handoff(FIX, HOME, 0, 24, OUT, BASE_PROJ, state=dict(week=week, boundary=list(boundary), pid=pid, mine=mine), quiet=quiet)
+    for b2_name, b2_cond, b2_detail in b2["checks"]: verdict(b2_name, b2_cond, b2_detail)
 # ---------------- C ----------------
 say("\n=== C: four isolated injected faults, each refusing for its own reason, no card artifact ===")
 def drop_team(data):
