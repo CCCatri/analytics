@@ -401,7 +401,7 @@ Data-contract fix pending: a full-precision result column beside result_pct.  De
 ## 2026 PROSPECTIVE REGISTRATION (register.py -> proj/register_2026.json, read-only, stamped before the first eligible week-4 kickoff)
 H1 SC confirmation (PRIMARY, per the CHARTER 2026 section embedded verbatim); H2 DST-V1, H3 WR-short, H4 A p_play live (audit), H6 week-N salary change as a
 role trigger (secondary); H5 new-absence teammate tail (descriptive).  Power stored with it.  Nothing else is confirmatory in 2026; post-kickoff findings ->
-POST-2026 WALLS.  No statistical test consumes result_pct.  Method for every blocker: BLOCKER -> LEGAL OBSERVABLE -> FROZEN TEST -> PASS / CLOSE; never rescue
+POST-2026 REVISIONS.  No statistical test consumes result_pct.  Method for every blocker: BLOCKER -> LEGAL OBSERVABLE -> FROZEN TEST -> PASS / CLOSE; never rescue
 a failed branch except for a mechanical / accounting bug; calibration first, sharpness second.
 
 ## 2026 REGISTRATION - witness and power (stamped 2026-10-03 11:21:38 UTC, before the first eligible kickoff)
@@ -458,7 +458,7 @@ DESCRIPTIVE ONLY (downstream of the failed revision; AB = non-fading new real-ro
    C fading (98): price +68.7 [+8.7, +146.9]; role +0.177 [+0.135, +0.225].  Price by position: RB +444, TE +95, WR +82; role +0.18-0.22 in all.
 CONVENTION: chain snap_before = mean snap over the backup's earlier PLAYED games this season on this team (absences not zero) - not snap_ws.
 NOT A BUG: a relayed "CTRL stratum collision" is false - STEP 3 merges EV[TK + pos] (keys only); the run reached every d.stratum cell.
-POST-2026 WALL (designed on seen 2019-25 data, so confirmable only prospectively): W0 timing signal in pre-declared coarse r1 bins; monotonicity
+POST-2026 REVISION (designed on seen 2019-25 data, so confirmable only prospectively): W0 timing signal in pre-declared coarse r1 bins; monotonicity
    before any threshold; W1 crossing stability; then W2 price, W3 role, W4 tail, read sequentially (first NO stops); tail companion = A&dsal>=300
    vs control&dsal>=300 (descriptive).  Timing state from pbp last involvement replaces snap ratios when that facts column exists.  H6 unchanged.
 
@@ -473,7 +473,7 @@ T5 walk-forward rotated Gumbel vs Gaussian (held-out log copula density): QB1~WR
 SUPERSEDES the tail reading in "J JOINT TAILS + SALARY TIMING": the QB1~WR1 upper-tail excess was marginal, not copula (rank-scale uu +0.0049
    [-0.0027, +0.0132]); likewise QB1~opp QB1 uu and WR1~opp DST lu.  Slot PIT tail rates (descriptive, no null): WR1 11.1% / 8.9%, QB1 10.0% / 11.0%,
    RB1 10.1% / 8.9%, WR2 8.7% / 10.0%, TE1 10.5% / 10.1%, DST 8.8% / 10.2%.
-POST-2026 WALLS: corner-deficit copula family chosen from structure, not from these three corners; slot-conditioned Y tail calibration (needs its own null).
+POST-2026 REVISIONS: corner-deficit copula family chosen from structure, not from these three corners; slot-conditioned Y tail calibration (needs its own null).
 
 ## J TAIL POWER - Oct 3 2026 (jtail_power.py; proj/jtail_power_report.txt) - procedure characteristics under a known thinned-corner deficit
 WORLD jtails2 geometry (960 games, real mask, rank-scale corr); TRUTH Gaussian with QB1~WR1 ll, QB1~opp QB1 ll, RB1~opp DST lu thinned by rejection,
@@ -605,7 +605,7 @@ BENEATH IT (descriptive): A1-J resolved on 3 / 39 slates; all 5 J-vs-I discordan
 NEXT (only as a new registration, not a rerun of W0): W0-R resolution - the winner-vs-runner-up p90 gap in DK points across slates and the draws needed
    to resolve it; if the gaps are fractions of a point, reranking inside the exp neighbourhood is operationally immaterial whatever J does.
 
-## A TRANSITION WALL (AT) - REGISTRATION - Oct 3 2026 (before code; nothing seen; diagnostic - A stays frozen in L v2)
+## A TRANSITION REVISION (AT) - REGISTRATION - Oct 3 2026 (before code; nothing seen; diagnostic - A stays frozen in L v2)
 QUESTION: in the LIVE-LIKE candidate universe (not the outcome-selected priced rows A was fit on), in which transition states is A's p_play wrong, by
    how much in probability and in DK points, and how variable is the error?
 ROWS: proj/avail_rows.csv.gz (candidates Y would price, incl. absent; weeks 4-16; tests 2020-25).  PRIMARY 2023-25 (outside A's fit seasons and the
@@ -620,7 +620,7 @@ PW-A: the quality gate's power on these rows with true absence scaled by k in {1
 READING: noise-like on 2023-25 -> the availability lever is closed in the live-like universe;  STRUCTURAL -> lever map (flagged cells, dp, DK impact,
    deviation) recorded as POST-2026 candidates.  Nothing in A / S changes during L v2.
 
-## A TRANSITION WALL (AT) - OUTCOME - Oct 3 2026 (at_wall.py; proj/at_rows.csv.gz, at_report.txt) - STRUCTURAL in the live-like universe
+## A TRANSITION REVISION (AT) - OUTCOME - Oct 3 2026 (at_wall.py; proj/at_rows.csv.gz, at_report.txt) - STRUCTURAL in the live-like universe
 Candidate universe (avail_rows, incl. absent; 26,003 rows, 2020-25), A's frozen p_play by A's own path (0 rows without A).
 PRIMARY 2023-25 (15,536 rows): p_play 97.4% vs played 83.7%; 9 / 9 cells fail vs null 95th 11.1% -> STRUCTURAL.  PW-A x1.25 78%, x1.5 100%, x2 100%.
    gap 0 / low 84.5% vs 94.5%, mid 93.0% vs 99.6%, high 94.3% vs 100.0%;  gap 1: low 43.2% vs 91.7%, mid 39.3% vs 99.1%, high 38.6% vs 99.9%;
@@ -633,10 +633,10 @@ MECHANISM (read, not tested): A was fit on outcome-selected priced rows (HISTORI
 OPERATIONAL: s.run selects on exp = pred x p_play -> real-role players returning from absence enter the live slate with exp overstated by about half
    their projection; the frozen selector is drawn toward them.  Nothing changes in L v2.
 FORECAST, recorded before any 2026 scoring: H4 (A p_play on the live DK pool) is expected to fail, chiefly in players who missed the previous team-game.
-NOT A FUTURE WALL (project owner, Oct 3 2026): the candidate-universe availability model is built and validated NOW on 2019-25 history (pbp filtered to
+NOT A FUTURE REVISION (project owner, Oct 3 2026): the candidate-universe availability model is built and validated NOW on 2019-25 history (pbp filtered to
    games before the week where absence information is needed).  Only deployment into the frozen live s.run is tied to the L v2 freeze - the project owner's decision.
 
-## A TRANSITION WALL - STEP 3 OUTCOME - Oct 3 2026 (at_q.py, at_t.py; proj/at_q_report.txt, at_t_report.txt)
+## A TRANSITION REVISION - STEP 3 OUTCOME - Oct 3 2026 (at_q.py, at_t.py; proj/at_q_report.txt, at_t_report.txt)
 Step 2: no existing model passes the AT quality gate on 2023-25 - A 9/9, 1 - q_B 9/9, 1 - q_M 66.7% vs 22.2% (q_M log loss .3348, but too optimistic at gap 1).
 Step 3 (walk-forward, partial pooling M = 10): T1 gap x role G1 33.3% vs 11.1%, G2 44.0% vs 12.0%; T2 (+ position) G1 33.3% vs 22.2%, G2 20.0% vs 12.0%
    -> FAIL as registered.  The 3 failing G1 cells are exactly the gap-0 cells (T1 under by 1.0-2.2 points at n 3,800-5,200); every gap >= 1 cell is inside
@@ -1101,7 +1101,7 @@ READING: P and Y split the usage information (P shares, Y snaps / opportunities)
    consumer of price.  Quality gate for stranded skill: TERM SKILL (registered above).  Unifying P and Y usage is a method change - a later L start week (project owner).
 UNKNOWN: which of P / Y supplies the center s.py simulates (s.py not read here).
 
-## S CONSUMPTION + WALL RULE - Oct 3 2026 (code read of s.py, lineups9.py, card.py; grep of center / p10 / p90 / p_near_zero / p_plays / ystick / p_coef / j_model over *.py)
+## S CONSUMPTION + REVISION RULE - Oct 3 2026 (code read of s.py, lineups9.py, card.py; grep of center / p10 / p90 / p_near_zero / p_plays / ystick / p_coef / j_model over *.py)
 WHAT REACHES THE LINEUP (s.py): projection pred = P's frozen coefficients on p.asof inputs, salary cubic included (s L32-37); DST pred = DST salary curve alone (L38-39);
    p_plays = A's frozen cells (L44); lineup = lineups9.best9 on dk_expected = pred x p_plays (L46-47); lineup distribution = Monte Carlo of pred + J's margin quantile per
    depth slot through J's copula, x Bernoulli(p_plays) (L56-65).
@@ -1113,7 +1113,7 @@ CONSEQUENCE FOR TERM SKILL: a driver that earns a Y term improves the yardstick 
    J margins (shape).  TERM SKILL's target is an project owner decision (work order).
 AMENDMENT to CONSUMPTION MAP: "every validated driver (S01, S03-S07) is consumed by neither" reads: every validated FORM S01 / S03-S07 is not consumed as validated;
    some underlying variables already appear in P or Y (e.g. S01's shares in P).
-WALL RULE (project owner review): no revision opens without four lines - FORECAST TERM | CURRENT BASELINE (exact producer / output) | CANDIDATE SKILL (exact atlas row) |
+REVISION RULE (project owner review): no revision opens without four lines - FORECAST TERM | CURRENT BASELINE (exact producer / output) | CANDIDATE SKILL (exact atlas row) |
    SUCCESS CONSEQUENCE (which output changes if it earns).  P and Y are not unified for duplication alone.
 
 ## TERM-SKILL LADDER - Oct 3 2026 (project owner decision (c): both, Y first)
@@ -1169,7 +1169,7 @@ HIERARCHY: F0 information | F1 game state | F2 team volume | F3 participation | 
    (stat units) | F8 fantasy transform | F9 market / lineup.  Current producers: F3 A / T1; F6 J; F8 Y; F9 P (salary inside every prediction) and S, judged by L.
    F2, F4, F5 have no canonical producer and F7 no evaluator.  F2 has evidence: season-level plays / pass rate stand as baseline and extremes shrink (N01, N02, S08), so
    its first revision starts from that historical level baseline.
-WALL RULE (six fields; replaces the four-line rule for new revisions): primary target (the statistic or state) | data available before kickoff (before game N, N >= 4) | current baseline
+REVISION RULE (six fields; replaces the four-line rule for new revisions): primary target (the statistic or state) | data available before kickoff (before game N, N >= 4) | current baseline
    for that exact quantity | one candidate improvement | metric in the quantity's own units | consumer (next layer).  No revision opens with target or consumer empty.
 INDEX STATES: every F-row records evidence exists -> producer exists -> evaluator exists.  Demonstrated skill is not an earned producer (S01 share and S04 TD rank are skill
    against their historical baselines only; S01 has not faced a recency-weighted share baseline).
@@ -1218,7 +1218,7 @@ PROCESS RULES (added): every layer is scoreable in its own units before the next
    passes - each spine revision is registered once and judged once; closed revisions, boundaries and resolution limits are recorded as findings; every transaction states which
    piece of F2 -> F4 -> F5 -> F7 uncertainty it reduces, or is deferred.
 
-## STAT SPINE - WALL 1 (F2 team volume) - REGISTRATION - Oct 3 2026 (reads: facts.py L132-134 share denominators; p.py load / team_game / paired_by_slate / passes_gate; FUNNEL INDEX)
+## STAT SPINE - REVISION 1 (F2 team volume) - REGISTRATION - Oct 3 2026 (reads: facts.py L132-134 share denominators; p.py load / team_game / paired_by_slate / passes_gate; FUNNEL INDEX)
 primary target: team targets, team carries, team pass attempts per team-game (sums over players who played; targets / carries are the denominators of F4's shares, facts
    L132-134) | data available before kickoff: results through week N-1, N >= 4 (weeks 4-16, >= 3 earlier team-games this season) | current baseline: team season-to-date mean (N02 season
    level) | candidate: that mean shrunk toward the training seasons' league mean, strength k chosen on training seasons by MAE (grid 0-40; k = 0 equals the baseline) |
@@ -1227,14 +1227,14 @@ TESTS: walk-forward 2020, 2021, 2023, 2024, 2025 (history 2019-21, 2023-25).  GA
    that target; else the season-to-date mean is F2 v1 (the baseline stands).  Either way F2 v1 is fixed for the spine; procedure check (line 38) before any freeze.
    Script spine_f2.py, report proj/spine_f2_report.txt.  Registered once, judged once.
 
-## STAT SPINE - WALL 1 (F2) - OUTCOME - Oct 3 2026 (proj/spine_f2_report.txt; tests 2020-21, 2023-25; 384 team-games per season)
+## STAT SPINE - REVISION 1 (F2) - OUTCOME - Oct 3 2026 (proj/spine_f2_report.txt; tests 2020-21, 2023-25; 384 team-games per season)
 targets: MAE league mean 6.292, season-to-date 6.237 (+0.060+-0.078, 3/5), shrunk 6.022 - cut over season-to-date +0.2113+-0.0461 (5/5) *, k 5 every season.
 carries: 6.110 / 6.192 (-0.084, 1/5) / 5.994 - cut +0.1981+-0.0513 (5/5) *, k 8-12.   attempts: 6.498 / 6.527 (-0.022, 2/5) / 6.283 - cut +0.2383+-0.0546 (5/5) *, k 5-8.
 F2 v1 = shrunk team level (team season-to-date mean shrunk toward the training league mean, k chosen on training seasons) for targets, carries, pass attempts.
 RESOLUTION LIMIT: the season level alone does not beat the league mean; the shrunk level beats it by only 2-4% (MAE ~6 on means 27-34) - most team-game volume variation
    is not forecastable from team history.  Recorded as a finding.
 
-## STAT SPINE - WALL 2 (F4 shares) - REGISTRATION - Oct 3 2026 (reads: p.py OUTC share columns; facts L182 played-with-no-stat = 0)
+## STAT SPINE - REVISION 2 (F4 shares) - REGISTRATION - Oct 3 2026 (reads: p.py OUTC share columns; facts L182 played-with-no-stat = 0)
 primary target: next-game share given he plays - RB carry_share, RB / WR / TE target_share | data available before kickoff: through week N-1, weeks 4-16, >= 3 earlier played games for
    this team this season | current baseline: season-to-date share (the form P consumes; S01's baseline) | candidate: recency-weighted share, weight w^lag on earlier games,
    w chosen on training seasons by MAE from {1.0, 0.9, 0.8, 0.7, 0.6, 0.5} (1.0 = baseline) | metric: share MAE, paired by slate | consumer: F5 counts = F2 v1 x F4.
@@ -1242,38 +1242,38 @@ TESTS: walk-forward 2020, 2021, 2023, 2024, 2025.  GATE: passes_gate per slice. 
    winner is the bar for S01 / S02 as challengers.  Declared: players with < 3 earlier games on the team are not covered (shares need not sum to 1); team change restarts
    history.  Script spine_f4.py, report proj/spine_f4_report.txt.  Registered once, judged once.
 
-## STAT SPINE - WALL 2 (F4) - OUTCOME - Oct 3 2026 (proj/spine_f4_report.txt; tests 2020-21, 2023-25)
+## STAT SPINE - REVISION 2 (F4) - OUTCOME - Oct 3 2026 (proj/spine_f4_report.txt; tests 2020-21, 2023-25)
 RB carry_share: MAE 0.10978 -> 0.10491, cut +0.00473+-0.00072 (5/5) *, w 0.6 every season -> recency share is F4 v1.
 RB target_share: 0.03852 -> 0.03855, -0.00004+-0.00008 (1/5) -> season-to-date share is F4 v1.
 WR target_share: 0.05468 -> 0.05401, +0.00066+-0.00015 (5/5) *, w 0.8 -> recency.   TE target_share: 0.03930 -> 0.03911, +0.00018+-0.00006 (5/5) *, w 0.9 -> recency.
 F4 v1: recency-weighted share (w chosen on training seasons) for RB carry / WR target / TE target; season-to-date share for RB target.  This is the bar for S01 / S02.
 
-## STAT SPINE - WALL 3 (F5 counts: targets, carries) - REGISTRATION - Oct 3 2026 (reads: revisions 1-2 outcomes; spine_f2.py / spine_f4.py procedures)
+## STAT SPINE - REVISION 3 (F5 counts: targets, carries) - REGISTRATION - Oct 3 2026 (reads: revisions 1-2 outcomes; spine_f2.py / spine_f4.py procedures)
 primary target: player targets (RB / WR / TE) and RB carries per game given he plays | data available before kickoff: through week N-1, weeks 4-16, >= 3 earlier played games on the
    team | current baseline: his season-to-date mean count on the team | candidate: F2 v1 team count x F4 v1 share, each re-fit on training seasons inside each fold by its
    registered procedure (form per slice fixed by revisions 1-2) | metric: count MAE, paired by slate | consumer: later F5 revisions (receptions, yards, TDs) and F8.
 TESTS: walk-forward 2020, 2021, 2023, 2024, 2025.  GATE: passes_gate per slice.  EARNED -> the identity is F5 v1 for that count; else his season-to-date count is F5 v1.
    Script spine_f5.py, report proj/spine_f5_report.txt.  Registered once, judged once.
 
-## STAT SPINE - WALL 3 (F5 targets / carries) - OUTCOME - Oct 3 2026 (proj/spine_f5_report.txt; tests 2020-21, 2023-25)
+## STAT SPINE - REVISION 3 (F5 targets / carries) - OUTCOME - Oct 3 2026 (proj/spine_f5_report.txt; tests 2020-21, 2023-25)
 RB carries: MAE 3.4463 -> 3.3293, cut +0.1187+-0.0217 (5/5) * -> F5 v1 = F2 v1 x F4 v1.   WR targets: 1.9049 -> 1.8788, +0.0258+-0.0054 (5/5) * -> F5 v1 = identity.
 RB targets: 1.3061 -> 1.3000, +0.0059+-0.0030 (4/5) -> F5 v1 = his season-to-date count.   TE targets: 1.3393 -> 1.3332, +0.0060+-0.0036 (3/5) -> F5 v1 = season-to-date.
 The identity earns exactly where revision 2's recency gain was large (RB carry w 0.6, WR target w 0.8); near misses are not re-tried on these seasons.
 
-## STAT SPINE - WALL 4 (F5 receptions) - REGISTRATION - Oct 3 2026 (reads: revision 3 outcome; p.py OUTC receptions)
+## STAT SPINE - REVISION 4 (F5 receptions) - REGISTRATION - Oct 3 2026 (reads: revision 3 outcome; p.py OUTC receptions)
 primary target: player receptions (RB / WR / TE) per game given he plays | data available before kickoff: through week N-1, weeks 4-16, >= 3 earlier played games on the team |
    current baseline: his season-to-date mean receptions | candidate: F5 v1 targets x his season-to-date catch rate (earlier receptions / earlier targets) | metric:
    reception MAE, paired by slate | consumer: yards revisions; F8 (1 DK point per reception).
 TESTS: walk-forward 2020, 2021, 2023, 2024, 2025.  GATE: passes_gate per position.  EARNED -> targets x catch rate is F5 v1 receptions; else his season-to-date receptions.
    Declared: rows with no earlier targets (catch rate undefined) are dropped from both arms and counted.  Script spine_rec.py.  Registered once, judged once.
 
-## STAT SPINE - WALL 4 (F5 receptions) - OUTCOME - Oct 3 2026 (proj/spine_rec_report.txt; 1474 rows without earlier targets dropped: RB 479, WR 472, TE 523)
+## STAT SPINE - REVISION 4 (F5 receptions) - OUTCOME - Oct 3 2026 (proj/spine_rec_report.txt; 1474 rows without earlier targets dropped: RB 479, WR 472, TE 523)
 WR: MAE 1.4400 -> 1.4328, cut +0.0064+-0.0034 (5/5) - below 2 s.e. -> NOT SHOWN.
 RB, TE: cut exactly 0 - NO TEST: with F5 v1 targets = season-to-date, mean targets x (receptions / targets so far) = mean receptions by construction (registration error).
 F5 v1 receptions = his season-to-date mean receptions (all positions).
 RULE (added): a candidate identical to the baseline by construction on a slice is declared NO TEST at registration and not run.
 
-## STAT SPINE - WALL 5 (F5 yards) - REGISTRATION - Oct 3 2026 (reads: revisions 3-4 outcomes; p.py OUTC rushing_yards / receiving_yards)
+## STAT SPINE - REVISION 5 (F5 yards) - REGISTRATION - Oct 3 2026 (reads: revisions 3-4 outcomes; p.py OUTC rushing_yards / receiving_yards)
 primary target: RB rushing yards, WR receiving yards per game given he plays | data available before kickoff: through week N-1, weeks 4-16, >= 3 earlier played games on the team |
    current baseline: his season-to-date mean yards | candidate: F5 v1 count (RB carries / WR targets = F2 v1 x F4 v1, re-fit per fold) x his season-to-date yards per
    carry / per target | metric: yards MAE, paired by slate | consumer: TD revisions; F8 (0.1 DK per yard + 100-yard bonus).
@@ -1281,12 +1281,12 @@ NO TEST (declared): RB and TE receiving yards (F5 v1 targets = season-to-date, s
 TESTS: walk-forward 2020, 2021, 2023, 2024, 2025.  GATE: passes_gate per slice.  Rows with an undefined rate (no earlier carries / targets) dropped from both arms and counted.
    Script spine_yds.py.  Registered once, judged once.
 
-## STAT SPINE - WALL 5 (F5 yards) - OUTCOME - Oct 3 2026 (proj/spine_yds_report.txt; dropped for undefined rate: RB 404, WR 472)
+## STAT SPINE - REVISION 5 (F5 yards) - OUTCOME - Oct 3 2026 (proj/spine_yds_report.txt; dropped for undefined rate: RB 404, WR 472)
 RB rushing yards: MAE 20.484 -> 20.350, cut +0.1397+-0.1038 (4/5) -> NOT SHOWN.   WR receiving yards: 21.571 -> 21.683, -0.1185+-0.0468 (0/5) -> NOT SHOWN (worse).
 F5 v1 yards = his season-to-date mean yards.  Pattern across revisions 3-5: volume terms earn (RB carries, WR targets); unshrunk efficiency rates (catch rate, yards per
    opportunity) add nothing over his own average.  Rate shrinkage stays a post-freeze challenger (listed before this revision ran) - not a rescue on these seasons.
 
-## STAT SPINE - WALL 6 (F5 TDs) - REGISTRATION - Oct 3 2026 (reads: term_skill.py S04 construction; p.py OUTC TD / red-zone columns)
+## STAT SPINE - REVISION 6 (F5 TDs) - REGISTRATION - Oct 3 2026 (reads: term_skill.py S04 construction; p.py OUTC TD / red-zone columns)
 primary target: player TDs (rushing + receiving), RB / WR / TE, per game given he plays | data available before kickoff: through week N-1, weeks 4-16, >= 3 earlier played games on the
    team | current baseline: his season-to-date mean TDs | candidate: S04 - (TDs so far + kb x league rate) / (red-zone opportunities so far + kb) x his red-zone
    opportunities per game so far; kb (grid 2-80, by squared error) and league rate fit on training seasons; grouping player-season-team | metric: Poisson deviance per
@@ -1294,17 +1294,17 @@ primary target: player TDs (rushing + receiving), RB / WR / TE, per game given h
 TESTS: walk-forward 2020, 2021, 2023, 2024, 2025.  GATE: passes_gate per position on deviance.  EARNED -> S04 is F5 v1 TDs; else his season-to-date TDs.  First test of S04
    in TD units (its earlier closure was as an F8 increment).  Script spine_td.py.  Registered once, judged once.
 
-## STAT SPINE - WALL 6 (F5 TDs) - OUTCOME - Oct 3 2026 (proj/spine_td_report.txt; tests 2020-21, 2023-25)
+## STAT SPINE - REVISION 6 (F5 TDs) - OUTCOME - Oct 3 2026 (proj/spine_td_report.txt; tests 2020-21, 2023-25)
 RB: deviance 0.9415 -> 0.7865, cut +0.16251+-0.01905 (5/5) *, kb 20-40; Brier P(TD>=1) 0.1716 -> 0.1631; MAE 0.3814 -> 0.3867 (MAE rewards the median, 0).
 WR: 0.7642 -> 0.6715, +0.09497+-0.01269 (5/5) *, kb 10-40; Brier 0.1403 -> 0.1354; MAE 0.2888 -> 0.2941.
 TE: 0.6703 -> 0.5542, +0.11933+-0.01537 (5/5) *, kb 20-40; Brier 0.1115 -> 0.1050; MAE 0.2168 -> 0.2209.
 F5 v1 TDs = S04 (hierarchical TD rate x red-zone opportunities per game, kb and league rate fit on training seasons) for RB / WR / TE.
 
 ## LEDGER RESTORE - Oct 3 2026 (wc -l CHARTER.md 1091; grep of "^## " headings; ls: one copy, modified 18:50)
-Between the 18:49 run (headings through STAT SPINE WALL 5 REGISTRATION at L1267) and the 18:50 append, CHARTER.md was replaced by a copy ending at RENAME REHASH
-   (L1075-1078); the 18:50 block appended WALL 5 OUTCOME and WALL 6 REGISTRATION after it.  Restored verbatim from this session's heredocs, in original order, before those
-   two entries: CONSUMPTION MAP; S CONSUMPTION + WALL RULE; TERM-SKILL LADDER; TERM SKILL STAGE 1 REGISTRATION / OUTCOME; STAGE 2 (P) S03 REGISTRATION; STAGE 2 (P) S03
-   OUTCOME (first recorded here - its block never ran); FORECAST HIERARCHY + STAT-SPINE RULES; FUNNEL INDEX; STAT SPINE WALL 1-4 REGISTRATION / OUTCOME; WALL 5
+Between the 18:49 run (headings through STAT SPINE REVISION 5 REGISTRATION at L1267) and the 18:50 append, CHARTER.md was replaced by a copy ending at RENAME REHASH
+   (L1075-1078); the 18:50 block appended REVISION 5 OUTCOME and REVISION 6 REGISTRATION after it.  Restored verbatim from this session's heredocs, in original order, before those
+   two entries: CONSUMPTION MAP; S CONSUMPTION + REVISION RULE; TERM-SKILL LADDER; TERM SKILL STAGE 1 REGISTRATION / OUTCOME; STAGE 2 (P) S03 REGISTRATION; STAGE 2 (P) S03
+   OUTCOME (first recorded here - its block never ran); FORECAST HIERARCHY + STAT-SPINE RULES; FUNNEL INDEX; STAT SPINE REVISION 1-4 REGISTRATION / OUTCOME; REVISION 5
    REGISTRATION.  Source of the overwrite: unknown (the stale copy ends at the entry written outside this session).
 
 ## LENS LADDER - governing workflow for every stubborn quantity - Oct 3 2026 (project owner)
@@ -1669,13 +1669,13 @@ Null: independent F6 v1 marginals (CHARTER "F6 MARGINAL PROCEDURE HARNESS - OUTC
    revision 3, player count with team total (F2 team total x F4 share given team total, F6 v1 forms); dependence revision 4, QB passing yards with receiver yards; dependence
    revision 5, QB passing TDs with receiver TDs; dependence revision 6, opposing team volumes; then the dependence harness (line 38 procedure).  Metric: joint negative log
    score per player-game (or team-game), paired by slate, tests 2021, 2023-25; quality gate p.passes_gate.  Any other structure is a challenger.
-## F6 DEPENDENCE WALL 1 - REGISTRATION - Oct 3 2026
+## F6 DEPENDENCE REVISION 1 - REGISTRATION - Oct 3 2026
 Keys unique; targets x receptions matched 5055 / 8661 / 5283 (RB / WR / TE), Q1 x Q2 matched 1895; bounded count never exceeds bounding count (0 rows).  Null:
    marginal(bounding) x marginal(bounded), F6 v1 forms (negative binomial WR targets / WR receptions / Q1 / Q2, Poisson RB / TE targets and receptions; r on earlier
    seasons).  Candidate: marginal(bounding) x Binomial(bounded; bounding, mean_bounded / mean_bounding).  Reported: randomized-PIT Spearman (bounding, bounded) under
    the null; bounded-count PIT mean / sd under both.  Consumer F7, F8.  Reduces: joint uncertainty of player volume and conversion.
 
-## F6 DEPENDENCE WALL 1 - OUTCOME - Oct 3 2026 (proj/f6_dependence_report.txt): EARNED 4 / 4, each 4 / 4 seasons, pending the dependence harness.
+## F6 DEPENDENCE REVISION 1 - OUTCOME - Oct 3 2026 (proj/f6_dependence_report.txt): EARNED 4 / 4, each 4 / 4 seasons, pending the dependence harness.
    F5 receptions given F5 targets RB +0.80468+-0.03354, WR +0.53249+-0.02605, TE +0.64045+-0.03209; Q2 completions given Q1 attempts +1.16989+-0.05671.  Randomized-PIT
    Spearman under independent marginals +0.764 / +0.713 / +0.729 / +0.883.  Bounded-count PIT mean / sd under revision 1: .486 / .307, .492 / .314, .490 / .307, .495 / .299.
 NOTE: the dependence revision 2 condition ("PIT sd below 0.27") is inverted relative to what a beta-binomial precision can repair (a too-narrow conditional, PIT sd above
@@ -1684,7 +1684,7 @@ NOTE: the dependence revision 2 condition ("PIT sd below 0.27") is inverted rela
 
 NOTE (F6 DEPENDENCE LADDER order): dependence revision 3 runs while the revision 2 decision is open; revision 3 pairs different quantities (F2 team total with player count) and
    neither its null nor its candidate uses the revision 1 / revision 2 conditional, so the revision 2 outcome cannot change it.  Revision 2 remains not run as registered.
-## F6 DEPENDENCE WALL 3 - REGISTRATION - Oct 3 2026
+## F6 DEPENDENCE REVISION 3 - REGISTRATION - Oct 3 2026
 Slices: F5 targets RB / WR / TE with F2 team targets; F5 carries RB with F2 team carries.  Team from load() (player_id, season, week); team total = F2 spine row (key team).
    Null: F6 v1 team marginal (negative binomial team targets, Poisson team carries) x F6 v1 player marginal (negative binomial WR targets; Poisson RB / TE targets, RB
    carries).  Candidate: same team marginal x F6 v1 share given team total (beta-binomial WR / TE targets, binomial RB targets / carries) with p = frozen F5 mean / frozen
@@ -1692,7 +1692,7 @@ Slices: F5 targets RB / WR / TE with F2 team targets; F5 carries RB with F2 team
    per player-game, paired by slate, tests 2021, 2023-25; quality gate.  Reported: randomized-PIT Spearman (team total, player count) under the null; player PIT mean / sd
    under both.  Consumer F7, F8.  Reduces: joint uncertainty of team volume and player volume.
 
-## F6 DEPENDENCE WALL 3 - OUTCOME - Oct 3 2026 (proj/f6_dependence_team_report.txt): EARNED 4 / 4, pending the dependence harness.  F5 targets given F2 team targets
+## F6 DEPENDENCE REVISION 3 - OUTCOME - Oct 3 2026 (proj/f6_dependence_team_report.txt): EARNED 4 / 4, pending the dependence harness.  F5 targets given F2 team targets
    RB +0.13248+-0.01549 (4/4), WR +0.19683+-0.01584 (4/4), TE +0.18011+-0.01724 (4/4); F5 carries given F2 team carries RB +0.07259+-0.03323 (3/4).  Randomized-PIT
    Spearman under independent marginals +.241 / +.297 / +.206 / +.409.  Player PIT sd under revision 3 .320 / .292 / .299 / .359 (RB too narrow: binomial / Poisson v1 cost);
    TE player PIT mean .549 (TE level challenger).  Share forms = F6 v1 (beta-binomial WR / TE, binomial RB).
@@ -1707,24 +1707,24 @@ GOVERNING RULE (F6, reviewer Oct 3 2026): prefer a conditional football identity
    row).  Team-games with 1 / 2 / 3 passers 2720 / 465 / 15.  Receiving-yards share WR .639, TE .216, RB .145, QB .0002.
 NOTE (dependence revision 5): spine "F5 TDs" = rushing TDs + receiving TDs, so the passing-TD identity has no spine term; revision 5 needs a receiving-TD term and its own
    registration.
-## F6 DEPENDENCE WALL 4 - REGISTRATION - Oct 3 2026 (category A, allocation of passing yards)
+## F6 DEPENDENCE REVISION 4 - REGISTRATION - Oct 3 2026 (category A, allocation of passing yards)
 Team-games with exactly one Q3 passing yards spine row; each F5 receiving yards row (RB / WR / TE) of that team-game paired with it (team from load()).  Null:
    Normal(Y_Q; Q3 mean, sigma_Q) x receiver F6 v1 form at its frozen mean (rung 2 RB / WR, rung 3 TE).  Candidate: same QB term x receiver F6 v1 form at frozen mean x
    Y_Q / max(Q3 mean, 1); nothing fitted (spreads fit on earlier seasons around the frozen means, identical in null and candidate).  Joint negative log score per
    receiver-game, paired by slate, tests 2021, 2023-25; quality gate.  Reported: pairs used / dropped, randomized-PIT Spearman (QB yards, receiver yards) under the null,
    receiver PIT mean / sd under both.  Consumer F7, F8.  Reduces: joint uncertainty of QB passing yards and receiver yards.
 
-## F6 DEPENDENCE WALL 4 - OUTCOME - Oct 3 2026 (proj/f6_dependence_yards_report.txt): NOT SHOWN 3 / 3.  F5 receiving yards given Q3 passing yards RB -0.03488+-0.03836
+## F6 DEPENDENCE REVISION 4 - OUTCOME - Oct 3 2026 (proj/f6_dependence_yards_report.txt): NOT SHOWN 3 / 3.  F5 receiving yards given Q3 passing yards RB -0.03488+-0.03836
    (1/4), WR -0.11390+-0.10350 (1/4), TE -0.10339+-0.04699 (1/4); pairs from 1649 single-passer team-games (123 dropped).  Randomized-PIT Spearman under independent
    marginals +.179 / +.276 / +.182 - co-movement exists, but one-for-one scaling of the receiver mean by realized / frozen QB yards scores worse than independence.
    Independent marginals stay.  Fitted-elasticity or residual (category B) form -> challenger.
-## F6 DEPENDENCE WALL 5 - STATUS: not runnable in v1 (spine "F5 TDs" = rushing + receiving TDs; a receiving-TD term would be a new F5 term after the F5 set was fixed).
+## F6 DEPENDENCE REVISION 5 - STATUS: not runnable in v1 (spine "F5 TDs" = rushing + receiving TDs; a receiving-TD term would be a new F5 term after the F5 set was fixed).
    Passing-TD allocation -> challenger.
 
 CHALLENGER SPEC (reviewer, Oct 3 2026; dependence revision 4): receiver mean x (realized / frozen QB passing yards)^beta, beta fit on training seasons only (revision 4 hard-coded
    beta = 1); runs on the challenger clock, and is relevant only if F8 shows a receiving-yard covariance miss.  Revision 4 recorded as a boundary: PIT co-movement present,
    registered usable mechanism not demonstrated.
-## F6 DEPENDENCE WALL 6 - REGISTRATION - Oct 3 2026 (category B, opposing team volumes)
+## F6 DEPENDENCE REVISION 6 - REGISTRATION - Oct 3 2026 (category B, opposing team volumes)
 team_game() opponent non-null 1.0 (seasons <= 2025).  Pairs: F2 team rows of both teams in the same game (home row joined to its opponent's row; both must have F2
    rows).  One quantity at a time: F2 team targets (negative binomial), team carries (Poisson), team attempts (negative binomial), F6 v1 forms, r on earlier seasons.
    Null: independent marginals.  Candidate: Gaussian copula on the same marginals, one correlation rho on grid -0.60..0.60 step 0.05, fit by likelihood on earlier
@@ -1732,7 +1732,7 @@ team_game() opponent non-null 1.0 (seasons <= 2025).  Pairs: F2 team rows of bot
    match scipy multivariate_normal.cdf within 1e-6 at 2000 random points or the run refuses.  Reported: pairs, rho per test season, randomized-PIT Spearman home x away
    under the null, share of rectangles floored.  Consumer F7, F8.  Reduces: joint uncertainty of the two teams' volumes in one game.
 
-## F6 DEPENDENCE WALL 6 - OUTCOME - Oct 3 2026 (proj/f6_dependence_opponent_report.txt; 768 games; bivariate normal self-check 2.22e-16; 0 rectangles floored)
+## F6 DEPENDENCE REVISION 6 - OUTCOME - Oct 3 2026 (proj/f6_dependence_opponent_report.txt; 768 games; bivariate normal self-check 2.22e-16; 0 rectangles floored)
    F2 team carries home with away: rho -0.35 / -0.40 / -0.40 / -0.40, randomized-PIT Spearman -.555, gain +0.22849+-0.02548 (4/4) -> EARNED (pending dependence harness).
    F2 team targets: rho -0.15, Spearman -.103, +0.00390+-0.00490 (3/4) -> NOT SHOWN; F2 team attempts: rho -0.15 / -0.20, Spearman -.117, +0.00449+-0.00561 (3/4) -> NOT
    SHOWN.  Independent marginals stay for team targets and attempts.  Every declared dependence revision now has an outcome.
@@ -1815,7 +1815,7 @@ Dependence revision 7: yards given realized opportunities (receiving yards given
    completions; QB rushing yards given QB carries).  Dependence revision 8: TDs given volume - runs only if, after revision 7 enters composition, F8 above-p90 share stays above
    .12 overall.  Each earned revision goes through the dependence harness; composition and F8 vs Y are re-run after each.  FREEZE RULE: freeze v1 when the F8 quantile-score
    gain over the previous composition fails the quality gate.  Any other structure is a challenger.
-## F6 DEPENDENCE WALL 7 - REGISTRATION - Oct 3 2026 (category A, conversion of opportunities into yards)
+## F6 DEPENDENCE REVISION 7 - REGISTRATION - Oct 3 2026 (category A, conversion of opportunities into yards)
 Null: opportunity F6 v1 marginal (negative binomial F5 receptions WR, Q2 completions, QB carries; Poisson F5 receptions RB / TE, F5 carries RB; r on earlier seasons) x
    yards F6 v1 marginal (rung 2 receiving yards RB / WR, rushing yards RB, Q3; rung 3 receiving yards TE; rung 3z zero-hurdle QB rushing yards).  Candidate: same
    opportunity marginal x yards given realized count n: n > 0 -> Normal(n e, n v), e = frozen yards mean / frozen opportunity mean (frozen yards mean preserved), v =
@@ -1823,7 +1823,7 @@ Null: opportunity F6 v1 marginal (negative binomial F5 receptions WR, Q2 complet
    score per player-game (unit-bin), paired by slate, tests 2021, 2023-25; quality gate.  Reported: gain split n = 0 / n > 0 rows; conditional PIT mean / sd on n > 0 rows.
    Rows to proj/f6_dependence_efficiency_rows.csv.gz.  Consumer F7, F8.  Reduces: within-player joint uncertainty of opportunities and yards (F8 thin upper tail).
 
-## F6 DEPENDENCE WALL 7 - OUTCOME - Oct 3 2026 (proj/f6_dependence_efficiency_report.txt): EARNED 6 / 6, each 4 / 4 (pending the dependence harness).
+## F6 DEPENDENCE REVISION 7 - OUTCOME - Oct 3 2026 (proj/f6_dependence_efficiency_report.txt): EARNED 6 / 6, each 4 / 4 (pending the dependence harness).
    Receiving yards given receptions RB +1.65709+-0.03589, WR +1.61270+-0.02416, TE +1.66325+-0.02662; rushing yards given carries RB +1.08777+-0.05256; Q3 passing yards
    given Q2 completions +0.72892+-0.04191; QB rushing yards given QB carries +0.59666+-0.02505.  Mean gain per row n = 0 / n > 0: RB +3.87 / +.38, WR +4.48 / +.49, TE +3.34 /
    +.65, RB rushing +4.31 / +.35, Q3 +6.27 / +.57, QB rushing +1.73 / +.46.  Conditional PIT (n > 0) mean .481-.511, sd .256-.280.
@@ -1831,7 +1831,7 @@ NOTE (dependence harness scope): harness.py dependence mode consumes one random 
    recorded revision 1 / 3 / 4 / 6 outcomes.  harness.py gains an optional rows-file argument; revision 7 is harnessed alone (fresh stream, seed 20261003);
    harness_dependence_report.txt remains the play-by-play record for revisions 1, 3, 4, 6.  Spine and F6 modes must reproduce byte-identical.
 
-## F6 DEPENDENCE WALL 7 HARNESS - OUTCOME - Oct 3 2026 (proj/harness_dependence_efficiency_report.txt; spine and F6 modes reproduced byte-identical)
+## F6 DEPENDENCE REVISION 7 HARNESS - OUTCOME - Oct 3 2026 (proj/harness_dependence_efficiency_report.txt; spine and F6 modes reproduced byte-identical)
 HARNESS PASS: F5 receiving yards given F5 receptions TE (FP null B .000), F5 rushing yards given F5 carries RB (.000), Q3 passing yards given Q2 completions (.000), QB
    rushing yards given QB carries (.000).  HARNESS FAIL: F5 receiving yards given F5 receptions RB (.056, tau/sigma .26), WR (.204, tau/sigma .58).
 DISCLOSURE (harness procedure defect, not yet corrected): harness.py draws every slice of a run from one random stream in order, so each slice's FP null B depends on the
@@ -1900,13 +1900,13 @@ spine_compose.py rebuilt on the corrected architecture: apply_freeze means; Q1 a
    F8 vs Y (16713 rows): center ALL +0.0513+-0.0104 (4/4), RB +0.0930 (4/4), TE +0.1295 (4/4), WR +0.0344 (3/4) not shown, QB -0.2003 (0/4); quantile score worse at every
    position (ALL -0.0946, 0/4); above p90 ALL .147 (RB .151, WR .145, TE .141, QB .164); below p10 .112.  Dependence revision 8 condition (.147 > .12) MET.  Freeze rule not
    applicable yet (first composition on the corrected architecture).
-## F6 DEPENDENCE WALL 8 - REGISTRATION - Oct 3 2026 (TDs given volume)
+## F6 DEPENDENCE REVISION 8 - REGISTRATION - Oct 3 2026 (TDs given volume)
 TD count given realized volume n ~ Poisson((n + .001) tau), tau = frozen TD mean / frozen volume mean (freeze-form means; nothing fitted).  Volume: F5 TDs RB = F5 carries +
    F5 receptions; F5 TDs WR / TE = F5 receptions; Q4 passing TDs = Q2 completions; QB rushing TDs = QB carries.  Null: TD F6 v1 Poisson marginal.  The volume term is
    identical in null and candidate and cancels.  Negative log score per player-game, paired by slate, tests 2021, 2023-25; quality gate; then harness v2 on its rows file alone.
    Reported: rows with n = 0 and TD > 0; conditional PIT.  Rows to proj/f6_dependence_touchdowns_rows.csv.gz.  Consumer: composition, F8.
 
-## F6 DEPENDENCE WALL 8 - OUTCOME - Oct 3 2026 (f6_dependence_touchdowns_report.txt; harness v2)
+## F6 DEPENDENCE REVISION 8 - OUTCOME - Oct 3 2026 (f6_dependence_touchdowns_report.txt; harness v2)
 F5 TDs given F5 receptions WR +0.03560+-0.00582 (4/4) HARNESS PASS (.0000); Q4 passing TDs given Q2 completions +0.09210+-0.01434 (4/4) HARNESS PASS (.0000), conditional
    PIT mean .530; QB rushing TDs given QB carries +0.03675+-0.00809 (4/4) HARNESS PASS (.0000); F5 TDs given F5 carries + F5 receptions RB +0.04472+-0.00612 (4/4) HARNESS
    FAIL (.0629); F5 TDs given F5 receptions TE -0.46934+-0.26864 (0/4) quality gate fail, under examination: suspected near-zero frozen-receptions denominator in tau (TE TD v1
@@ -1966,7 +1966,7 @@ INVENTORY (silent-substitution read): semantic substitutions to remove - mean cl
 CLASSIFICATION: revision 1 RB / TE receptions blocked by first-event support (16 / 31 defined rows); revision 8 WR TDs materially blocked (219-223); revision 1 QB, revision 7 RB / TE
    receiving yards and Q3 clean on support; revision 7 WR receiving yards (2 rows) and QB rushing yards (1 row) small identity-exception residue.  Revisions 1 / 8 quality gates are not
    re-run under raw zero-rate laws.
-NOTE: the coming FIRST-EVENT SUPPORT WALL (pooled rate law fit on earlier seasons, the same law for zero and nonzero histories, no branch, no floor) is a new revision; closed
+NOTE: the coming FIRST-EVENT SUPPORT REVISION (pooled rate law fit on earlier seasons, the same law for zero and nonzero histories, no branch, no floor) is a new revision; closed
    dependence revision 2 (extra conditional dispersion) is not reopened.  Identity exceptions (realized n = 0 with Y != 0) are not reached by a shrunk rate; their handling
    remains an project owner decision.
 
@@ -1997,7 +1997,7 @@ spine.py emits proj/spine_sufficient.csv.gz per test player-game: prior games, p
 ## CONSTRUCTOR STATE step 2 - OUTCOME - Oct 3 2026: self-check 20 / 20; issue path 33 / 33; season-to-date base = prior sum / prior games for 20 terms (max |diff|
    1.42e-14); undefined per pair = D read (350, 376; 417, 449, 491; 449; 12).  Zero states: catch rate RB 67, TE 115; receiving yards per reception RB 12, WR 5, TE 13; TDs
    per reception WR 2415; QB rushing yards per carry 6.  proj/spine_sufficient.csv.gz covers every history season (2020 on).
-## FIRST-EVENT SUPPORT WALL - REGISTRATION - Oct 3 2026 (new revision; not dependence revision 2)
+## FIRST-EVENT SUPPORT REVISION - REGISTRATION - Oct 3 2026 (new revision; not dependence revision 2)
 Slices: catch rate RB, TE (conditional receptions given realized targets); TDs per reception WR (conditional TDs given realized receptions).  Sufficient statistics from
    spine_sufficient (prior successes s, prior exposure n, constructor label); realized k, y from spine_rows.  Baseline: raw-rate law (Binomial(k, s/n); Poisson(k s/n)),
    defined for n > 0.  Candidate: conjugate pooled law, the same for every history - Beta(a, b) prior -> Beta-binomial(k, a + s, b + n - s); Gamma(a, b) prior -> negative
@@ -2007,13 +2007,13 @@ Slices: catch rate RB, TE (conditional receptions given realized targets); TDs p
    floor; no branch.  Reported: fitted prior per test season, candidate conditional PIT.  Quality gate rows to proj/f6_rows_support.csv.gz; harness v2 F6 mode re-run (earlier
    slices must be unchanged).  Consumer: dependence revisions 1 and 8, composition.
 
-## FIRST-EVENT SUPPORT WALL - OUTCOME - Oct 3 2026 (f6_support_report.txt; harness v2 F6 mode, earlier slices unchanged)
+## FIRST-EVENT SUPPORT REVISION - OUTCOME - Oct 3 2026 (f6_support_report.txt; harness v2 F6 mode, earlier slices unchanged)
 Catch rate RB Beta-binomial +0.02923+-0.00627 (4/4) HARNESS PASS (.0000), acceptance PASS, raw rate impossible on 127 rows, prior mean .77-.78 conc 126-251, PIT .501 /
    .290; catch rate TE +0.04395+-0.00988 (4/4) HARNESS PASS (.0000), acceptance PASS, 126 rows, prior .67-.70 conc 100-126, PIT .514 / .286; TDs per reception WR
    Gamma-Poisson -0.00947+-0.00288 (0/4) NOT SHOWN (acceptance PASS; raw rate impossible on 218 rows; prior .078-.080 conc 126) -> revision 8 WR keeps the raw-rate law.
 LIMITATION (registered design, not a rescue): the quality gate uses rows where both forms are finite, so it excludes exactly the rows where the baseline fails and favours the
    baseline; the candidate's advantage on those rows is counted (218 WR), not gated.
-## DEPENDENCE WALLS 1, 7, 8 UNDER D - REGISTRATION - Oct 3 2026 (f6_dependence_domain.py, consolidated; dispatches on constructor labels)
+## DEPENDENCE REVISIONS 1, 7, 8 UNDER D - REGISTRATION - Oct 3 2026 (f6_dependence_domain.py, consolidated; dispatches on constructor labels)
 Slices (coherent only): revision 1 RB / TE receptions given targets, conditional = support law (Beta-binomial, prior refit by the support revision's procedure - must equal
    f6_support_report.txt), QB Q2 given Q1, Binomial(realized attempts, Q2 mean / Q1 mean); revision 7 receiving yards given receptions RB / WR / TE and QB rushing yards given
    QB carries (e = prior yards sum / prior opportunity sum, constructor labels), Q3 given Q2 (e = Q3 mean / Q2 mean), conditional Normal(n e, n v), v on earlier seasons;
@@ -2023,7 +2023,7 @@ Slices (coherent only): revision 1 RB / TE receptions given targets, conditional
    impossible on 0 non-exception defined rows; then harness v2 dependence.  The fallback-run outputs (f6_dependence / f6_dependence_efficiency / f6_dependence_touchdowns
    rows files and reports) and their three scripts are deleted after the new script succeeds (dirty data, not archived); revision 3 / 4 / 6 harness lines must be unchanged.
 
-## DEPENDENCE WALLS 1, 7, 8 UNDER D - OUTCOME - Oct 3 2026 (f6_dependence_domain_report.txt; harness v2 dependence; revision 3 / 4 / 6 harness lines unchanged; revision 1 priors
+## DEPENDENCE REVISIONS 1, 7, 8 UNDER D - OUTCOME - Oct 3 2026 (f6_dependence_domain_report.txt; harness v2 dependence; revision 3 / 4 / 6 harness lines unchanged; revision 1 priors
    equal the support revision's; fallback-run outputs and scripts deleted)
 Quality gate EARNED 8 / 8 (4 / 4 each; candidate impossible on 0 non-exception rows).  HARNESS PASS: revision 1 Q2 given Q1 +1.25817 (.0000); revision 7 Q3 given Q2 +0.78059 (.0000);
    revision 7 QB rushing yards given QB carries +0.59710 (.0000; 1 identity_exception).  HARNESS FAIL: revision 1 RB support law +0.98582+-0.01971 (FP null B .1825, tau/sigma
@@ -2067,7 +2067,7 @@ NEXT: MARGINAL FIRST-EVENT SUPPORT for season-to-date count terms (RB / TE targe
    negative binomial(a + s, (b + g) / (b + g + 1)) from constructor sufficient statistics vs current F6 v1 marginal; non-sum zero sources (WR targets, RB carries: F2 x
    recency share; RB / TE / QB rushing TDs: hierarchical) listed separately.  The prior moves the mean (rate shrinkage) - scored and harnessed as a model change.
 
-## MARGINAL FIRST-EVENT SUPPORT WALL - REGISTRATION - Oct 3 2026
+## MARGINAL FIRST-EVENT SUPPORT REVISION - REGISTRATION - Oct 3 2026
 Slices: F5 targets RB, TE; F5 receptions RB, WR, TE; F5 TDs WR; Q1 attempts; Q4 passing TDs; Q5 interceptions; QB carries (season-to-date terms; sufficient statistics s =
    prior sum, g = prior games from spine_sufficient).  Baseline: F6 v1 marginal around s / g (negative binomial for F5 receptions WR, Q5, QB carries with r on earlier seasons'
    positive-mean rows; Poisson otherwise).  Candidate: Gamma(a, b) prior on the per-game rate -> one-game predictive negative binomial(a + s, (b + g) / (b + g + 1)); prior
@@ -2076,7 +2076,7 @@ Slices: F5 targets RB, TE; F5 receptions RB, WR, TE; F5 TDs WR; Q1 attempts; Q4 
    mean bias of both forms (the prior moves the mean), candidate PIT.  Rows to proj/f6_rows_marginal_support.csv.gz; harness v2 F6 mode re-run, earlier slices unchanged.
    Consumer: composition.  Out of scope (non-sum zero sources): F5 targets WR, F5 carries RB (F2 x recency share), F5 TDs RB / TE, QB rushing TDs (hierarchical).
 
-## MARGINAL FIRST-EVENT SUPPORT WALL - OUTCOME - Oct 3 2026 (f6_marginal_support_report.txt; harness v2 F6 mode, earlier slices unchanged; candidate finite on every row of
+## MARGINAL FIRST-EVENT SUPPORT REVISION - OUTCOME - Oct 3 2026 (f6_marginal_support_report.txt; harness v2 F6 mode, earlier slices unchanged; candidate finite on every row of
    all 10 slices).  HARNESS PASS: F5 targets TE +0.02827+-0.00497 (4/4; .0000; bias -.206 -> -.109; prior mean 4.5-4.7, b .32); Q5 interceptions +0.02824+-0.01149 (4/4;
    .0000; bias -.024 -> -.013; b 25-63).  HARNESS FAIL: Q1 attempts +0.45231+-0.06236 (4/4; .0673), F5 targets RB +0.03205 (.1259), F5 receptions RB +0.02073 (.1297), TE
    +0.01111 (.0645).  NOT SHOWN: F5 receptions WR (2/4), F5 TDs WR -0.02781 (0/4), Q4 (2/4), QB carries (3/4).  First-event support matters selectively, not universally.
@@ -2165,7 +2165,7 @@ WORK ORDER (appended): spine.py issue path disagrees with freeze.py - the week f
 ## DEVIANCE FLOOR UNDER D step 3 - OUTCOME - Oct 4 2026: self-check 20 / 20 (Q5 interceptions QB 1.1936 / 1.0898 PASS on 1873 both-finite rows); issue path 34 / 34;
    spine_rows and f6_rows_td content identical; f6_td report changed only in six "(mean = ...)" labels, all now season-to-date; zero uses of FREEZE_BASE, PENDING_RERECORD,
    nre, f6_td col.
-## Q5 EARNED MEAN COMPATIBILITY WALL - REGISTRATION - Oct 4 2026: f6_q5_mean.py.  Project owner: the Q5 Gamma-Poisson support law, the procedure of f6_marginal_support.py on its
+## Q5 EARNED MEAN COMPATIBILITY REVISION - REGISTRATION - Oct 4 2026: f6_q5_mean.py.  Project owner: the Q5 Gamma-Poisson support law, the procedure of f6_marginal_support.py on its
    frame (spine_sufficient QB rows x spine "Q5 interceptions" y), prior fit on earlier seasons.  Candidate: negative binomial around "Q5 interceptions (Q1 season-to-date
    parent)" (harness spine PASS +0.10139), r over the F6 grid including Poisson, fit on earlier-season rows with positive mean.  "Q5 interceptions" v1 is not a candidate:
    it consumes Q1 v1 attempts and Q1 did not pass harness v2 (propagation rule); it stays a spine record.  Rows: the project owner's frame, test seasons 2021, 2023-25; the
@@ -2177,7 +2177,7 @@ WORK ORDER (appended): spine.py issue path disagrees with freeze.py - the week f
    keeps Q5.
 WORK ORDER (appended): the support-law procedure exists in three copies (f6_marginal_support.py, spine_compose.py support_fit, f6_q5_mean.py) - one producer.
 
-## Q5 EARNED MEAN COMPATIBILITY WALL - OUTCOME - Oct 4 2026: witness PASS (52 slates, 1491 / 1491 rows, max |slate-mean diff| 2.22e-16).  Strata: rows 1531, quality gate 1531,
+## Q5 EARNED MEAN COMPATIBILITY REVISION - OUTCOME - Oct 4 2026: witness PASS (52 slates, 1491 / 1491 rows, max |slate-mean diff| 2.22e-16).  Strata: rows 1531, quality gate 1531,
    no impossible or undefined row on either side; 17 zero season-to-date attempt rows, candidate state zero on all 17 with finite loss - spine.py fillna(attempts_pb x li)
    did not act on this frame.  Quality gate: support law -log score 1.0932, negative binomial around the Q1 season-to-date parent mean 1.1000; gain -0.00692+-0.00839 (1/4) NOT
    SHOWN; candidate r 2021 inf, 2023 20.0, 2024 15.8, 2025 7.9; mean bias support law -0.013, parent mean -0.027.  Harness F6: quality gate fail, FP null B 0.0000, HARNESS FAIL;
@@ -2222,7 +2222,7 @@ WORK ORDER (appended): the term -> column mapping is written three times in spin
    history 2250, baseline impossible 168.  QB rushing TDs: Poisson .3426 vs .3784, gain -0.03531+-0.00429 (0/4) NOT SHOWN, harness FAIL (0.0619); quality gate 1477, zero
    history 684, baseline impossible 54.  ACCEPTANCE PASS on all three; no existing harness verdict changed.  Registered decision: the v1 marginals stay.
 GAP: the quality gate excludes baseline-only-impossible rows by construction - the v1 marginal is point mass 0 on zero-history rows where TDs occurred (RB 138, TE 168, QB 54).
-## DECISION B - ZERO-HISTORY TD CALIBRATION WALL - REGISTRATION - Oct 4 2026 (project owner / reviewer: a support defect, a native-stat question ahead of F8):
+## DECISION B - ZERO-HISTORY TD CALIBRATION REVISION - REGISTRATION - Oct 4 2026 (project owner / reviewer: a support defect, a native-stat question ahead of F8):
    f6_zero_history_td.py, diagnostic only.  Population: per term / position (F5 TDs RB, F5 TDs TE, QB rushing TDs QB), test-season rows (2021, 2023-25) of the support
    frame with season-to-date TD sum s = 0.  Forecast: what the frozen producer emits - F6 v1 marginal around s / g (RB Poisson; TE negative binomial, r fit on earlier
    seasons; QB rushing TDs Poisson).  Rows with g = 0 (undefined mean) reported separately, never treated as zero.  Report: rows, Y > 0 count and share, predicted
@@ -2232,7 +2232,7 @@ GAP: the quality gate excludes baseline-only-impossible rows by construction - t
    TE 2250 / 168, QB 684 / 54), else no verdict.  The revision cannot revise recorded TD verdicts and promotes nothing; a replacement law (Gamma-Poisson, hurdle, other)
    needs its own preregistered revision.  The recompose's F8 result carries the annotation "TD zero-history support unresolved" until a later revision resolves it.
 
-## DECISION B - ZERO-HISTORY TD CALIBRATION WALL - OUTCOME - Oct 4 2026: witness 3 / 3 (RB 1353 / 138, TE 2250 / 168, QB 684 / 54); no g = 0 rows.  F5 TDs RB:
+## DECISION B - ZERO-HISTORY TD CALIBRATION REVISION - OUTCOME - Oct 4 2026: witness 3 / 3 (RB 1353 / 138, TE 2250 / 168, QB 684 / 54); no g = 0 rows.  F5 TDs RB:
    predicted P(Y > 0) 0 on 1353 of 1353, realized 138 (.1020), support violations 138, PIT = 1 on 138 -> SUPPORT-MISS; per season .126 / .088 / .107 / .090.  F5 TDs
    TE: 0 on 2250, realized 168 (.0747), violations 168 -> SUPPORT-MISS; .075 / .076 / .075 / .073.  QB rushing TDs: 0 on 684, realized 54 (.0789), violations 54 ->
    SUPPORT-MISS; .118 / .059 / .065 / .085.  Recorded TD verdicts stand; nothing promoted; a replacement law needs its own preregistered revision.
@@ -2306,7 +2306,7 @@ CORRECTION: "BOUNDARY CONFIRMED" (Oct 3) does not hold.  The F8 upper-tail miss 
    f6_zero_history_td.py and its outputs deleted.
 ## ORDER DECISION B - Oct 4 2026 (project owner / reviewer): the zero-history replacement revision (work order line 13) advances ahead of Q1 dispersion because SUPPORT-MISS holds for
    all 12 point-mass-0 components; after it, Q1 dispersion, then the tail challenger; nothing else reordered.
-## ZERO-HISTORY REPLACEMENT WALL - REGISTRATION - Oct 4 2026: f6_zero_history_replacement.py, one procedure, 12 per-component verdicts.  Domain: s = 0 rows of the 12
+## ZERO-HISTORY REPLACEMENT REVISION - REGISTRATION - Oct 4 2026: f6_zero_history_replacement.py, one procedure, 12 per-component verdicts.  Domain: s = 0 rows of the 12
    components (the population of proj/f6_zero_history_rows.csv.gz; witness: identical component set and per-component test-row and event counts, else no verdict).
    Candidate: negative binomial predictive, mean = mean of Y over earlier seasons' s = 0 rows of the component, r by maximum likelihood over logspace(0, 4, 41) + Poisson
    on those rows; strict walk-forward per test season (2021, 2023 - 25); no covariates.  A component with no earlier-season s = 0 rows or a training mean of 0 is
@@ -2316,7 +2316,7 @@ CORRECTION: "BOUNDARY CONFIRMED" (Oct 3) does not hold.  The F8 upper-tail miss 
    log-score comparison with the point mass (infinite loss on violations).  No rescue: a FAIL stays unresolved; no second family in this transaction.  s > 0 rows are not
    touched; a PASS enters composition only through an integration transaction in which every s > 0 row's composed law parameters are identical before / after.
 
-## ZERO-HISTORY REPLACEMENT WALL - OUTCOME - Oct 4 2026: witness 12 / 12 (rows and events = f6_zero_history).  PASS: F5 TDs WR (n 2864; share .0800 vs predicted
+## ZERO-HISTORY REPLACEMENT REVISION - OUTCOME - Oct 4 2026: witness 12 / 12 (rows and events = f6_zero_history).  PASS: F5 TDs WR (n 2864; share .0800 vs predicted
    .0829, gap -.0029, 2 SE .0103; PIT .501 / .0848), F5 TDs TE (2250; .0747 vs .0743), Q4 passing TDs (81; .2593 vs .1797, gap +.0795 within 2 SE .0848), QB rushing
    TDs (684; .0789 vs .1018, gap -.0228 within .0231), F5 receptions TE (491; .1690 vs .1859), QB carries (12; .3333 vs .5212, gap -.1879 within .2868).  FAIL: F5 TDs RB
    (.1020 vs .1205, gap -.0185 beyond .0177; PIT pass), F5 targets RB (.1657 vs .2435; PIT pass), F5 targets WR (.1886 vs .3193; PIT fail), F5 carries RB (.1125 vs
@@ -2409,7 +2409,7 @@ Negative binomial, Gamma-Poisson support and discretized normal each reached exa
    only.  Reviewer read: no walk-forward 4-component PIT exists before 2021 (spine begins 2020; yards spreads are fit on earlier seasons), so the revision starts at 2023;
    positive shared-state dependence only (0 <= rho < 1); no P10 / P25 / P75 / P90 coverage in this revision (work order 27); f7 energy_score_nd enters in the registration
    transaction.  Scaling: stat units (F7 = stat-unit evaluation; every existing compose energy score is in stat units).
-## F6 DEPENDENCE WALL 9 - REGISTRATION - Oct 4 2026 (tail challenger; one-factor Gaussian copula within a skill player's F8 components)
+## F6 DEPENDENCE REVISION 9 - REGISTRATION - Oct 4 2026 (tail challenger; one-factor Gaussian copula within a skill player's F8 components)
 Term "F5 receptions with F5 receiving yards with F5 rushing yards with F5 TDs", stage "dependence revision 9 one-factor Gaussian copula"; RB, WR, TE separately.
    Components exactly those passed to dk() in spine_compose.py (Rc, RYD, UYD, TDd), through one producer skill_dk.  Null: the composed independent draws.
    Candidate: the same draws rank-reordered per row by Z_j = sqrt(rho) F + sqrt(1 - rho) e_j from rng_copula = default_rng(20261005), stable argsort; values never
@@ -2420,7 +2420,7 @@ Term "F5 receptions with F5 receiving yards with F5 rushing yards with F5 TDs", 
    dependence).  Reported: rho per position per season, training rows and seasons, clipped-u counts, constant-draw test rows; diagnostic without quality gate: F5 receptions
    with F5 TDs 2-D energy score.  Compose outputs byte-identical (decompressed) or restore whole.  Downstream: F8 mean invariance and the F8 tail diagnostic (realized
    DK above P90) only.  No richer covariance, team state or TD-conditioned rescue.  Registered once, judged once.
-## F6 DEPENDENCE WALL 9 - OUTCOME - Oct 4 2026 (proj/f6_dependence_tail_copula_report.txt, proj/harness_dependence_report.txt; first run Oct 4, reproduced exactly on re-application)
+## F6 DEPENDENCE REVISION 9 - OUTCOME - Oct 4 2026 (proj/f6_dependence_tail_copula_report.txt, proj/harness_dependence_report.txt; first run Oct 4, reproduced exactly on re-application)
 rho 2023 / 2024 / 2025 (from earlier test seasons): RB +.2135 / +.1983 / +.1968; WR +.1633 / +.1577 / +.1606; TE +.1911 / +.1761 / +.1731 - all inside 0 <= rho < 1.
    RB: gain +0.00346+-0.00542 (3/3), quality gate fail, FP null B exact 0/8 -> HARNESS FAIL - independent composition stays.
    WR: gain +0.00458+-0.00423 (2/3), quality gate fail, FP null B exact 0/8 -> HARNESS FAIL - independent composition stays.
@@ -2429,7 +2429,7 @@ rho 2023 / 2024 / 2025 (from earlier test seasons): RB +.2135 / +.1983 / +.1968;
    7.11e-15 over 11,486 rows).  Realized DK above P90, independent -> copula: RB .146 -> .121, WR .133 -> .119, TE .143 -> .125 (mean P90 RB 14.14 -> 15.26, WR 13.21 ->
    13.96, TE 8.69 -> 9.25).  Only TE may consume the copula; RB / WR tail movement is diagnostic only.  Clipped u RB 97 / 156 / 236, WR 69 / 149 / 206, TE 23 / 58 / 84;
    constant-draw test rows RB 35-36%, WR 6-8%, TE 0.
-## F6 DEPENDENCE WALL 9 - INTEGRATION - Oct 4 2026 (project owner / reviewer: persistence of the observed deterministic transaction; no redesign)
+## F6 DEPENDENCE REVISION 9 - INTEGRATION - Oct 4 2026 (project owner / reviewer: persistence of the observed deterministic transaction; no redesign)
 spine_compose.py: TE F8 draws use the revision 9 copula order in 2023-2025; TE 2021 has no rho (no earlier composed PIT) and keeps the independent order; RB and WR keep
    the independent order.  Earned positions are read from proj/harness_dependence_verdicts.csv (harness.py now writes proj/harness_<mode>_verdicts.csv; reports
    unchanged), never listed by hand.  Checks passed: compose rows / pairs / params / report byte-identical; revision 9 rows identical before and after integration; every
@@ -2716,7 +2716,7 @@ Witness: f7.pit_self equals f7.pit column by column (same uniforms).  Compose ou
    .25 .542 vs .567, -.0256 +- .0127 (0/4) -> NEGATIVE: back to marginal shape / state.  Context, no reading: RB q .25 +.0299 +- .0162 (3/4); RB q .75 +.0749 +- .0156
    (4/4); RB q .90 .576 vs .344, +.2223 +- .0272 (4/4); WR q .75 +.1057 +- .0102 (4/4); WR q .90 .524 vs .331, +.1964 +- .0160 (4/4) - an upper-tail excess larger than the
    lower-tail one, a lead for work order 34, not promotable from this diagnostic.  The RB q .10 reading leans on 2021 (+.168); the registered rule is met and stands.
-## F6 DEPENDENCE - RB WITHIN-PLAYER WALL ON CURRENT MARGINALS - CANDIDATE (a) NOT REGISTRABLE - Oct 4 2026 (project owner / reviewer decision (b))
+## F6 DEPENDENCE - RB WITHIN-PLAYER REVISION ON CURRENT MARGINALS - CANDIDATE (a) NOT REGISTRABLE - Oct 4 2026 (project owner / reviewer decision (b))
 Candidate (a) - revision 9's one-factor exchangeable Gaussian copula, rho >= 0 from earlier-season current-composition PITs - cannot supply a verdict on the current marginals:
    compose computes its RB slice every run and the current result was on screen before any registration (proj/f6_dependence_tail_copula_report.txt: RB rho +.2237 / +.2026 /
    +.2016; energy score gain +0.00322+-0.00553 (2/3)).  Diagnostic context only - not a revision outcome, not a FAIL; the frozen RB revision 9 verdict (judged rows 10e1d017...) is
@@ -2732,7 +2732,7 @@ Hazard: harness.py dependence judges every f6_dependence*_rows slice on disk and
 ## WORK ORDER 47 - DEPENDENCE VERDICT PROVENANCE - OUTCOME - Oct 4 2026 (harness.py dependence after the edit)
 proj/harness_dependence_verdicts.csv byte-identical (26 rows).  FROZEN 2: revision 9 RB (recorded rows 10e1d0177268, rows on disk c08933ba29f0) and revision 9 WR (e40aa99f42ac,
    56def60444eb), recorded FAIL kept, not re-judged; the other 24 re-judged on matching rows and reproduced exactly; no recorded verdict without rows; no new slice.  Closed.
-## F6 DEPENDENCE WALL 10 - RB LOWER-TAIL CLAYTON COPULA ON CURRENT MARGINALS - REGISTRATION - Oct 4 2026 (project owner / reviewer; blind)
+## F6 DEPENDENCE REVISION 10 - RB LOWER-TAIL CLAYTON COPULA ON CURRENT MARGINALS - REGISTRATION - Oct 4 2026 (project owner / reviewer; blind)
 Domain: RB, test seasons after the first (2023, 2024, 2025 - earlier composed PITs required, as revision 9), current marginals (work order 19 hurdle, work order 20 (a)); never
    consumed by compose without its own integration transaction.  Candidate: exchangeable four-dimensional Clayton copula on F5 receptions, F5 receiving yards, F5 rushing
    yards, F5 TDs; theta = 2 tau / (1 - tau), tau = mean of the 6 pairwise Kendall tau of the earlier-season composed PITs (REC pit_comp through earlier_pits, one producer
@@ -2743,7 +2743,7 @@ Domain: RB, test seasons after the first (2023, 2024, 2025 - earlier composed PI
    under work order 47.  P10 / P90 coverage independent vs Clayton: consequence only, printed after the verdict.  Every existing compose output byte-identical; the 26
    recorded verdict rows an identical prefix.  Files: proj/f6_dependence_lower_tail_copula_rows.csv.gz, proj/f8_lower_tail_copula_rows.csv.gz,
    proj/f6_dependence_lower_tail_copula_report.txt.  Candidate (a)'s seen numbers are not reused.  Registered once, judged once.
-## F6 DEPENDENCE WALL 10 - RB LOWER-TAIL CLAYTON COPULA ON CURRENT MARGINALS - OUTCOME - Oct 4 2026 (proj/harness_dependence_report.txt, proj/f6_dependence_lower_tail_copula_report.txt)
+## F6 DEPENDENCE REVISION 10 - RB LOWER-TAIL CLAYTON COPULA ON CURRENT MARGINALS - OUTCOME - Oct 4 2026 (proj/harness_dependence_report.txt, proj/f6_dependence_lower_tail_copula_report.txt)
 Compose 13 of 13 outputs byte-identical (earlier_pits reproduces revision 9).  theta: 2023 +.3840 (tau .1611), 2024 +.3481 (.1483), 2025 +.3422 (.1461) - inside the domain;
    3050 rows, keys and l_base equal to revision 9 RB.  Harness (work order 47): 26 recorded rows an identical prefix, RB / WR revision 9 FROZEN, one row appended.  RB: slates 39,
    observed -0.01206+-0.00705 (0/3), quality gate fail; FP null B exact 0/8 -> HARNESS FAIL (rows 1ff148fb4a06...).  Consequence only: below P10 .1059 -> .0616, above P90 .1311 ->
@@ -3250,7 +3250,7 @@ TWO GATES FOR ROOT 3: scientific - the joint score improves on held-out historic
 FACTS FOR WP2 / WP3 (read, earlier this cycle): shared-game co-movement on the Y scale is earned (Class D, L278-286); s.run selects by best9 on exp with no dependence term (L489-491,
    L532-533), so under the current selector any dependence has structurally zero effect on lineup identity - WP3's decision quality gate therefore needs a candidate set generated for the
    tail objectives (selector ladder L538: A0 best9(exp) -> A1 reranker over pair-blind candidates; W0 outcome-free), never the best9-only set.
-## WP1 - EARNED CHAIN INTEGRATION - REGISTRATION - Oct 4 2026 (ROOT 3 decision (c) work package 1; precedent F6 DEPENDENCE WALL 9 - INTEGRATION)
+## WP1 - EARNED CHAIN INTEGRATION - REGISTRATION - Oct 4 2026 (ROOT 3 decision (c) work package 1; precedent F6 DEPENDENCE REVISION 9 - INTEGRATION)
 The live composed F8 for RB / WR (revision 9 not earned, work order 31 L1 earned) uses the earned chain order [L1 reception order, L2 receiving-yards order if L2 earned else the
    independent order, rushing yards independent (L3R failed), L3 TD order if L3 earned else the independent order]; earned rungs read from proj/harness_dependence_verdicts.csv,
    never listed by hand.  Orderings only: every component's draw multiset per row is the composition's (asserted in each rung); F8 mean invariant (skill_dk additive per
@@ -4372,7 +4372,7 @@ Correction: the D-CONFORMANCE transaction (registration and outcome above) was a
    UNRESOLVED 2); card DECISION-QUALIFIED issued stat rows back to 240 / 2129; BASE E[DK] 171.00; draws-check M2 ACCEPTED; guard passes.
 Work order (same premise, registered laws, not changed here): the share laws and yards-given-count also issue a point mass at state zero; F5 targets WR zero is
    CENTER TOO LOW (bias -.337).  Each is a candidate for the zero-history treatment below, through its own registered revision.
-## ZERO-HISTORY YARDS WALL - REGISTRATION - Oct 6 2026 (before code; no result of this formulation computed)
+## ZERO-HISTORY YARDS REVISION - REGISTRATION - Oct 6 2026 (before code; no result of this formulation computed)
 Cells: F5 receiving yards RB / TE / WR and F5 rushing yards RB / TE / WR, law state zero (layer 1, as the count terms' zero-history layer).
 Law (no family authored): from the training rows of that term x position in law state zero (seasons before the cutoff), P(Y != 0) = their nonzero share (maximum
    likelihood) and Y | Y != 0 = the empirical distribution of their nonzero outcomes (integers, negative and positive).  A draw is 0 when its keyed uniform is at or
@@ -4386,16 +4386,16 @@ Anti-drift sentence: if this passes, the zero-state yards rows of these six cell
 ## CORRECTION REVERT - OUTCOME - Oct 6 2026 (draws-check; atlas; card 2026 4; market-check; base; guard)
 ACCEPTED.  Atlas back to its v0 counts (DECISION-QUALIFIED 8, CENTER TOO LOW 17, TOO NARROW 8, TOO WIDE 7, MISCALIBRATED 5, CENTER TOO HIGH 4, UNRESOLVED 2); card
    DECISION-QUALIFIED issued stat rows 240 / 2129; BASE E[DK] 171.00; draws-check M2 ACCEPTED (witnesses 9558 exact, rho reproduced); kit size 61919 AST nodes.
-ZERO-HISTORY YARDS WALL - cost measured before any run: the minimal promotion (fit_state samples, row_laws layer, verdict read, sampler) adds 330 AST nodes
+ZERO-HISTORY YARDS REVISION - cost measured before any run: the minimal promotion (fit_state samples, row_laws layer, verdict read, sampler) adds 330 AST nodes
    (61919 -> 62249) before its judgment instrument and witness scoping.  Under the R-quality gate's literal AST charge the revision cannot earn as registered.  The convergent
    form: one zero-state law (the empirical distribution of training zero-state outcomes) for counts and yards, dissolving the zero-history NB fit, ztnb_fit and the
    hurdle sampler / expectation - judged cell by cell against each earned incumbent; it dissolves code only where every replaced cell earns.
-## R-GATE AMENDMENT AND EMPIRICAL ZERO-STATE WALL - REGISTRATION - Oct 6 2026 (project owner ruling; before any run of this procedure)
+## R-GATE AMENDMENT AND EMPIRICAL ZERO-STATE REVISION - REGISTRATION - Oct 6 2026 (project owner ruling; before any run of this procedure)
 R-GATE AMENDED (project owner): two quality gates.  Scientific quality gate - a cell of a genuinely new revision is EARNED iff its mean held-out season gain > 0 (evaluate.r_gate_earned; the
    posterior mean of mu under the reference prior 1 / sigma).  Operational quality gate - an earned cell is integrated only if the production invariants hold (M1 / A2' /
    M2 witnesses scoped to v0 with promoted cells listed; guard); the kit's AST change is reported there as a consequence, never as evidence for promotion.
    The AST term leaves the earning rule.
-WALL (supersedes the ZERO-HISTORY YARDS WALL registration; its six cells are included): one procedure, fit per term x position, no evidence pooled across cells.
+REVISION (supersedes the ZERO-HISTORY YARDS REVISION registration; its six cells are included): one procedure, fit per term x position, no evidence pooled across cells.
    For a cell whose law state and own constructor state are both zero, the law at test season s is the empirical distribution of that term x position's
    zero-state outcomes in the recorded spine with season < s: F(y) = (1 / n) sum 1(Y_i <= y).  It carries integer counts, negative yards, the atom at 0, skew and
    tails without a family.  No training rows in a season -> undefined.
@@ -4407,7 +4407,7 @@ STOP RULE: register, judge every cell once, integrate the earned cells in one la
 Anti-drift sentence: if cells earn, these zero-state issued rows on the 2026 w4 card get a law read from their own history: F5 rushing yards WR 113, TE 85,
    RB 10; F5 receiving yards WR 19, RB 13, TE 12; F5 TDs WR 84, TE 58, RB 44; F5 receptions WR 19, RB 12, TE 12; F5 targets WR 12, RB 9, TE 8; F5 carries RB 10;
    QB rushing TDs 14; Q5 interceptions 3 (537 rows).
-## EMPIRICAL ZERO-STATE WALL - JUDGMENT OUTCOME - Oct 6 2026 (kit.py zero-state-revision; tests 2021, 2023, 2024, 2025; 21 cells)
+## EMPIRICAL ZERO-STATE REVISION - JUDGMENT OUTCOME - Oct 6 2026 (kit.py zero-state-revision; tests 2021, 2023, 2024, 2025; 21 cells)
 EARNED 13; FAIL 6; UNRESOLVED 2 (QB carries, QB rushing yards: a test season without graded rows).  proj/empirical_zero_state_verdicts.csv, rows hashed per cell.
    Yards cells - all EARNED, every season positive: receiving RB +2.07 to +3.01, TE +.89 to +.95, WR +5.45 to +5.50; rushing RB +4.17 to +5.78, TE +.67 to +.71,
    WR +.72 to +.75 CRPS per row.  F5 targets WR EARNED (+.0452, +.0471, +.0177; 2021 -.0048).
@@ -4415,7 +4415,7 @@ EARNED 13; FAIL 6; UNRESOLVED 2 (QB carries, QB rushing yards: a test season wit
    rushing TDs.  Reading: their season gains are within about .005 of 0 (Q5 within .125), the size of the paired Monte Carlo noise of two 2000-draw CRPS estimates;
    the empirical law and the earned parametric zero-state laws (fit on the same zero-state rows) are indistinguishable there, so the EARNED / FAIL split among them
    is not evidence of a difference.  The registered rule stands: EARNED cells integrate, FAIL cells keep their incumbents, no second variant.
-## EMPIRICAL ZERO-STATE WALL - INTEGRATION - REGISTRATION - Oct 6 2026 (operational quality gate; before the run)
+## EMPIRICAL ZERO-STATE REVISION - INTEGRATION - REGISTRATION - Oct 6 2026 (operational quality gate; before the run)
 Change: laws.zero_state_sample is the one producer of the sample for the judgment and the issued law; build_inputs reads the EARNED cells; fit_state carries their
    samples (integers); row_laws adds a layer-4 law "empirical zero-state" (mean = the sample mean) on each earned cell's zero-state rows, so it is final there;
    draws resample the sample on the layer's keyed substream, the same label as the judgment, so the replay reproduces the judged draws.  zero-state-revision refuses a
@@ -4424,7 +4424,7 @@ Operational quality gate (fixed now): M1 issue-check and A2' replay ACCEPTED on 
    promoted cells' hurdle rows are no longer final, so their witnesses retire; every witness still drawn is found and exact); the integration witness: on each
    EARNED cell's zero-state replay rows, per season the mean over slates of (atlas CRPS before - after) equals the judged season gain within 1e-12; atlas, card,
    market-check and base ACCEPTED; guard passes.  Reported, not gated: kit AST change; DECISION-QUALIFIED issued stat rows (v0 240 / 2129); changed qualifications.
-## EMPIRICAL ZERO-STATE WALL - INTEGRATION - CORRECTION AND WITNESS REGISTRATION - Oct 6 2026 (before the run)
+## EMPIRICAL ZERO-STATE REVISION - INTEGRATION - CORRECTION AND WITNESS REGISTRATION - Oct 6 2026 (before the run)
 Correction: the registered integration witness (season gains equal to the judged gains within 1e-12) ran as a printed one-liner, not as a quality gate; the guard passed and
    the ledger advanced to 4424 lines with it unmet: max |diff| RB rushing yards .109, RB receiving yards .027, TE receiving yards .007, WR receiving yards .0033,
    TE targets .001, the others 1e-4 to 3e-6.  Measured cause in the witness: it averaged every law-state-zero row of a cell (RB receiving yards 408); the
@@ -4439,7 +4439,7 @@ Acceptance (fixed now): the atlas rerun equals the pre-change proj/atlas_rows.cs
    equals proj/atlas_rows.csv.gz (differing 0); per EARNED cell, judged-scope rows equal the verdict's rows, their content hash equals rows_sha256, every season gain
    within 1e-12 of the judged gain; guard passes.  Reported, not gated: issued rows outside the judged scope per cell, by spine state.  The scope decision (issue
    the law on the judged scope only, or register the wider scope as a new judgment) follows on that reading; nothing is decided here.
-## EMPIRICAL ZERO-STATE WALL - INTEGRATION - WITNESS OUTCOME - Oct 6 2026 (kit.py zero-state-check)
+## EMPIRICAL ZERO-STATE REVISION - INTEGRATION - WITNESS OUTCOME - Oct 6 2026 (kit.py zero-state-check)
 Atlas rerun on the converged replay producer: proj/atlas_rows.csv.gz and proj/atlas.csv IDENTICAL in content to the pre-change files.  zero-state-check: issued
    layer-4 rows graded 14851, incumbent drew nothing 0; issued CRPS vs proj/atlas_rows.csv.gz differing 0 of 14851.  Every EARNED cell PASS: judged-scope rows equal
    the verdict's, content hash equals rows_sha256, max |season gain - judged| at most 8.88e-16.  INTEGRATION ACCEPTED: on the judged rows the issued law is the
@@ -4525,7 +4525,7 @@ The registration above named 2026 week 6 with play-by-play through week 5.  Wron
    frozen as prospective_2026_w5 before 2026-10-08 20:15 ET and scored after its games.  Everything else in the registration stands.
 This step: kit.py fetch 2026 5 --dk-group 154467 --no-nflverse (writes the price file and its raw JSON), then the guard lists the raw files added or changed since
    the manifest (the nflverse 2026 files moved into data/ by the last fetch, and these two).  accept follows only after that list is read.
-## DISPERSION WALL (NB1) - REGISTRATION - Oct 6 2026 (before the run)
+## DISPERSION REVISION (NB1) - REGISTRATION - Oct 6 2026 (before the run)
 Why (the atlas, M3 replay): TOO NARROW - RB carries (below P10 21.1%, above P90 21.4%), RB targets 14.7 / 15.1, RB receptions 14.1 / 15.1, TE receptions 12.0 / 15.7,
    Q1 attempts 22.3 / 23.1; Q2, Q3 and F8 QB below them.  Walk-down: every one is a layer-0 law with no fitted spread (Poisson); the fitted-spread cells (WR
    receptions NB, WR targets beta-binomial, QB carries NB) are near 10 / 10.  The spread was decided by which family a cell happened to carry, not by the rows.
@@ -4542,7 +4542,7 @@ Judgment (kit.py dispersion-revision, judged once): tests 2021, 2023, 2024, 2025
    spine center v1.  Writes proj/dispersion_verdicts.csv (phi and gain per season, rows hashed); promotes nothing.  Integration is a separate registered transaction,
    and Q2 / Q3 are read conditionally on the integrated Q1 before any child revision.
 Pre-stated anti-drift line: if this passes, the TOO NARROW count cells above can become DECISION-QUALIFIED and Q2, Q3 and F8 QB widen through the chain.
-## DISPERSION WALL - FIRST RUN REFUSED; LEDGER ADVANCED PAST A FAILING GUARD - CORRECTION - Oct 6 2026
+## DISPERSION REVISION - FIRST RUN REFUSED; LEDGER ADVANCED PAST A FAILING GUARD - CORRECTION - Oct 6 2026
 Dispersion revision: refused as registered - law mean vs spine center v1 on 28383 scored rows, 21 differing; no verdict written, nothing promoted.  Cause not measured:
    the check counted a row with no spine row at its key, term and position (center missing) the same as a row whose center differs.  dispersion-revision now prints
    the differing rows by cell, split into those two kinds, before it refuses; the registered rule stands and the revision runs again unchanged in substance.
@@ -4557,7 +4557,7 @@ Leak check (fixed now): with week 4's outcomes now in the facts, the week 4 prod
    new facts must equal witness_v2 in every file (none declared).
 The issue: issue, card, market-check and base 2026 5 on the accepted code.  Acceptance: the guard passes; witness-check witness_v2 ACCEPTED; card, market-check
    and base ACCEPTED.  The freeze prospective_2026_w5 is taken after this outcome is read, before 2026-10-08 20:15 ET.
-## DISPERSION WALL - SECOND RUN REFUSED; SCOPE CORRECTION - Oct 6 2026 (before the next run)
+## DISPERSION REVISION - SECOND RUN REFUSED; SCOPE CORRECTION - Oct 6 2026 (before the next run)
 Measured (dispersion-revision with the split): 28383 scored rows, 21 differing - all 21 have no spine row at their key, term and position (F5 TDs TE 2, F5 receptions
    RB 2, TE 11, WR 4, F5 targets RB 2); rows with a different center 0.  Wherever a spine row exists, the law mean is the spine center v1.  The 21 are issue-path
    rows routed to a position the recorded spine has no row for (the same kind as the zero-state check's 78).
@@ -4686,7 +4686,7 @@ Measured: box scores rebuilt per game from play-by-play (rushes; targets as pass
 Project owner's ruling: the stats file stays the source of record (the official, corrected stats DraftKings scores from; no history changes); play-by-play reconciliations it.
    facts.pbp_box_crosscheck runs inside kit.py facts: every differing value to facts/pbp_crosscheck.csv, counts per season in the facts report - a reading, not a quality gate.
    Display names are not a forecast input; they remain only the price-file join's key, read through the as-of view, with source revisions measured by witness-check.
-## DISPERSION WALL - INTEGRATION - REGISTRATION - Oct 6 2026 (operational quality gate; before the run)
+## DISPERSION REVISION - INTEGRATION - REGISTRATION - Oct 6 2026 (operational quality gate; before the run)
 Change: build_inputs reads the EARNED cells (F5 receptions RB, F5 targets RB, QB rushing TDs); fit_state carries phi_s = laws.dispersion_ratio per earned cell;
    row_laws adds a layer-5 law "negative binomial", size mean / (phi_s - 1), provenance "dispersion revision NB1 (earned)", on each earned cell's layer-0 nonzero
    Poisson / negative binomial rows where layer 0 is final, only when phi_s > 1 (at or below 1 the incumbent Poisson is the law: QB rushing TDs in three of four test
@@ -4697,7 +4697,7 @@ Operational quality gate (fixed now): issue-check (M1) and replay (A2') ACCEPTED
    EARNED cell the judged rows, rows_sha256 and every season gain within 1e-12; atlas; issue, card, market-check and base 2026 5 ACCEPTED; guard passes.  Then freeze
    witness_v3 2026 5 - the current-product witness from here (prospective_2026_w5 stays the issue of record, untouched).  Reported, not gated: the atlas
    qualification changes against witness_v2's atlas, and DECISION-QUALIFIED issued stat rows.
-## DISPERSION WALL - INTEGRATION - OUTCOME AND CORRECTION - Oct 6 2026 (operational quality gate; registered before the rerun)
+## DISPERSION REVISION - INTEGRATION - OUTCOME AND CORRECTION - Oct 6 2026 (operational quality gate; registered before the rerun)
 Outcome of the registered run: M1, A2', M2, dispersion-check, atlas, issue 2026 5 and card 2026 5 ACCEPTED; market-check 2026 w5 W1 PASS, W2 (reproduction from
    the issue path) FAIL -> M7 MARKET REFUSED.  Nothing was frozen; the ledger did not advance.  The quality gate did its work: the frozen draws did not reproduce.
 Mechanism (read from code; not yet witnessed on the subject): row_laws appended the layer-5 rows cell by cell in the iteration order of fitted_state["dispersion"],
@@ -4750,7 +4750,7 @@ Also read: the 2026 w4 price file's Game Info dates (issue-of-record put w4's fi
 variance-read stopped before its first cell: the tail column was named "tail", and rows.tail is pandas' DataFrame.tail method (AttributeError).  The column is now
    "in_tail", read by key.  Nothing else changes; the registered definitions and the OWNED criterion stand as registered.  Rerun: variance-read, composition-read and
    the 2026 w4 price file read.
-## YARDS GIVEN COUNT WALL - REGISTRATION - Oct 6 2026 (genuinely new revision; registered before the run; judged once; promotes nothing; no week 5 change - witness_v3 is the issue of record)
+## YARDS GIVEN COUNT REVISION - REGISTRATION - Oct 6 2026 (genuinely new revision; registered before the run; judged once; promotes nothing; no week 5 change - witness_v3 is the issue of record)
 Evidence (composition-read, Oct 6): the composition draws yards independent of their count.  WR receptions x receiving yards: law correlation +0.000, realized +0.772;
    TE: law +0.169 (copula) / -0.001 (independent), realized +0.807 / +0.809; RB rushing yards x TDs: law +0.001, realized +0.358.  DK-linear variance realized / law:
    WR 1.513, TE 1.301 / 1.529, RB 1.276, nearly all of it off-diagonal.  variance-read: WR F8 is too wide in the low-usage tercile (.14) and too narrow in the high (.37) -
@@ -4768,7 +4768,7 @@ Judgment: row_crps (the atlas's instrument) on F8 and on the yards component, in
    EARNED iff BOTH the F8 and the yards mean season gains are positive (R-GATE).  Refused before any verdict if an incumbent F8 score differs from proj/atlas_rows.csv.gz.
    Reading beside it: F8 tail share, incumbent vs challenger.
 Also read: facts/game.csv.gz gameday / gametime for 2026 w4 (whether the week had a game before the price file's first, Sun 10/04 1:00 PM).
-## YARDS GIVEN COUNT WALL - OUTCOME - Oct 6 2026
+## YARDS GIVEN COUNT REVISION - OUTCOME - Oct 6 2026
 EARNED 3 of 3; every season gain positive on both F8 and the yards component.  TE receiving yards: 3712 rows, F8 +0.040 / +0.031 / +0.035 / +0.024, yards +0.66 / +0.53 /
    +0.55 / +0.48, F8 tail share .196 -> .177.  WR receiving yards: 6454 rows, F8 +0.114 / +0.128 / +0.103 / +0.128, yards +1.24 / +1.53 / +1.20 / +1.35, tail .251 -> .155.
    RB rushing yards: 3735 rows, F8 +0.045 / +0.049 / +0.044 / +0.064, yards +0.94 / +1.00 / +0.92 / +1.20, tail .209 -> .215.  Incumbent F8 = atlas_rows on all 13901 rows.
@@ -4781,7 +4781,7 @@ Correction: facts.schedule, the one reader of facts/game.csv.gz, schedule column
    lines or weather).  first_kickoff = the earliest gameday + gametime of the week (nflverse: US Eastern).  Refused when the week has no scheduled games.
 Quality gate: facts rebuilt (facts.py changed; freshness); guard passes; issue-of-record 2026 5 keeps witness_v3 ISSUE OF RECORD and prospective_2026_w5 AUDIT WITNESS;
    issue-of-record 2026 4 prints first kickoff 2026-10-01 20:15 ET with both freezes AFTER THE FIRST KICKOFF.
-## YARDS GIVEN COUNT WALL - INTEGRATION - REGISTRATION - Oct 6 2026 (operational quality gate; before the run; week 5 untouched - witness_v3 is the issue of record)
+## YARDS GIVEN COUNT REVISION - INTEGRATION - REGISTRATION - Oct 6 2026 (operational quality gate; before the run; week 5 untouched - witness_v3 is the issue of record)
 Change: laws.build_inputs reads the EARNED cells (TE and WR receiving yards, RB rushing yards) as a sorted tuple; fit_state carries their yards_count_variance
    (YARDS_COUNT and yards_count_variance move to laws - one producer for the revision and the issued law).  draws.compose_slate applies them after the earned orders
    (count_yards_components: per in-scope row, yards_given_count on the composed count) and returns (composed, count_yards); the callers that grade or issue (atlas,
@@ -4841,12 +4841,12 @@ Ladder outcome: witness passed (51 cells, 0 differing); reference rows 109439 of
 Ladder refinements (readings; no rung changes): rung 3 is named HISTORICALLY SKILLFUL.  Width keeps the total tail rate and adds its two parts, L = share PIT <= .10 and
    U = share PIT > .90, each against .10 by share_band; TAIL BALANCE = balanced iff both within band (shown, not a rung).  Prospective evidence adds the paired weekly gain
    (reference CRPS - kit CRPS) per frozen week.  Actionable (later): a query is qualified by the calibration near its own threshold, not only by the cell.
-WALL A - Q1 snap-normalized center (draws.q1_snap_wall; genuinely new formula).  Challenger center (draws.snap_center, earlier played games this season only): attempts per
+REVISION A - Q1 snap-normalized center (draws.q1_snap_wall; genuinely new formula).  Challenger center (draws.snap_center, earlier played games this season only): attempts per
    offensive snap x mean team snaps per game (offense_snaps / snap_share) x his last game's snap_share; family Poisson and everything else kept.  Scope: final Q1 laws, layer
    0 Poisson, nonzero, played, recorded, center defined.  Quality gate: exact_crps season gains; EARNED iff their mean > 0 (R-GATE).  Witness: incumbent Q1 draws = atlas_rows.
    Registered targets (readings): lowest snap_share level tercile bias -3.13 toward 0 and PIT > .90 .388 toward .10; Q1 CRPSS vs the reference > 0; downstream Q2, Q3,
    QB F8 row_crps.  Not a target: Q1 total width (the lower tail .21-.23 is flat across snap terciles); if Q1 stays too narrow it is a separate residual.
-WALL B - TE receptions <-> TDs (draws.te_td_link_wall; genuinely new formula).  TE TDs reordered to the ranks of Poisson(R tau) + U, R the issued receptions after the
+REVISION B - TE receptions <-> TDs (draws.te_td_link_wall; genuinely new formula).  TE TDs reordered to the ranks of Poisson(R tau) + U, R the issued receptions after the
    copula, tau = TE TDs per reception on seasons < s (dependence.chain_l3: marginal-preserving).  Scope: played TE player-weeks with a composed F8 and dk_points.  Quality gate: F8
    row_crps season gains; EARNED iff mean > 0.  Witness: incumbent F8 = atlas_rows; the TD marginal row_crps unchanged on every row.  Registered targets: TE F8 L / U
    (.116-.125 / .118-.122 by form) toward .10 / .10, TE F8 CRPS down, receptions x TDs draw correlation toward the realized +.270 / +.304.
@@ -4858,12 +4858,12 @@ Ladder outcome: witness passed (51 cells, 0 differing); reference rows 109439 of
 Ladder refinements (readings; no rung changes): rung 3 is named HISTORICALLY SKILLFUL.  Width keeps the total tail rate and adds its two parts, L = share PIT <= .10 and
    U = share PIT > .90, each against .10 by share_band; TAIL BALANCE = balanced iff both within band (shown, not a rung).  Prospective evidence adds the paired weekly gain
    (reference CRPS - kit CRPS) per frozen week.  Actionable (later): a query is qualified by the calibration near its own threshold, not only by the cell.
-WALL A - Q1 snap-normalized center (draws.q1_snap_wall; genuinely new formula).  Challenger center (draws.snap_center, earlier played games this season only): attempts per
+REVISION A - Q1 snap-normalized center (draws.q1_snap_wall; genuinely new formula).  Challenger center (draws.snap_center, earlier played games this season only): attempts per
    offensive snap x mean team snaps per game (offense_snaps / snap_share) x his last game's snap_share; family Poisson and everything else kept.  Scope: final Q1 laws, layer
    0 Poisson, nonzero, played, recorded, center defined.  Quality gate: exact_crps season gains; EARNED iff their mean > 0 (R-GATE).  Witness: incumbent Q1 draws = atlas_rows.
    Registered targets (readings): lowest snap_share level tercile bias -3.13 toward 0 and PIT > .90 .388 toward .10; Q1 CRPSS vs the reference > 0; downstream Q2, Q3,
    QB F8 row_crps.  Not a target: Q1 total width (the lower tail .21-.23 is flat across snap terciles); if Q1 stays too narrow it is a separate residual.
-WALL B - TE receptions <-> TDs (draws.te_td_link_wall; genuinely new formula).  TE TDs reordered to the ranks of Poisson(R tau) + U, R the issued receptions after the
+REVISION B - TE receptions <-> TDs (draws.te_td_link_wall; genuinely new formula).  TE TDs reordered to the ranks of Poisson(R tau) + U, R the issued receptions after the
    copula, tau = TE TDs per reception on seasons < s (dependence.chain_l3: marginal-preserving).  Scope: played TE player-weeks with a composed F8 and dk_points.  Quality gate: F8
    row_crps season gains; EARNED iff mean > 0.  Witness: incumbent F8 = atlas_rows; the TD marginal row_crps unchanged on every row.  Registered targets: TE F8 L / U
    (.116-.125 / .118-.122 by form) toward .10 / .10, TE F8 CRPS down, receptions x TDs draw correlation toward the realized +.270 / +.304.
@@ -4875,7 +4875,7 @@ The ledger stood at 4853 accepted lines when the second run began (4836 after th
    and its registration was appended a second time by the rerun (lines 4854-4870 repeat 4837-4853; the first copy is the registration of record).  The rerun stopped at
    q1-snap-revision's refusal: "proj/q1_snap_verdicts.csv exists - the revision is judged once".  That verdict was written by the first run, before anyone read it; it stands as
    written.  Read now: both revisions' verdict and report files as they are on disk.
-## WALL A - OUTCOME, and BATCH 4 - REGISTRATION - Oct 6 2026 (before the run; week 5 untouched - witness_v3 is the issue of record)
+## REVISION A - OUTCOME, and BATCH 4 - REGISTRATION - Oct 6 2026 (before the run; week 5 untouched - witness_v3 is the issue of record)
 Revision A (first batch 3 run, verdict written before read): 1498 rows, 11 outside (center undefined); incumbent = atlas_rows on every row.  Season gains (exact CRPS)
    -0.4053, -0.0443, +0.1914, +0.4689; mean +0.0527 -> EARNED by the registered R-GATE (mean > 0).  Two of four seasons are negative: recorded, not re-judged.
    Targets: lowest snap tercile bias -3.151 -> -0.977, PIT > .90 .388 -> .309, PIT <= .10 .211 -> .243; Q1 CRPSS -0.011 -> +0.001; downstream row_crps F8 QB 4.8432 ->
@@ -4888,7 +4888,7 @@ Integration of revision A: laws.snap_center moves from draws (one producer); law
 Quality gate (fixed now): te-td-link-revision runs as registered in batch 3 (unchanged code; the TE composition is untouched by revision A).  Then issue-check (M1) and replay (A2')
    ACCEPTED; draws-check (M2) ACCEPTED; q1-snap-check: rows equal the verdict's, rows_sha256 equal, every season gain within 1e-12; atlas regraded; ladder.  The issue
    path's quality gate runs on 2026 week 6 (card, market-check, base) before any week 6 freeze.
-## WALL A - OUTCOME, and BATCH 4 - REGISTRATION - Oct 6 2026 (before the run; week 5 untouched - witness_v3 is the issue of record)
+## REVISION A - OUTCOME, and BATCH 4 - REGISTRATION - Oct 6 2026 (before the run; week 5 untouched - witness_v3 is the issue of record)
 Revision A (first batch 3 run, verdict written before read): 1498 rows, 11 outside (center undefined); incumbent = atlas_rows on every row.  Season gains (exact CRPS)
    -0.4053, -0.0443, +0.1914, +0.4689; mean +0.0527 -> EARNED by the registered R-GATE (mean > 0).  Two of four seasons are negative: recorded, not re-judged.
    Targets: lowest snap tercile bias -3.151 -> -0.977, PIT > .90 .388 -> .309, PIT <= .10 .211 -> .243; Q1 CRPSS -0.011 -> +0.001; downstream row_crps F8 QB 4.8432 ->
@@ -4907,8 +4907,8 @@ Runs after batch 4's atlas regrade, on the cells then labelled NOT QUALIFIED - C
    last game, median) by bias and MAE; the three largest bias owners among the pregame states (end-tercile gap / SE); bias by week band.  Use: each cell gets a kind and
    an project owner.  A center revision that follows must be a mechanism fitted on earlier seasons and registered before it is run; the alternative center that scores best here is
    never itself promoted from this read (it was chosen after seeing these seasons) - it may only run as a prospective shadow.
-## BATCH 4 / 5 - RUN RECORD, WALL B - OUTCOME, and WALL B - INTEGRATION - REGISTRATION - Oct 6 2026 (before the run; week 5 untouched)
-Run record: ssot_batch4.zsh ran (ledger 4875 -> 4888): WALL B EARNED; M1 ACCEPTED; A2' ACCEPTED (layers 4, 5, 6 set aside: 24515 rows); M2 ACCEPTED (Q1 layer 6 1503 rows,
+## BATCH 4 / 5 - RUN RECORD, REVISION B - OUTCOME, and REVISION B - INTEGRATION - REGISTRATION - Oct 6 2026 (before the run; week 5 untouched)
+Run record: ssot_batch4.zsh ran (ledger 4875 -> 4888): REVISION B EARNED; M1 ACCEPTED; A2' ACCEPTED (layers 4, 5, 6 set aside: 24515 rows); M2 ACCEPTED (Q1 layer 6 1503 rows,
    z -0.26); q1-snap-check ACCEPTED (1498 rows, hash equal, max gap 2.78e-17); atlas regraded (Q1 CRPS 6.0293, bias +0.557; Q2 4.0529; Q3 47.7139; F8 QB 4.7258, bias +0.619);
    ladder (rung counts unchanged; F8 QB CRPSS +0.088; Q1 skill FAIL, gains -0.422 / -0.023 / +0.130 / +0.340; Q2 skill now FAIL, gains -0.013 / +0.090 / +0.204 / +0.274).
    ssot_batch4_5.zsh then appended the batch 4 registration a second time with batch 5's
@@ -4929,17 +4929,17 @@ Batch 6: q1-snap-check, te-td-link-check (4211 rows, hash equal, gap 4.34e-19) a
    dk_points level -3.362 / -0.221 / +3.757, 7.6 SE; WR receptions 7.9 SE; RB targets 7.4 SE; RB receiving yards 6.2 SE) - the signature of an unshrunk mean; (3) six cells
    are tail shape, not center (WR TDs, WR receptions, TE targets, Q5, RB and QB rushing yards).  The season-to-date median's lower MAE is the median minimizing absolute
    error, not evidence for a center.
-WALL C - shrunk center (draws.shrink_wall; genuinely new).  Per nonzero law: mean' = (n mean + k m) / (n + k), n = earlier played games on this team this season (the
+REVISION C - shrunk center (draws.shrink_wall; genuinely new).  Per nonzero law: mean' = (n mean + k m) / (n + k), n = earlier played games on this team this season (the
    frames' n), m = the term x position mean outcome of nonzero rows of seasons < s, k from SHRINK_GRID (0, .5, 1, 2, 3, 5, 8, 12, 20, 40; 0 = incumbent) minimizing squared
    error on seasons < s.  Every other parameter kept.  Scope: final layer 0 or 5, nonzero, Poisson / negative binomial / normal, not TEAM, n > 0 (share-of-team-draw and
    support laws are out of scope by family - WR and TE targets).  Quality gate per cell: exact_crps season gains, EARNED iff mean > 0.  Targets: the usage-tercile bias gap shrinks.
-WALL D - TDs on yards (draws.td_yards_wall; genuinely new).  RB and WR TDs reordered to Poisson(issued receiving + rushing yards, negatives 0, x tau) + U, tau = TDs per
+REVISION D - TDs on yards (draws.td_yards_wall; genuinely new).  RB and WR TDs reordered to Poisson(issued receiving + rushing yards, negatives 0, x tau) + U, tau = TDs per
    scrimmage yard on seasons < s (chain_l3, marginal-preserving; replaces L3's volume order).  Evidence: residual partial correlation TDs x yards given the count +.244
    (RB rushing), +.236 (WR receiving).  Quality gate per position: F8 row_crps season gains, EARNED iff mean > 0.  Witness: incumbent F8 = atlas_rows; TD marginal unchanged.
    Targets: yards x TDs draw correlation toward realized (RB rushing +.358, WR receiving +.359); F8 L / U toward .10 / .10.
 CONSISTENCY READ (reading): share of issued draws impossible in a box score - receptions > targets, TDs > touches, yards with zero count, negative counts, QB completions >
    attempts, passing yards with zero completions - beside the played box scores; F8 mean vs the linear part at component means.
-## BATCH 7 - OUTCOME, CORRECTIONS, OWNER DIRECTIVE; WALL E - REGISTRATION - Oct 6 2026 (before the run; week 5 untouched)
+## BATCH 7 - OUTCOME, CORRECTIONS, OWNER DIRECTIVE; REVISION E - REGISTRATION - Oct 6 2026 (before the run; week 5 untouched)
 Batch 7 outcome (proj/shrink_verdicts.csv, td_yards and consistency reports): Revision C EARNED 14, FAIL 2 (RB carries mean -0.0176; TE rushing yards k 0 in every season);
    Revision D RB EARNED (F8 L .096 -> .083, U .117 -> .108), WR FAIL; consistency read: RB receiving yards nonzero in 78% of zero-reception draws; receptions > targets TE
    22.5%, RB 5.7%, WR 5.5%; TDs > touches 1-2.4%.  No law promoted.
@@ -4951,7 +4951,7 @@ CORRECTION - Revision C was registered "genuinely new"; it was not.  Cells cover
 CLASSIFICATION - today's integrations (yards given count, revision A layer 6, revision B TE TD link) were designed on the seasons that judged them: SEEN, not independent EARNED.
 OWNER DIRECTIVE (Oct 6 2026): "Measurements are the only thing that can keep or remove capability.  Use what we have now as baseline."  The issued law at ledger 4939
    (those integrations included) is the baseline; each served law keeps a version-scoped prospective clock from 2026 week 6; only measurement keeps or removes it.
-WALL E - ROLE GROUPS READ FROM THE POPULATION (draws.role_group_wall; project owner question: should a mean be pulled toward the position average, or toward players who share
+REVISION E - ROLE GROUPS READ FROM THE POPULATION (draws.role_group_wall; project owner question: should a mean be pulled toward the position average, or toward players who share
    its role?).  Open branch: N05's archetypes were a beat / boom log-loss feature (L968, L1065), and rank-type targets score uniform level shrinkage zero (L960-962); no
    recorded revision pooled a level toward a population-derived role.  The snap tiers (.35 / .70) are authored cut points; no cut point is authored here.
    Role vector: per played player-week, the season-to-date level (earlier games only, variance_states) of snap_share, target_share, carry_share, air_yards_share - state
@@ -4968,13 +4968,13 @@ WALL E - ROLE GROUPS READ FROM THE POPULATION (draws.role_group_wall; project ow
    nothing; an EARNED cell is a Layer C shadow candidate.  Readings: the groups per position x season (BIC by count, weights, centroids - what the natural roles are);
    bias by dk_points level tercile, issued / position / role (Revision C's position prior over-corrected the usage gap).  Writes proj/role_group_verdicts.csv,
    proj/role_group_groups.csv, proj/role_group_report.txt.  Registered once, judged once.
-## WALL E - FIRST RUN STOPPED BEFORE ANY VERDICT - INSTRUMENT DEFECT - Oct 6 2026 (the registered procedure re-run once, unchanged)
+## REVISION E - FIRST RUN STOPPED BEFORE ANY VERDICT - INSTRUMENT DEFECT - Oct 6 2026 (the registered procedure re-run once, unchanged)
 First run: every mixture fit, 47,265 rows scored (out of scope, role vector undefined: 40), then the verdict step stopped - AttributeError: cell_rows.groupby("season")
    .groups is the GroupBy's own attribute, not the column "groups".  No gain was computed or printed; no verdict, groups or report file was written.  Fix: the column is
    read as groupby("season")["groups"]; nothing else changes.
 Reading on screen before the stop (role vectors only, no outcome): BIC chose 8, the top of the registered range 1-8, in all 16 position x season fits - the population
    resolves at least 8 roles at every position.  The registered range is kept (no change after a reading); an uncapped group count is its own registration.
-## WALL E - OUTCOME; ABSORPTION ROUTING; THE ROLE ATLAS - REGISTRATION - Oct 6 2026 (proj/role_group_report.txt; week 5 untouched)
+## REVISION E - OUTCOME; ABSORPTION ROUTING; THE ROLE ATLAS - REGISTRATION - Oct 6 2026 (proj/role_group_report.txt; week 5 untouched)
 Revision E (47,265 rows; 40 without a role vector; BIC chose 8 groups, the registered top, in all 16 fits).  Judged cells (mean of 4 season gains, exact CRPS):
    RB targets ROLE vs position +0.0019 (3/4), role vs issued +0.0169 (4/4) EARNED; RB carries ROLE +0.0061 (2/4), vs issued -0.0115 FAIL (low dk_points tercile bias
    issued -0.550, position +0.180, role +0.005); QB carries POSITION -0.0064 (1/4), role vs issued +0.0185 EARNED (position vs issued +0.0249); TE rushing yards POSITION,
@@ -4996,7 +4996,7 @@ THE ROLE ATLAS (draws.role_atlas; project owner: "I want the data to tell me wha
    rows (recurrence: a true role holds in every season), and for the pooled population its members' positions (a mixed-position role is a cross-position role).
    Writes proj/role_atlas_groups.csv, proj/role_atlas_report.txt.  Next lenses, each its own registration after the atlas: team concentration (the team's favorite
    targets regardless of position); absorption by role; role-level comparisons within and across teams and against defenses.
-## ROLE ATLAS - OUTCOME; CORRECTIONS (WITHDRAWN-FRAMEWORK WORDING, WALL E CLOSURE SCOPE); WALL F - REGISTRATION - Oct 6 2026 (week 5 untouched)
+## ROLE ATLAS - OUTCOME; CORRECTIONS (WITHDRAWN-FRAMEWORK WORDING, REVISION E CLOSURE SCOPE); REVISION F - REGISTRATION - Oct 6 2026 (week 5 untouched)
 Role atlas (proj/role_atlas_report.txt; usage vectors only, no outcome): roles RB 11, WR 17, TE 15, QB 12 (BIC, no upper count); large roles hold a stable share in every
    season; mean clarity .81-.85 (soft membership).  Position label removed (RB+WR+TE, 29 roles): WR and TE share roles (role 11 WR .50 / TE .49; role 25, 80% snaps 20%
    targets, WR .75 / TE .25; roles 4, 7, 14, 15, 26 mixed); RBs are 95-100% of every role with meaningful usage.  A reading; nothing promoted.
@@ -5011,7 +5011,7 @@ CORRECTION 2 - Revision E closure scope.  ROLE_CLOSED named F5 receiving / rushi
    receiving +0.187, WR rushing +0.124, 4/4 each; role vs position +0.007, +0.058, +0.013, -0.021) are DISCOVERY / SEEN POSITIVE, not verdicts, and not integrated.
    Receptions stay closed (the closure is the posterior-mean form, L2580).  TE receiving yards: role groups are the lens L2929 named next ("residualized / nonlinear share");
    its Revision E value is seen; its own registration later.  TD cells stay read only (L2140-2141).
-WALL F - THE TRAINING-ONLY SHRINKAGE PROCEDURE (draws.procedure_wall; reviewer (b+), project owner-adopted).  Object judged: a procedure that chooses the pull target and strength
+REVISION F - THE TRAINING-ONLY SHRINKAGE PROCEDURE (draws.procedure_wall; reviewer (b+), project owner-adopted).  Object judged: a procedure that chooses the pull target and strength
    from earlier seasons only - not the cells seen to win.  Cells: Revision E's scope minus PROCEDURE_CLOSED (ROLE_CLOSED without the four 41 (a) cells) with rows in every test
    season: F5 receiving / rushing yards RB / WR, F5 targets RB, F5 carries RB, QB carries, F5 rushing yards TE (Q1 attempts if it holds rows every season).  Variants per
    row (exact_crps): the issued law; (n mean + k prior) / (n + k), k in SHRINK_GRID > 0, prior = the position mean or the hierarchical role prior (player -> role ->
@@ -5024,7 +5024,7 @@ WALL F - THE TRAINING-ONLY SHRINKAGE PROCEDURE (draws.procedure_wall; reviewer (
    statistic is positive and above the null 95th.  PASS -> an integration registration of the frozen procedure in every eligible cell (cells choosing the issued law stay
    unchanged); FAIL -> the role-conditioned level prior closes for these cells; the smooth role curve is the next rung only if a residue reading asks for it.  Writes
    proj/procedure_verdict.csv, proj/procedure_choices.csv, proj/procedure_report.txt.  Registered once, judged once.
-## WALL F - OUTCOME; WALL F' AND ITS SIMULATION BENCH - REGISTRATION - Oct 6 2026 (proj/procedure_report.txt; week 5 untouched)
+## REVISION F - OUTCOME; REVISION F' AND ITS SIMULATION BENCH - REGISTRATION - Oct 6 2026 (proj/procedure_report.txt; week 5 untouched)
 Revision F: 25,581 rows, 9 cells, outer 2023 / 2024 / 2025; pooled relative CRPS gain -0.02865, whole-pipeline null 95th +0.37922 (share at or above .5595) -> HISTORICAL
    STRUCTURAL FAIL.  It stands; not re-run.  INSTRUMENT DEFECT (disclosed): cells were pooled with equal weight and Q1 attempts (11 rows) entered; its relative gains
    (+.2119, -.2166, -1.2268) set both the statistic and the null.  The other 8 cells' 24 outer gains average +0.0191 (arithmetic on printed lines; 22 of 24 >= 0; the
@@ -5033,11 +5033,11 @@ Revision F: 25,581 rows, 9 cells, outer 2023 / 2024 / 2025; pooled relative CRPS
    covered by it (it carries no information about 2022).
 OWNER-ADOPTED ROUTE (reviewer; "simulation calibrates the judge; reality supplies the verdict"): simulate the judge -> freeze the corrected procedure -> decide whether one
    unseen season (2022: no raw file, never admitted, L4151) is worth spending -> if so, and only by an project owner decision lifting the no-fetch rule for 2022, consume it once.
-WALL F' (frozen now): Revision F's procedure unchanged except the statistic - cells pooled by their row counts in the outer season (procedure_rows_statistic; weights fixed by
+REVISION F' (frozen now): Revision F's procedure unchanged except the statistic - cells pooled by their row counts in the outer season (procedure_rows_statistic; weights fixed by
    rows, never by results).  2022 design: choose the variant per cell on 2021 (priors fit on seasons < 2021), score 2022 (issued laws fit on seasons < 2022; priors and
    role mixtures fit on seasons < 2022), weekly sign-flip whole-pipeline null of 2000 draws; HISTORICAL STRUCTURAL PASS iff the statistic is positive and above the null
    95th.  PASS -> integration registration of the frozen procedure in every eligible cell; FAIL -> the role-conditioned level prior closes for these cells.
-WALL F' BENCH (draws.procedure_simulation; simulated outcomes only; never evidence for a role pull).  Semi-synthetic: the real rows of 2021 (inner) and of 2023, 2024,
+REVISION F' BENCH (draws.procedure_simulation; simulated outcomes only; never evidence for a role pull).  Semi-synthetic: the real rows of 2021 (inner) and of 2023, 2024,
    2025 (each standing in for 2022's row structure; their priors refit on seasons < 2022) keep their issued laws, n, priors, weeks and cells; only outcomes are drawn.
    Worlds gamma in {0, .25, .5, 1}: truth mean = issued mean + gamma (role k* mean - issued mean), role k* = the role k with the largest real mean CRPS gain per cell
    (seen; a power target only, as SEEN positive allows); outcome = truth + residuals resampled with replacement from one real (cell, season, week) residual block of the
@@ -5067,7 +5067,7 @@ LOCKBOX BUDGET: at most 6 judgments on LOCKBOX and 6 on DEEP LOCKBOX over the pr
    its simulation bench (simulation calibrates the judge; reality supplies the verdict); each verdict states its number (k of 6) and the seasons it read; a lockbox season is
    read only by a judgment (proj/lockbox_ledger.csv, append-only, records each spend).  When a budget is spent, new evidence comes only from completed future seasons.
    The project owner may close a tier at any time; no tier is ever reopened by refetching.
-WALL F' ON THE LOCKBOX (judgment 1 of 6, LOCKBOX; registered here, run only after its instrument exists and passes its bench): train 2012, choose on 2013 (priors on
+REVISION F' ON THE LOCKBOX (judgment 1 of 6, LOCKBOX; registered here, run only after its instrument exists and passes its bench): train 2012, choose on 2013 (priors on
    seasons < 2013), outer 2014 (choice from 2013) and 2015 (choice from 2013-2014); Revision F's cells and procedure with the row-count pooled statistic; whole-pipeline weekly
    sign-flip null; HISTORICAL STRUCTURAL PASS iff positive and above the null 95th; era disclosed (a pass shows the procedure worked in 2014-15 under refits).  Before it:
    (1) a lockbox law build (laws refit from lockbox facts built in isolation - engineering, no fetch); (2) a bench of this two-season design with quality gates registered
@@ -5091,17 +5091,17 @@ Second run: lockbox/snaps_2012.csv.gz arrived "truncated" 3 times and the fetch 
 Consequence, recorded now, before any lockbox season is read: roles exist in the LOCKBOX for 2013-2015 only (2012 stays sealed; it has play-by-play, stats, injuries and
    rosters but no snap counts).  Revision F' on the lockbox (judgment 1 of 6) needs a design within 2013-2015; it is registered with its corrected null and its simulation
    bench in one entry, before the lockbox is read.
-## FINAL CORPUS - OUTCOME AND ACCEPTANCE; WALL F' AMENDMENT (LOCKBOX DESIGN, CONDITIONAL NULL) AND ITS BENCH - REGISTRATION - Oct 6 2026 (before the bench runs; no lockbox season read)
+## FINAL CORPUS - OUTCOME AND ACCEPTANCE; REVISION F' AMENDMENT (LOCKBOX DESIGN, CONDITIONAL NULL) AND ITS BENCH - REGISTRATION - Oct 6 2026 (before the bench runs; no lockbox season read)
 Corpus (fetch --corpus, third run): data/corpus written, 104 data files + absent.json; accepted in this transaction after the fetch's own per-file listing was read.
    Absent 27 (measured): snap counts 1999-2012 (2012: the .gz broken at its published length, the .csv header only); injuries 1999-2008; weekly rosters 1999-2001.
    Present per season: stats, play-by-play and schedule 1999-2022 tiers; injuries 2009+; weekly rosters 2002+; snaps 2013+; participation 2016-2018, 2022; FTN 2022.
    Upstream notes (nflfastR changelog, read by the project owner): 1999 and 2000 are no longer supported upstream ("inconsistent data sources") - kept, flagged UNSUPPORTED
    UPSTREAM, and any judgment reading them states it; 2001-2010 come from the 2011+ source (4.0.0) and player ids are standardized across 2011 (2.1.1); the pre-2016
    Jacksonville home-game defect was fixed in the raw data (5.0.0, #478) and this fetch is the current release.
-WALL F' AMENDMENT 1 - LOCKBOX DESIGN (supersedes the 2012-2015 design; 2012 has no snap counts): choose on 2014 (priors and role mixtures fit on 2013), judge 2015
+REVISION F' AMENDMENT 1 - LOCKBOX DESIGN (supersedes the 2012-2015 design; 2012 has no snap counts): choose on 2014 (priors and role mixtures fit on 2013), judge 2015
    (issued laws, priors and role mixtures fit on seasons < 2015, i.e. 2013-2014); one outer season.  Cells, variants, CRPS selection and the row-count pooled statistic
    unchanged.  Lockbox judgment 1 of 6.
-WALL F' AMENDMENT 2 - CONDITIONAL NULL (draws.procedure_outer_null).  The whole-pipeline null re-randomized the inner season too; consistently harmful variants (large k)
+REVISION F' AMENDMENT 2 - CONDITIONAL NULL (draws.procedure_outer_null).  The whole-pipeline null re-randomized the inner season too; consistently harmful variants (large k)
    then turned into large chance wins under sign flips, and the batch 11 bench measured the result: null 95th +0.069 to +0.100 against a gamma-1 effect near +0.019;
    power 0.000 at every gamma.  The choice never reads the outer season, so the test is conditional on it: choices fixed from the earlier seasons; each draw flips the sign
    of every outer week (one sign per week, shared by every cell) on the chosen variants' weekly gains; same pooling; 2000 draws in the judgment.  PASS iff the statistic is
@@ -5110,7 +5110,7 @@ BENCH (draws.procedure_simulation, rerun with procedure_outer_null; outputs proj
    residual blocks, witness, 100 replicates per world x template (2021 as the choosing season, 2023 / 2024 / 2025 as the judged one), 200 null draws each.  GATE, fixed
    now: false pass at gamma 0 <= .05 and power at gamma 1 >= .80 -> LOCKBOX JUDGMENT 1 MAY RUN (then the lockbox law build and the judgment, each its own transaction);
    otherwise the lockbox is not spent and the role question ends (project owner stopping rule).  Promotes nothing; reads no lockbox season.
-## WALL F' BENCH (BATCH 13) - INVALID; FIVE WHYS; CANONICAL REPLACEMENT; INSTRUMENT STATES - Oct 6 2026 (no lockbox season read)
+## REVISION F' BENCH (BATCH 13) - INVALID; FIVE WHYS; CANONICAL REPLACEMENT; INSTRUMENT STATES - Oct 6 2026 (no lockbox season read)
 Batch 13 bench (proj/procedure_bench.csv): false pass .183 at gamma 0, power 1.000 at gamma 1; it printed "LOCKBOX NOT SPENT - THE ROLE QUESTION ENDS".  That
    reading is INVALID, and the role question is UNRESOLVED (not ended): the bench's null world was not null.  Correction of the agent's report the same day ("closed").
 FIVE WHYS (project owner-directed): (1) at gamma 0 the pulls truly improved CRPS - the world was not null; (2) draws.procedure_simulation built outcomes as issued mean + raw
@@ -5131,7 +5131,7 @@ INSTRUMENT STATES (evaluate.instrument_state; standing rule from now): every ins
 OWNER ROUTE (a), the last correction, registered before the run: the replaced bench runs once (worlds, quality gate, replicates, null draws and seed as in batch 13; outputs
    proj/procedure_bench_law.csv / _report.txt).  VALID PASS -> the lockbox law build, then Revision F' lockbox judgment 1 of 6 (each its own transaction).  VALID FAIL or INVALID
    -> the role question is recorded UNRESOLVED and stopped by the project owner's rule; no further bench correction is made.
-## WALL F' BENCH - OUTCOME (VALID PASS); OPERATING SYSTEM AND v1 FINISH LINE (OWNER-ADOPTED); COHERENCE READ - REGISTRATION - Oct 6 2026
+## REVISION F' BENCH - OUTCOME (VALID PASS); OPERATING SYSTEM AND v1 FINISH LINE (OWNER-ADOPTED); COHERENCE READ - REGISTRATION - Oct 6 2026
 Bench (proj/procedure_bench_law_report.txt): premises held (score = exact_crps, max |diff| 1.17e-13; null world = issued law, max |z| 1.91; other worlds move only the
    mean, max |z| 2.24).  Pass share: gamma 0 .003 +- .003, .25 .067, .5 .560, 1 .993 +- .005 -> VALID PASS.  The judge is a validated instrument; no further method
    work on Revision F'.  Reading: a lockbox FAIL means no effect of the seen size (power at half size .56), not no effect.  Measured real bias per cell on the bench rows is
@@ -5552,7 +5552,7 @@ Reviewer adjudication against the CHARTER (copy through L4023; later entries owe
 OWNER (Oct 7): TDs are three different events - passing, rushing, receiving.  receiving TDs and rushing TDs enter as a structural decomposition of F5 TDs
    (TD_total = TD_receiving + TD_rushing), reads only this sprint, no producer status; every F5 TDs verdict stays frozen as judged.  The coupling of receiving TDs to
    passing TDs waits on the accounting read (td_accounting_read) and is judged on the joint QB-receiver law, never on a receiving-TD marginal alone.
-SPRINT 33 WALL - the receiver yards link (laws.fit_receiver_yards_beta, draws.receiver_yards_link): per position (RB, WR, TE), beta minimises the squared error of a played
+SPRINT 33 REVISION - the receiver yards link (laws.fit_receiver_yards_beta, draws.receiver_yards_link): per position (RB, WR, TE), beta minimises the squared error of a played
    receiver's receiving yards against his season-to-date receiving yards per game x (his team-game's passing yards / the team's season-to-date passing yards per game)^beta
    on seasons < s.  In the draws, each receiver's receiving yards draw x (his team's starter passing yards draw / its mean)^beta, draw by draw (the starter: the team's
    issued QB with the largest expected attempts; no passing yards, no receiving yards); receptions, rushing and TDs unchanged.  Judged once inside THE ONE REPLAY
@@ -5675,7 +5675,7 @@ SPRINT 37 (one batch, one replay): THE THIRD CUMULANT - draws.yards_sum is the O
    product (proj/atlas_rows_batch36.csv.gz): EARNED iff the cell's mean season gain is positive; issued while unjudged, then only EARNED cells (laws.build_inputs).
    Deleted: two producers of the yards form, six guards (three n = 0, three max(n, 1)).  The yards-count revision keeps judging its normal form (yards_given_count with
    k3 NaN); yards-count-check witnesses the batch 23 normal form and is superseded for any cell whose k3 is issued.
-LANDING CONTRACT: the batch snapshots laws.py, draws.py and CHARTER.md before writing and restores them whole if the guard refuses (ledger-advance).
+ACCEPTANCE CONTRACT: the batch snapshots laws.py, draws.py and CHARTER.md before writing and restores them whole if the guard refuses (ledger-advance).
 REGISTERED GOALS (before any result; draws.third_cumulant_judgment prints MET / NOT MET): G1 F8 WR DECISION-QUALIFIED; G2 F8 cells DECISION-QUALIFIED >= 1 (layer 1
    0 -> 1); G3 yards cells whose nonzero L moves toward .10 >= 6 of 8; G4 Q3 passing yards U >= .08 (from .055); G5 F5 rushing yards RB FAIL (registered falsification).
 PREDICTIONS: WR receiving yards L .048 -> about .07; WR F8 L .088 -> about .10; QB F8 stays CENTER TOO HIGH (exits, sprint 38); RB rushing yards FAIL; TE mixed.
@@ -5715,7 +5715,7 @@ PREDICTIONS: RB carries L / U .21 -> about .10; F8 RB TOO NARROW -> qualified or
 WORK ORDER (appended): WO37 settled (yards form owns the tail; k3 earned on four cells).  WO38-G the quality gate follows L245 (project owner).  WO38-R re-judge the rearrangement on
    played-only totals (accounting bug, L403); pending.  WO38-T team attempts spread challenger (L1526); pending.  WO38-Q QB rushing TD rate (L1584); pending.  WO38-B
    receptions given targets: beta-binomial precision (L1697); pending.  WO38-Z reads report slate-clustered z (L2438); pending.
-LANDING CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
+ACCEPTANCE CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
 ## SPRINT 38 - OUTCOME; THE SHARE LAW READ; SPRINT 39 - THE RB CONTROL LAW, THE GATE AGAINST CHANCE - REGISTRATION WITH GOALS - Oct 7 2026 (before code)
 Batch 38 (graded, THE CONFIRMATION GATE): NB1 DISPERSION OF EVERY POISSON CELL - challenged F5 carries RB, F5 receptions TE, Q1 attempts QB (rows without a control
    state), Q4 passing TDs QB.  F5 carries RB TOO NARROW -> TOO WIDE (L .211 -> .045, U .214 -> .088, center .528 -> .377) FAIL; F5 receptions TE TOO NARROW -> CENTER TOO
@@ -5747,7 +5747,7 @@ PREDICTIONS: F5 carries RB width resolved (L, U .06-.12) with its center still l
    F8 RB one band from qualified; the verdict likely UNRESOLVED or EARNED on CRPS (about +.04 mean against Poisson) - the label may stay structural on its center.
 WORK ORDER (appended): WO38 settled (NB1 refused: a count's width is not the shape).  WO39-C the RB share's center (.43-.48) - pending.  WO39-R the receptions' catch rate
    level (L117 regression) - pending.  WO38-R, WO38-T, WO38-Q, WO38-Z carried.
-LANDING CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
+ACCEPTANCE CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
 ## SPRINT 39 - OUTCOME; THE BROKEN LINK; SPRINT 40 - THE LINK RESTORED, THE GATE GUARDS THE GOAL - Oct 7 2026 (before code)
 Batch 39 (graded): THE RB CONTROL LAW EARNED on its cell - F5 carries RB nonzero TOO NARROW -> MISCALIBRATED (shape), L .212 -> .092, center .528 -> .504, U .214 ->
    .091, CRPS 2.5958 -> 2.5385, gains +.094 +.033 +.123 -.019, p .002.  But the goal regressed: F8 RB CRPS 3.2485 -> 3.2680 (0/4 seasons), bias -.076 -> -.209, L .106
@@ -5768,7 +5768,7 @@ SPRINT 40 (one batch, one replay, no new mechanism):
 PREDICTIONS: F5 rushing yards RB returns to yards given carries (no imposed-zero mass beyond the floor; CRPS below 14.34 as its parent is better); F8 RB CRPS below the
    batch 36 3.2485 with bias toward 0; F8 RB label one band from DECISION-QUALIFIED or qualified (layer 1 0 -> 1 if so).
 WORK ORDER (appended): WO39-L settled by (A).  WO40-G settled by (B).  WO39-C (RB share center), WO39-R (catch-rate level), WO38-R, WO38-T, WO38-Q, WO38-Z carried.
-LANDING CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
+ACCEPTANCE CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
 ## SPRINT 40 - OUTCOME; THE LUCK MAP; SPRINT 41 - THE SHRUNK EFFICIENCY - REGISTRATION WITH GOALS - Oct 7 2026 (before code)
 Batch 40 (graded): THE LINK RESTORED - RB rushing yards drawn given the share law's carries again (marginal changed .686 -> .00005); F8 RB CRPS 3.2680 -> 3.2418, below
    batch 36's 3.2485 (season gains over batch 36 +.013 -.007 +.015 +.006, p .005), bias -.029, L .074 U .098 - still CENTER TOO LOW (L).  Layer 1: 0 -> 0 qualified; the
@@ -5794,7 +5794,7 @@ REGISTERED GOALS (draws.efficiency_judgment): G1 F8 cells DECISION-QUALIFIED >= 
 PREDICTIONS: yards cells' CRPS fall (the per-unit error falls 15-21% in the luck map); F8 gains at RB, WR, TE and QB; the yards L tails move toward .10.
 NEXT FACTOR CLASSES (work order): WO41-C conversion (TD rates per touch: QB rushing TDs, Q4 passing TDs, F5 TDs) shrunk the same way; WO41-O opportunity (team volume,
    w .4); WO41-R the catch rate where L1 is not earned (TE).  Carried: WO39-C, WO38-R, WO38-Q, WO38-Z.
-LANDING CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
+ACCEPTANCE CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
 ## SPRINT 41 - OUTCOME; THE CENTER LINES; SPRINT 42 - THE SHRUNK CONVERSION - REGISTRATION WITH GOALS - Oct 7 2026 (before code)
 Batch 41 (graded): THE SHRUNK EFFICIENCY - the yards cells gained (receiving yards RB 8.049 -> 7.928 4/4, WR 14.861 -> 14.767 4/4, QB rushing yards 8.453 -> 8.295 4/4)
    but F8 RB 3.2418 -> 3.2696 and F8 WR 3.1060 -> 3.1161 lost beyond chance: the goal guard refused RB / WR cells; Q3 passing yards 44.12 -> 44.78 (0/4) FAIL; TE receiving
@@ -5819,7 +5819,7 @@ PREDICTIONS: QB rushing TDs bias +.088 -> about 0 and CENTER TOO HIGH resolved; 
 WORK ORDER (appended): WO41 settled (efficiency: QB rushing yards earned; the yards per-count rates' b .03-.30 confirms luck, but the F8 composition refused them - the
    F8 interaction with the yards rate is open, WO42-Y).  WO42-O opportunity: team carries b .4, team attempts b .7.  WO42-Q the QB volume under-reaction (b 1.12-1.24).
    WO42-T TE TDs b .37.  Carried: WO38-R, WO38-Z.
-LANDING CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
+ACCEPTANCE CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
 ## SPRINT 42 - OUTCOME; SPRINT 43 - THE SHRUNK OPPORTUNITY - REGISTRATION WITH GOALS - Oct 7 2026 (before code)
 Batch 42 (graded): THE SHRUNK CONVERSION - Q4 passing TDs CRPS .6360 -> .6159, MISCALIBRATED -> DECISION-QUALIFIED, EARNED (calibration route; 4/4, p .0022);
    QB rushing TDs CRPS .2002 -> .1894, bias +.088 -> +.006, EARNED (p .0018).  F8 QB 4.6392 -> 4.6104, bias +.774 -> +.554, still CENTER TOO HIGH (L .124, cov.25 .285).
@@ -5844,7 +5844,7 @@ PREDICTIONS: team attempts bias +.633 -> toward 0 and its center line b toward 1
    center's excess is not reactivity but level (v1 vs the league to date) - read before any further shrink.
 WORK ORDER (appended): WO42-O accepted here.  Open: WO42-Q QB volume under-reaction (b 1.12-1.24) / the exits mixture; WO42-Y the F8 interaction with the yards rate;
    WO42-T TE TDs b .37; TE catch rate; WO43-N the NB sizes refit on the issued means if the cells earn.  Carried: WO38-R, WO38-Z.
-LANDING CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
+ACCEPTANCE CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
 ## SPRINT 43 - OUTCOME; THE ABSENCE KINDS; SPRINT 44 - THE PLAYING TIME - REGISTRATION WITH GOALS - Oct 7 2026 (before code)
 Batch 43 (graded): THE SHRUNK OPPORTUNITY - F2 team carries CRPS 4.3296 -> 4.1807 (4/4, p .0000) EARNED, bias -.228 -> -.232 held (the registered falsifier: its
    excess is level, not reactivity); F2 team attempts bias +.633 -> +.036 as predicted, CRPS 4.3251 -> 4.3145 (3/4, p .28) UNRESOLVED - not issued from here.  Q1 / Q2 ->
@@ -5877,7 +5877,7 @@ PREDICTIONS: QB F8 L .124 (batch 42) -> about .10; full-game bias -.9 rises towa
    role-absence bias holds, the participation fact lives before the ledger (who is issued) - the issue's QB roster, not the law.
 WORK ORDER (appended): WO44-P accepted here.  Open: WO43-N NB sizes on the issued means; WO44-I Q5 thinning; WO44-S skill-position absence kinds; WO43-L team carries'
    level (bias -.23); WO42-Y, WO42-T, TE catch rate.  Carried: WO38-R, WO38-Z.
-LANDING CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
+ACCEPTANCE CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
 ## SPRINT 44 - CORRECTION BEFORE ANY VERDICT - THE ROLE FIT - Oct 7 2026
 Batch 44 passed the guard, then replay-all refused at the 2023 cutoff: "fit_share_control QB attempts: seasons < 2023 did not converge (ABNORMAL)" - the QB role, fit
    as the beta-binomial control law on the games of no absence.  Nothing was graded; no verdict was written; the atlas on disk stayed the batch 43 product (the ladder's
@@ -5921,7 +5921,7 @@ PREDICTION (the baseline of record): the QB block equals batch 42 exactly - QB F
    Falsifier: any QB value different from batch 42 - the deletion missed a reader.
 WORK ORDER (appended): WO44-P settled FAIL; WO44-R becomes T4 (history only) and Y_late (separate track); WO43-N folds into T1; WO44-S into T7; WO38-Z settled
    (graded_evidence flips per slate).
-LANDING CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
+ACCEPTANCE CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
 ## T0 - OUTCOME; T1 - THE ROLE - REGISTRATION WITH GOALS - Oct 7 2026 (before code)
 T0 (batch 45, graded): every prediction held - QB F8 4.6104 (bias +.554), Q1 5.1420, Q2 3.6102, Q3 44.1182, RB F8 3.2409, atlas DECISION-QUALIFIED 18, verdict files
    unchanged.  The baseline of record is proj/atlas_rows_batch45.csv.gz.
@@ -5947,7 +5947,7 @@ REGISTERED GOALS (draws.role_judgment): G1 F8 WR DECISION-QUALIFIED; G2 F8 cells
 PREDICTIONS: WR targets b .88 -> about 1, its bias by tercile toward 0; WR F8 tail share .210 / .200 / .160 -> about .20 each; WR F8 L .088 -> toward .10; F8 WR CRPS
    at most 3.1060.  Falsifier: if targets b reaches 1 and WR F8's tails by usage stay apart, the width project owner is downstream (yards per catch by usage) - read first.
 WORK ORDER (appended): T1 here.  Next by the spine: T2 RB (rushing-yards lower tail, then yards x TDs), T3 TE (center, then TDs x volume), T4 QB exposure state.
-LANDING CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
+ACCEPTANCE CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
 ## T1 - OUTCOME; T1b - THE CATCH - REGISTRATION WITH GOALS - Oct 7 2026 (before code)
 T1 (batch 46, graded): THE ROLE FAIL (proj/role_verdicts.csv).  ROOT - F5 targets WR CRPS 1.3430 -> 1.3534, gains -.0041 / -.0041 / -.0123 / -.0173, p .96; its label
    CENTER TOO LOW -> MISCALIBRATED (shape), while its calibration by usage was repaired (tails .205 / .212 / .203, bias -.06 / +.00 / +.08, center slope .88 -> .94, G3
@@ -5989,7 +5989,7 @@ PREDICTIONS: F5 receptions WR and RB CRPS fall; WR receptions width only 2.49 / 
    project owner (re-opened only on a new instrument).
 WORK ORDER (appended): T1 FAIL with its lesson; T1b here.  Next by the spine: T2 RB (rushing-yards lower tail, then yards x TDs), T3 TE (center: the catch composition
    with its targets center producer; TDs x volume), T4 QB exposure state.
-LANDING CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
+ACCEPTANCE CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
 ## T1b - OUTCOME; THE GATE BENCH; OWNER RULING - THE SEASON GATE; M0a - THE SEASON GATE AND ITS RE-JUDGMENT - REGISTRATION - Oct 7 2026 (before code)
 T1b (batch 47, graded): THE CATCH EARNED and integrated in both cells (proj/catch_verdicts.csv).  F5 receptions WR CRPS .9834 -> .9719, 4/4, CENTER TOO LOW ->
    DECISION-QUALIFIED (calibration route); RB .8294 -> .8247, 4/4, p .023.  WR F8 3.1060 -> 3.0808 (below witness_v4 3.1059), usage tail gap .051 -> .012 (G4 MET);
@@ -6029,7 +6029,7 @@ PREDICTIONS (season gains on file computed before code): dispersion F5 reception
    order as the next acceptance - a re-judgment ruled by the project owner is not reversed by its consequence.
 WORK ORDER (appended): T1b EARNED; L3 / revision 9 on the new marginals owed; M0a here; M0b readings print no verdict words (14 judgment functions recompute and print
    verdict words every replay); M0c WO38-R; team-stack verdicts' season gains (owed); the procedure revision's null.
-LANDING CONTRACT: snapshot laws.py, draws.py, CHARTER.md and every verdict file before writing; restore them whole if the guard refuses.
+ACCEPTANCE CONTRACT: snapshot laws.py, draws.py, CHARTER.md and every verdict file before writing; restore them whole if the guard refuses.
 ## M0a - OUTCOME; T2 - THE SHARE (RB WIDTH) - REGISTRATION WITH GOALS - Oct 7 2026 (before code)
 M0a (batch 48, graded): THE SEASON GATE - 86 verdicts re-judged, 27 changed (proj/season_gate_verdicts.csv).  Layer 1: 0 -> 1 of 5 - WR F8 DECISION-QUALIFIED
    (3.0808 -> 3.0770; shrunk yards per catch for RB and WR EARNED, p .004 / .010).  RB F8 3.2402 -> 3.2774, CENTER TOO LOW -> TOO NARROW, 0/4 seasons: the RB control
@@ -6064,7 +6064,7 @@ PREDICTIONS: RB carries PIT sd .359 -> about .29, CRPS 2.5958 -> below 2.5163 (t
    width; read next.
 WORK ORDER (appended): M0a graded; T2 here; M0b readings print no verdict words, with the two record corrections; M0c WO38-R; team-stack verdicts' season gains;
    L3 / revision 9 on the new marginals; TE receptions with its targets center producer (T3).
-LANDING CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
+ACCEPTANCE CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
 ## T2 - OUTCOME; T2b - THE DRIFT (THE RB CARRY SHARE AS A DISCOUNTED BETA) - REGISTRATION WITH GOALS - Oct 7 2026 (before code)
 T2 (batch 49, graded): F5 targets RB EARNED (CRPS .9712 -> .9458, 4/4, p .0024, TOO NARROW -> DECISION-QUALIFIED); F5 carries RB UNRESOLVED (2.5958 -> 2.5652, 2/4,
    p .17; TOO NARROW -> CENTER TOO LOW, bias -.133 -> -.273; tails by usage .41 / .48 / .39 -> .20 / .23 / .14).  RB F8 3.2774 -> 3.2479 (CENTER TOO LOW, only q .10
@@ -6096,7 +6096,7 @@ PREDICTIONS: RB carries bias -.273 -> about -.15 (share part -.08 and the team p
    the gain lives in rows the atlas does not grade (the incumbent-absent luck), read next.
 WORK ORDER (appended): T2 graded (targets EARNED, carries UNRESOLVED); T2b here; the class question - WR targets (the role) and RB targets on the drifting share;
    the team carries center (team part -.064, F2 team carries CENTER TOO LOW); M0b readings without verdict words and the two batch 48 record corrections; M0c WO38-R.
-LANDING CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
+ACCEPTANCE CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
 ## T2b - OUTCOME; T2c - THE YARDS SHAPE (RB YARDS GIVEN THEIR COUNT) - REGISTRATION WITH GOALS - Oct 7 2026 (before code)
 T2b (batch 50, graded): THE DRIFT EARNED - F5 carries RB 2.5652 -> 2.4732 (4/4, p .0018; better than Poisson 2.596, the control law 2.516, the T2 share 2.565), bias
    -.273 -> -.173, still CENTER TOO LOW; RB F8 3.2479 -> 3.2466, CENTER TOO LOW on q .10 coverage alone (.087); WR F8 3.0772 DECISION-QUALIFIED; QB, TE unchanged;
@@ -6124,7 +6124,7 @@ PREDICTIONS: RB rushing yards CRPS 14.29 -> lower, L .062 -> toward .10; RB rece
    L corrected - the carries count's own lower tail owns it (its bias -.173).
 WORK ORDER (appended): T2b EARNED; T2c here; the class - WR / TE yards given count around their issued rates; the team carries center (-.064, F2 team carries CENTER
    TOO LOW); the drifting share for the role and RB targets; M0b with the two batch 48 record corrections; M0c WO38-R.
-LANDING CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
+ACCEPTANCE CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
 ## T2c - OUTCOME; T2d - THE PLAY SUM (EVERY STRUCTURAL YARDS CELL AS THE SUM OF ITS PLAYS) - REGISTRATION WITH GOALS - Oct 7 2026 (before code)
 T2c (batch 51, graded): THE YARDS SHAPE UNRESOLVED in both cells; RB F8 3.2466 -> 3.2744; not issued from the next replay.  Lesson: a moment-matched gamma's floor
    truncates the low tail at the lowest counts and its k3 split was unstable - a family imposed on a play's luck.
@@ -6155,7 +6155,7 @@ PREDICTIONS: every yards cell's CRPS lower, its L toward .10; RB F8 3.2466 -> lo
 WORK ORDER (appended): T2c UNRESOLVED; T2d here; QB rushing - the play's kind (kneel, sneak, scramble, designed) as its sub-root; QB passing per completion as a
    play sum after M4; count x gain dependence (M4); the team carries center (-.064); the drifting share for the role and RB targets; M0b with the two batch 48
    record corrections; M0c WO38-R.
-LANDING CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
+ACCEPTANCE CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
 ## T2d - THE PLAY SUM: THE JUDGMENT RAISED BEFORE ITS VERDICT - Oct 7 2026
 Batch 52 replayed with all six play cells issued (unjudged) and graded: atlas DECISION-QUALIFIED 20 -> 22; RB receiving yards nonzero 7.8440 -> 7.8241 and WR
    receiving yards nonzero 14.5596 -> 14.4974 (both now DECISION-QUALIFIED); RB rushing yards nonzero 14.3375 -> 14.2820 (still CENTER TOO LOW, bias -1.318 - the
@@ -6167,7 +6167,7 @@ Five whys: no verdict file -> gated_judgment raised in a reading -> the tercile 
    between the lowest and highest tercile the rows reach.  The product is unchanged (laws.py as batch 52); the replay re-issues the six cells and judges them once.
 PREDICTION: verdicts as batch 52 printed for the receiving cells (RB EARNED, TE FAIL, WR EARNED); RB rushing EARNED (14.3375 -> 14.2820); WR and TE rushing EARNED
    on small gains; the TE receiving FAIL leaves its normal law in place from the next replay.
-LANDING CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
+ACCEPTANCE CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
 ## T2d - THE PLAY SUM: THE JUDGMENT RAISED BEFORE ITS VERDICT - Oct 7 2026
 Batch 52 replayed with all six play cells issued (unjudged) and graded: atlas DECISION-QUALIFIED 20 -> 22; RB receiving yards nonzero 7.8440 -> 7.8241 and WR
    receiving yards nonzero 14.5596 -> 14.4974 (both now DECISION-QUALIFIED); RB rushing yards nonzero 14.3375 -> 14.2820 (still CENTER TOO LOW, bias -1.318 - the
@@ -6179,7 +6179,7 @@ Five whys: no verdict file -> gated_judgment raised in a reading -> the tercile 
    between the lowest and highest tercile the rows reach.  The product is unchanged (laws.py as batch 52); the replay re-issues the six cells and judges them once.
 PREDICTION: verdicts as batch 52 printed for the receiving cells (RB EARNED, TE FAIL, WR EARNED); RB rushing EARNED (14.3375 -> 14.2820); WR and TE rushing EARNED
    on small gains; the TE receiving FAIL leaves its normal law in place from the next replay.
-LANDING CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
+ACCEPTANCE CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
 ## T2d - THE PLAY SUM: THE JUDGMENT RAISED BEFORE ITS VERDICT - Oct 7 2026
 Batch 52 replayed with all six play cells issued (unjudged) and graded: atlas DECISION-QUALIFIED 20 -> 22; RB receiving yards nonzero 7.8440 -> 7.8241 and WR
    receiving yards nonzero 14.5596 -> 14.4974 (both now DECISION-QUALIFIED); RB rushing yards nonzero 14.3375 -> 14.2820 (still CENTER TOO LOW, bias -1.318 - the
@@ -6191,7 +6191,7 @@ Five whys: no verdict file -> gated_judgment raised in a reading -> the tercile 
    between the lowest and highest tercile the rows reach.  The product is unchanged (laws.py as batch 52); the replay re-issues the six cells and judges them once.
 PREDICTION: verdicts as batch 52 printed for the receiving cells (RB EARNED, TE FAIL, WR EARNED); RB rushing EARNED (14.3375 -> 14.2820); WR and TE rushing EARNED
    on small gains; the TE receiving FAIL leaves its normal law in place from the next replay.
-LANDING CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
+ACCEPTANCE CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
 ## T2d - THE JUDGMENT RAISED AGAIN; THE VERDICTS FIRST - Oct 7 2026
 Batch 53: gated_judgment reached the five play cells' verdicts (stdout): RB receiving EARNED, TE receiving FAIL, WR receiving EARNED, RB rushing UNRESOLVED (p .4456),
    TE rushing EARNED - then raised ValueError (qcut: bin edges NaN) in the WR rushing cell's usage reading (its baseline F5 carries WR nonzero centers undefined) before
@@ -6210,7 +6210,7 @@ PREDICTION: play_verdicts.csv written - RB receiving EARNED, TE receiving FAIL, 
 WORK ORDER (appended): the next sub-root - team pass volume center high every season (team attempts +.633), project owner of QB F8's center (+.404 of +.564) and a part of
    WR's; TE receiving volume center low (receptions, yards) - TE F8's project owner; RB's per-carry center (-1.26 yards with carries -.165); WR carries baseline centers
    undefined (the usage reading's NaN) - read why.
-LANDING CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
+ACCEPTANCE CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
 ## T2d - OUTCOME; T3 - THE LEAGUE LEVEL (TEAM VOLUME CENTERS) - REGISTRATION WITH GOALS - Oct 7 2026 (before code)
 T2d (batch 54): proj/play_verdicts.csv - RB receiving EARNED, WR receiving EARNED, TE rushing EARNED; TE receiving FAIL, WR rushing FAIL; RB rushing UNRESOLVED (p .4456).
    G2, G3 (6 of 6 lower tails toward .10), G5 MET; G1 (RB F8 3.2474), G4 NOT MET.  The verdicts-first order held.
@@ -6235,7 +6235,7 @@ PREDICTIONS: team attempts bias +.63 -> about +.13, targets +.56 -> about +.17; 
    WR F8 stays DECISION-QUALIFIED; carries about unchanged.  Risk: the CRPS gain is small against per-game noise (MSE -1%) - ROOT may read UNRESOLVED as the opportunity
    law did; then the F8 integration readings carry the play-by-play record.
 WORK ORDER (appended): T2d judged; T3 here; QB's per-attempt and completion centers (the rest of passing yards' +7.7); TE receiving volume low; RB per-carry center.
-LANDING CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
+ACCEPTANCE CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
 ## T3 - OUTCOME; THE SUB-ROOT; T4 - THE ONE CHAIN - REGISTRATION WITH GOALS - Oct 7 2026 (before code)
 T3 (batch 55): team carries EARNED (DECISION-QUALIFIED); team attempts UNRESOLVED (bias +.633 -> +.123, p .1132) - reverts.  QB F8 4.6121 -> 4.6114 for one replay.
 THE READS: f8_owner_read - each F8 center's project owner (QB: passing yards +7.71 on attempts +.86; RB: rushing yards -1.26; TE: receiving yards -1.82).  team_volume_drift_read,
@@ -6267,7 +6267,7 @@ PREDICTIONS: QB attempts bias +.86 -> about 0, passing yards +7.7 -> about +2, Q
    is not the project owner.  Risk: CRPS gains small against game noise - cells may read UNRESOLVED; each keeps v1 then, named.
 WORK ORDER (appended): the next acceptance deletes the fossils - the 20 judgment functions and their goals, the dead verdict switches (FAIL / UNRESOLVED laws not
    issued), the THREE ZEROS re-run readings; then the TD link of the chain; owed instruments re-recorded on the new centers (spine_check, law_issue_check).
-LANDING CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
+ACCEPTANCE CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
 ## T4 - OUTCOME; THE CHAIN IS ONE LAW - Oct 7 2026
 T4 (batch 56, the chain issued whole): per cell 5 EARNED (TE receiving yards, TE receptions, RB targets, Q2 completions, QB carries), 8 UNRESOLVED, 6 FAIL - three
    of the FAILs unchanged cells (team carries, RB carries, TE targets: gains .0000, their issued laws read no v1 - UNCHANGED, owed as a record correction).  On the
@@ -6285,7 +6285,7 @@ PREDICTION: WITHHELD (QB, RB, WR F8 rose); the replay runs and its product equal
    were fit on v1's margins is the first candidate).
 WORK ORDER (appended): UNCHANGED record correction for the three cells; integration quality gate against the previous product with no rise (Done #6); readings print no
    verdict words; Q3's spread around its center; fossil deletion.
-LANDING CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
+ACCEPTANCE CONTRACT: snapshot laws.py, draws.py and CHARTER.md before writing; restore them whole if the guard refuses.
 ## THE GROUND-UP REWRITE - OWNER DECISION AND REGISTRATION - Oct 7 2026 (before code)
 Project owner (Oct 7): laws.py, draws.py and dependence.py are deleted; the kit is rewritten from the ground up so that every root discovered cannot be constructed.  The
    three files are kept unchanged in proj/fossils/batch59/ as history (the play-by-play record of thirty sprints), never imported: a reader of them fails the rewrite.
@@ -6709,7 +6709,7 @@ reclaimed (back) by the teammates he is next up to (the active members of the ab
 rate_A x (p(A, B) - [A active]) against his own earlier games; role law logit(mean) + t5 out + t6 back, fit with t0 - t4 by maximum likelihood on seasons < s
 (training rows: active = played that week); draws pass the active list to link_rates in the replay and the live week.  roster_status stays dropped at the
 door and named only by facts.py.
-WALL ALREADY PASSED (native units): vacancy_next_up_read_v1 - learned next-up alpha walk-forward BETTER on F5 carries RB (p .011), F5 targets RB (.009), TE
+REVISION ALREADY PASSED (native units): vacancy_next_up_read_v1 - learned next-up alpha walk-forward BETTER on F5 carries RB (p .011), F5 targets RB (.009), TE
 (.004), WR (.0002), Q1 attempts (.003); none WORSE; alpha stable by season; back < out.
 PREDICTION: the guard passes; the replay exits with a judgment; fitted t5 > 0 on F5 carries RB, F5 targets RB / TE / WR and Q1 attempts at every cutoff; on
 F8 for players who played, DK and the team total against batch 76: no cell WORSE, F8 RB and WR BETTER or UNKNOWN; the atlas's F5 carries RB, F5 targets
@@ -6834,7 +6834,7 @@ PREDICTION: the guard passes; the replay exits with a judgment and draws every r
 team-total cell is WORSE; every F8 cell UNKNOWN or BETTER; chain.py shorter.
 FALSIFIER: the guard refuses, the replay exits without a judgment, or any cell is WORSE: refused, chain.py, draws.py and proj/ restored.
 
-## BATCH 85 - DRAIN, JUDGED BEFORE LANDING (two role-law terms held at 0 where the quality gate's own ruler says they harm or carry nothing; Oct 9 2026)
+## BATCH 85 - DRAIN, JUDGED BEFORE ACCEPTANCE (two role-law terms held at 0 where the quality gate's own ruler says they harm or carry nothing; Oct 9 2026)
 QUESTION (redundancy, from the role law's terms): does the share law forecast as well or better without snap momentum in QB attempts and without share
 momentum in WR / TE targets?
 CRITERION (produced by the population, no labels): the quality gate itself, run in memory before acceptance - masked_gate_read_v2 (self-checked: 'none'
