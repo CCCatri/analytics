@@ -179,10 +179,10 @@ def season_chance(season_gains):
     with np.errstate(divide="ignore", invalid="ignore"): return float(student_t.sf(gains.mean() / (gains.std(ddof=1) / np.sqrt(len(gains))), len(gains) - 1))
 def chance_label(differences, season_gains):
     """The one door of a judgment (R4): UNCHANGED when every paired difference is 0; BETTER or WORSE when the season chance test puts the mean season gain beyond
-    ALPHA_FAMILY on that side; UNKNOWN otherwise (never measured is unknown, never no).  Returns (label, p better, p worse)."""
+    ALPHA_FAMILY on that side; INSUFFICIENT_EVIDENCE otherwise (never measured is unknown, never no).  Returns (label, p better, p worse)."""
     better, worse = season_chance(season_gains), season_chance(-np.asarray(season_gains, float))
     if len(differences) and not np.any(differences): return "UNCHANGED", better, worse
-    return ("BETTER" if better <= ALPHA_FAMILY else "WORSE" if worse <= ALPHA_FAMILY else "UNKNOWN"), better, worse
+    return ("BETTER" if better <= ALPHA_FAMILY else "WORSE" if worse <= ALPHA_FAMILY else "INSUFFICIENT_EVIDENCE"), better, worse
 def season_gains_of(paired, before, after):
     """Per season the mean over slates of before - after (the season quality gate's gains), seasons in order."""
     slates = (paired[before] - paired[after]).groupby([paired.season, paired.week]).mean()
@@ -214,12 +214,12 @@ def reference_crps(graded_rows, outcomes):
 def ladder_cells(graded_rows, atlas):
     """The trust ladder per atlas cell (the card's contract): CENTER - PIT <= .50 within band of .50; WIDTH - PIT <= .10 or > .90 within band of .20, its tails L / U
     each against .10 (share_band, the atlas's band rule); SKILL against the season-to-date reference by chance_label on its season gains (PASS = BETTER, FAIL =
-    WORSE, else UNKNOWN); CRPSS = 1 - mean kit / mean reference; RUNG 1 issued, 2 center and width, 3 and skill PASS."""
+    WORSE, else INSUFFICIENT_EVIDENCE); CRPSS = 1 - mean kit / mean reference; RUNG 1 issued, 2 center and width, 3 and skill PASS."""
     cells, frozen_weeks = [], len(glob.glob(os.path.join(PROJ_DIR, "score_*_w*.csv")))
     for (term, position, state), cell_rows in graded_rows.groupby(["term", "position", "state"], sort=True):
         slates = [cell_rows.season.values, cell_rows.week.values]; center = share_band(cell_rows.outcome_rank <= 0.50, slates, 0.50); width = share_band((cell_rows.outcome_rank <= 0.10) | (cell_rows.outcome_rank > 0.90), slates, 0.20)
         lower, upper = share_band(cell_rows.outcome_rank <= 0.10, slates, 0.10), share_band(cell_rows.outcome_rank > 0.90, slates, 0.10); scored = cell_rows[np.isfinite(cell_rows.crps_reference)]
-        skill = {"BETTER": "PASS", "WORSE": "FAIL"}.get(chance_label((scored.crps_reference - scored.crps).to_numpy(), season_gains_of(scored, "crps_reference", "crps").to_numpy())[0], "UNKNOWN")
+        skill = {"BETTER": "PASS", "WORSE": "FAIL"}.get(chance_label((scored.crps_reference - scored.crps).to_numpy(), season_gains_of(scored, "crps_reference", "crps").to_numpy())[0], "INSUFFICIENT_EVIDENCE")
         rung_two = center[2] == "within band" and width[2] == "within band"
         cells.append(dict(term=term, position=position, state=state, rows=len(cell_rows), center_share=center[0], center_band=center[2], tail_share=width[0], width_band=width[2], lower_share=lower[0], lower_band=lower[2],
                           upper_share=upper[0], upper_band=upper[2], tail_balance="balanced" if lower[2] == "within band" and upper[2] == "within band" else "unresolved", reference_rows=len(scored),
