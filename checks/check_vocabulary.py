@@ -34,10 +34,11 @@ TEXT = (".md", ".py", ".ts", ".tsv", ".yml", ".yaml", ".sh", ".txt", ".json", ".
 SKIP_DIRS = {".git", "node_modules", "__pycache__", "dist"}
 LIVE = "--live" in sys.argv
 GENERATED = {os.path.join(".", "out"), os.path.join(".", "slate-kit", "proj")}
-RETIRED_COLUMNS = {"VOCABULARY.md", os.path.join("slate-kit", "TAXONOMY.md"), os.path.join("checks", "check_vocabulary.py")}
+RETIRED_COLUMNS = {"VOCABULARY.md", os.path.join("slate-kit", "TAXONOMY.md"), os.path.join("slate-kit", "TAXONOMY_short_names.tsv"), os.path.join("checks", "check_vocabulary.py")}
+SOURCE_DATA = (os.path.join(".", "data"), os.path.join(".", "slate-kit", "data"), os.path.join(".", "slate-kit", "archive"))   # files other people wrote (nflverse, DraftKings caches): raw files keep source spellings (TAXONOMY rule); player surnames are not our vocabulary
 files, skipped = [], []
 for root, dirs, names in os.walk("."):
-    dirs[:] = [d for d in dirs if d not in SKIP_DIRS and not (LIVE and os.path.join(root, d) in GENERATED)]
+    dirs[:] = [d for d in dirs if d not in SKIP_DIRS and not (LIVE and os.path.join(root, d) in GENERATED) and os.path.join(root, d) not in SOURCE_DATA]
     for n in names:
         p = os.path.relpath(os.path.join(root, n), ".")
         if not os.path.isfile(p): skipped.append(p); continue
