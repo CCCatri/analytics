@@ -14,25 +14,26 @@ TERMS = {"plant / planted / planting -> fault injection, injected fault": r"\bpl
          "unknown / UNKNOWN (verdict) -> INSUFFICIENT_EVIDENCE": r"\bunknown\b", "\"right\" / \"yes\" (verdict) -> SUPPORTED": r'"(right|yes)"',
          "chain (dependency -> link chain; execution -> run)": r"\bchains?\b", "gate (acceptance) -> quality gate; .gate/ -> .quality-gate/": r"\bgates?\b|\.gate\b",
          "ledger (of a run) -> run log": r"\bledgers?\b", "owner (reviewing) -> reviewer": r"\bowner\b",
-         "Contract (rules doc) -> incident-derived rules": r"\bcontract\b", "the record -> play-by-play record": r"\bthe record\b",
+         "Contract (rules doc) -> incident-derived rules": r"\bContract\b", "the record -> play-by-play record": r"\bthe record\b",
          "man/men (players) -> player(s)": r"\b(man|men)\b"}
 TEXT = (".md", ".py", ".ts", ".tsv", ".yml", ".yaml", ".sh", ".txt", ".json", ".csv", ".stan", ".toml", ".cfg")
 SKIP_DIRS = {".git", "node_modules", "__pycache__", "dist"}
 RETIRED_COLUMNS = {"VOCABULARY.md", os.path.join("slate-kit", "TAXONOMY.md"), os.path.join("checks", "check_vocabulary.py")}
-files = []
+files = []; skipped = []
 for root, dirs, names in os.walk("."):
     dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
     for n in names:
         p = os.path.relpath(os.path.join(root, n), ".")
+        if not os.path.isfile(p): skipped.append(p); continue   # broken symlinks and specials are not text
         if (n.endswith(TEXT) or "." not in n) and p not in RETIRED_COLUMNS and os.path.getsize(p) < 50_000_000: files.append(p)
 texts = {}
 for f in files:
     try: texts[f] = open(f, encoding="utf-8", errors="ignore").read()
     except OSError: pass
 by_dir = collections.Counter(); total = 0
-print(f"VOCABULARY: {len(texts)} text files scanned on disk, no exemptions ({len([f for f in texts if f.startswith('.gate')])} under .gate/, {sum(1 for f in texts if 'CHARTER' in f)} charter)")
+print(f"VOCABULARY: {len(texts)} text files scanned on disk, no exemptions; {len(skipped)} paths skipped as not regular files ({len([f for f in texts if f.startswith('.gate')])} under .gate/, {sum(1 for f in texts if 'CHARTER' in f)} charter)")
 for label, rx in TERMS.items():
-    pat = re.compile(rx, 0 if rx.isupper() or '"' in rx else re.I); per = collections.Counter()
+    pat = re.compile(rx, 0 if rx.isupper() or '"' in rx or "Contract" in rx else re.I); per = collections.Counter()
     for f, t in texts.items():
         n = len(pat.findall(t))
         if n: per[f] += n; by_dir[f.split(os.sep)[0]] += n
