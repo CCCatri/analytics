@@ -58,7 +58,7 @@ Three statuses, never merged into one word:
 
 Definition of done for one engine: one entry point runs one real case from each repo, emits the experiment record, catches a planted failure in both; from a failed check, the trace names the pair or draw, the stage, the pinned input and the original expectation; a clean run reproduces the decision on the tracked fixtures. Verdict words: SUPPORTED is provisional (vocabulary row OPEN); older verdicts map at the boundary with their meaning intact.
 
-## G. Status (2026-11-07, both repos pushed; CI green at healix 9b096bd, analytics 9a8558a)
+## G. Status (2026-11-07; CI credited at exact SHAs: healix 9b096bd run 42416569445 — demo, check, separation on the tracked fixture; analytics 9a8558a run 42416567213 — demo_w15; later heads are docs-only, their runs recorded in matrix.tsv)
 | Thread | State | Last landed | Next |
 |---|---|---|---|
 | Vocabulary A–B4: file + check, analytics prose, identifiers, product words, regeneration, pruning | done | analytics 9a8558a | — |
@@ -70,11 +70,14 @@ Definition of done for one engine: one entry point runs one real case from each 
 | Analytics WO4 slices vs team budget | measured FAIL (receivers 52%, passers 42% of team-draws); units pinned; check in repo | 3eba502 | the fix (joint draws) not started |
 | Handoff harness | PASS run 20261107_153255 at 60ada8f; docs cite it | 81d74be | — |
 | Healix WO1 judge limitation | measured and bounded; owner rules on a population-independent floor (cost 51 of 267 c2 copies) | 92dc904 | one line from the owner |
-| Healix WO2 never-proposed case; evaluate in CI | refused: 3-field edited copies were proposed | — | measure which edits drop a copy; land with B5 |
+| Healix WO2a evaluator regression: remove one valid proposal from a scratch export; exactly one pair moves category, denominator holds | ran locally (6 / 106); not yet a tracked CI check | — | land as a CI step with the existing fault |
+| Healix WO2b matcher miss: which edits drop a true copy | refused prediction (3-field edits were proposed) | — | measure an edit table; separate from WO2a |
 | Healix harness ledger landings (landing 0, gateClean, demo/check/evaluate) | declared pending | — | after B6 |
 | Concept matrix, RUBRIC A–F | landed and mirrored | both repos | claims↔cells join: CLAIMS.md cells column + check |
 | Historical rows (healix6 on the five never-proposed pairs; NFL history) | not started | — | after the join |
 | Lineage rubric; NFL extract scan | not started | — | — |
-| Shared engine | definition of done (F); pilots (DraftKings join; two-case executor) not started | — | after Healix WO2 |
-| Résumé v13 | pending the owner's words: Mercor test first; one measured result on page one; Healix sentence rescoped to the named false confirmation; People Management ruling | v12 master | CLAIMS rows, rebuild |
+| Shared engine | definition of done (F); two-case executor starts now from the existing cases (NFL 36→60 with expected movement; Healix known-wrong confirmation detected by pair id), verdict words mapped at the adapter boundary; DraftKings join pilot separate | — | first milestone: one executor runs both, records domain result and check result separately, names the stage |
+| Résumé v13 | ready for the owner's words now (does not wait on vocabulary B5–B7): Mercor test first; one measured result on page one (NFL handoff or the named false confirmation); Healix sentence rescoped; People Management ruling | v12 master | CLAIMS rows, rebuild |
 | Healix case page: three decisions (Apr 21 and Aug excerpts; October unverified) | not started | — | after v13 wording |
+
+Proposed rulings (reviewer 2026-11-07, not yet the owner's): analytics WO2 — record 2026 w10+ as historical design, pilot deferred until a jointly issuable season and a pinned protocol; Healix WO1 — limitation stays visible, the floor stays a candidate under evaluation on a pinned comparison with an independent labeled set; résumé — Mercor first, NFL handoff or the named false confirmation as the measured result, People Management kept where the concessions entry carries it.
