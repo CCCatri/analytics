@@ -24,7 +24,7 @@ Tiers: mentioned, specified, measured_locally, measured (run evidence inspectabl
 |---|---|---|---|---|---|
 | Mercor broken-take test | fault injection; regression verification | paid-work account, scoped, explainable in interview | stated | - | not publicly verifiable; a public analog (partition check self-test) corroborates the method, not the event; leads page one |
 | NFL handoff: input trace 36->60 -> Ridder 6->10; refusals; switch-off replay | controlled perturbation; fault injection; regression verification; provenance | inspectable run | measured | four records at a79251c / run 20261106_082012, one per clause; vocabulary rerun as a further record | the rerun adds evidence at the new revision; it does not revise the verified one |
-| Healix evaluation: 112 -> 5 / 107 / 0 / 0; one removed proposal moves one | accounting; abstention; fault injection | local run | measured_locally | README evaluation; scripts/evaluate.ts | reproduced requires a tracked fixture with all three outcomes and evaluate in CI; Fodors keeps local scope |
+| Healix evaluation: 112 -> 5 / 107 / 0 / 0; one removed proposal moves one | accounting; abstention; fault injection | local run | measured_locally | README evaluation; scripts/evaluate.ts | stays measured_locally; a tracked synthetic evaluator run in CI is a separate reproduced record of the method, not of this result |
 
 ## D. Leads and uncited records
 | Record | Status | What makes it measured / a claim |
@@ -40,8 +40,20 @@ Tiers: mentioned, specified, measured_locally, measured (run evidence inspectabl
 | Identify | repos: what deserves to survive; hiring: the strongest surviving evidence easy to recognize and verify | the three claims scored with source, scope, evidence type, limit |
 | Exploit | résumé: Mercor test first in its entry; one measured NFL or Healix result on page one, owner's words | the PDF rebuilt; check_claims PASS |
 | Subordinate | prose passes, Healix renames, workbook, credentials wait behind the gap list | gap list printed |
-| Elevate | one missing proof: Healix fixture with all three outcomes + evaluate in CI (+ verdict words) | CI green; Healix claim tier -> reproduced |
+| Elevate | one missing proof: Healix fixture with a tracked never-proposed case + evaluate in CI | CI green gives the synthetic evaluator run its own reproduced record; the Fodors 5 / 107 / 0 / 0 result keeps measured_locally |
 | Repeat | one verified older version when it answers a real carry-forward question | a revision on disk; same fixture or an explicit account of what changed |
 
 ## Conflation tests
 Identical concept columns -> review, state the separating test. No record whose tier exceeds what its contents and provenance support. No claim without records appropriate to its type. No clause without a record. No intent_date read as a criterion unless the text names the test.
+
+## F. The shared object and the three statuses
+The experiment record: baseline, intervention, the dependency that carried the change, expected response, actual response, evidence, verdict at the declared scope. Forward execution writes it; diagnosis reads it backward. Adapters supply inputs and identities (team, draw, player; table, row); domain rules supply what a good result is; the shared code pins, intervenes, compares, records, replays.
+
+Three statuses, never merged into one word:
+| Status | Who issues it | Example from the 65-row case |
+|---|---|---|
+| domain verdict | the product's judge or kit | the judge said SUPPORTED |
+| verification result | the check against the fixture's expectation | FAIL, because the label says the pair is wrong |
+| release decision | the acceptance process (ledger) | accepted or not, recorded with the revision |
+
+Definition of done for one engine: one entry point runs one real case from each repo, emits the experiment record, catches a planted failure in both; from a failed check, the trace names the pair or draw, the stage, the pinned input and the original expectation; a clean run reproduces the decision on the tracked fixtures. Verdict words: SUPPORTED is provisional (vocabulary row OPEN); older verdicts map at the boundary with their meaning intact.

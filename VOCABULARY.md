@@ -4,7 +4,7 @@ The same words in the README a hiring manager reads, the case pages, the accepta
 
 | Kind | Canonical | Retired | Meaning | Standing |
 |---|---|---|---|---|
-| Verdict | `SUPPORTED` | right, yes (as a judge ruling) | The claim fits its evidence: a slice fits its budget; a pair's agreement is distinctive in its population | OPEN — proposed; not in the owner's map |
+| Verdict | `SUPPORTED` | right, yes (as a judge ruling) | The claim fits its evidence: a slice fits its budget; a pair's agreement is distinctive in its population | OPEN — provisional in docs and code; not in the owner's map; the owner rules |
 | Verdict | `REFUTED` | no (as a judge ruling) | The evidence contradicts the claim | in use |
 | Verdict | `INSUFFICIENT_EVIDENCE` | UNKNOWN, unknown, can't tell (as a verdict) | The evidence reaches neither bar; the output names what is missing | new |
 | Practice | fault injection | planting faults, planting | Introducing a known fault to prove a check detects it | new |
