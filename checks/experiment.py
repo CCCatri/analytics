@@ -18,12 +18,12 @@ for name, d, expect_false in (("healix tracked fixture (control)", "tests", 0), 
     else: target = "tests"
     rc, out = sh(["npx", "tsx", "scripts/separation.ts", target], HEALIX); open(f"{OUT}/{name.split()[1]}_separation.txt", "w").write(out)
     m = re.search(r"current rule: false confirmations (\d+), lost controls (\d+)", out); fc, lc = (int(m.group(1)), int(m.group(2))) if m else (None, None)
-    pairs = re.findall(r"FALSE CONFIRMATION (A#\d+ x B#\d+)", out)
+    pairs = re.findall(r"(A#\d+ x B#\d+)\s+current SUPPORTED", out)
     records.append(record(case=name, executed=True, baseline="the judge on the tables as given", intervention="none (65-row: five added customers, every address unique)" if expect_false else "none",
         dependency="within-table pairs -> chance bar -> verdict", expected=f"false confirmations {expect_false}, lost controls 0",
         actual=f"false confirmations {fc}, lost controls {lc}" + (f"; pairs {pairs}" if pairs else ""),
         domain_verdict=("SUPPORTED on " + ", ".join(pairs)) if pairs else "no wrong-by-construction pair SUPPORTED",
-        check_result="PASS" if (fc == expect_false and lc == 0) else "FAIL", evidence=f"{OUT}/{name.split()[1]}_separation.txt; {HEALIX}/{d}"))
+        check_result="PASS" if (fc == expect_false and lc == 0 and len(pairs) == expect_false) else "FAIL", evidence=f"{OUT}/{name.split()[1]}_separation.txt; {HEALIX}/{d}"))
 # NFL: slices vs team budget, executed (self-test is the plant)
 rc_t, out_t = sh([sys.executable, "checks/check_targets_partition.py", "--self-test"], "."); rc_p, out_p = sh([sys.executable, "checks/check_targets_partition.py", "slate-kit/proj/frozen_draws_2025_w16.npz", "slate-kit/proj/card_2025_w16.csv", "slate-kit/proj/team_draws_2025_w16.npz"], ".")
 open(f"{OUT}/nfl_partition.txt", "w").write(out_t + out_p)
