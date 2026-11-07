@@ -1,6 +1,6 @@
-run /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261106_082012
-candidate draws.py be959adb3025 cards.py dd8bf811bd6f | baseline (pre-adapter code) draws.py 3c5f9c4779c2 cards.py 8b0e8d9f6d1b
-pinned inputs from kit_pre/proj: atlas.csv 60d9b5d6a1ce ladder.csv 0ee25a698079 | baseline card 0b5663dfbb45 | fixture ee8dcc1dd089
+run /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261107_153255
+candidate draws.py a8255f2af08a cards.py dd8bf811bd6f | baseline (pre-adapter code) draws.py 4334cf0a05ef cards.py 8b0e8d9f6d1b
+pinned inputs from kit_pre/proj: atlas.csv 6cbeec3555f8 ladder.csv 2738e2c804c0 | baseline card 3b1b14cc44ae | fixture ee8dcc1dd089
   candidate code is the code the baseline step recorded: PASS
   pinned inputs are the baseline step's outputs: PASS
 
@@ -21,18 +21,18 @@ pinned inputs from kit_pre/proj: atlas.csv 60d9b5d6a1ce ladder.csv 0ee25a698079 
   B LV F2 team carries: kit columns 29,30,31 = source 29,0,1: PASS | kit [23.0, 29.0, 35.0] source [23, 29, 35] | source 0,1,29 distinct True
   B ATL F2 team carries: kit columns 29,30,31 = source 29,0,1: PASS | kit [29.0, 25.0, 21.0] source [29, 25, 21] | source 0,1,29 distinct True
   B a LV QB with Q1 attempts on the card: PASS | Desmond Ridder (00-0038122)
-  B his card row draw_mean equals the mean of the consumed draws: PASS | card 27.8035 draws 27.8035
+  B his card row draw_mean equals the mean of the consumed draws: PASS | card 27.6845 draws 27.6845
   B root law row names the engine file: PASS
 
 === B2: the value received at the boundary, and a controlled change of one source draw ===
   B2 draw_link for 00-0038122 Q1 attempts: one call, cell matched, parent is LV's F2 team attempts root: PASS
-  B2 received column 30 = LV source draw 0 (36) and column 29 = source draw 29 (27): PASS | received [30] 36.0, [29] 27.0; returned column 30 6.0
+  B2 received column 30 = LV source draw 0 (36) and column 29 = source draw 29 (27): PASS | received [30] 36.0, [29] 27.0; returned column 30 36.0
   B2 team root moved at all 67 columns mapped to source 0 and nowhere else: PASS | mapped moved 67 of 67; unmapped moved 0
   B2 00-0038122 Q1 attempts moved at >= 1 mapped column and at no unmapped column: PASS | mapped moved 67 of 67 (a binomial can land on the same value); unmapped moved 0
-  B2 the changed source (36 -> 60) is what draw_link received at column 30: PASS | received 60.0; returned column 30 before 6.0 after 10.0
+  B2 the changed source (36 -> 60) is what draw_link received at column 30: PASS | received 60.0; returned column 30 before 36.0 after 60.0
 
-=== C: four isolated plants, each refusing for its own reason, no card artifact ===
-  C missing file: refused by name, no artifact: PASS | engine root: draw file missing: /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261106_082012/components/plants/missing.npz - refused; noth | artifacts []
+=== C: four isolated injected faults, each refusing for its own reason, no card artifact ===
+  C missing file: refused by name, no artifact: PASS | engine root: draw file missing: /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261107_153255/components/injected_faults/missing.npz - refu | artifacts []
   C SHA mismatch: refused by name, no artifact: PASS | engine root: SHA mismatch: the manifest states '000000000000', the file sha.npz computes ee8dcc1dd089afb66e7534ebe14d3e0f8b920bfdaadb0ba39acdbaefaea4b | artifacts []
   C missing team LV: refused by name, no artifact: PASS | engine root: team LV has a game in 2024 w15 but no draws in team.npz - refused; nothing issued (no fallback to the kit's root draw) | artifacts []
   C draw_count 31 vs 30: refused by name, no artifact: PASS | engine root: draw_count mismatch: the manifest declares 31, the arrays hold attempts 30, carries 30, draw_id 30 - refused; nothing issued | artifacts []

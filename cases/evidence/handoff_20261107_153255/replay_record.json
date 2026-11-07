@@ -1,0 +1,379 @@
+{
+ "run": "/Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261107_153255",
+ "candidate": {
+  "draws.py": "a8255f2af08a43970e450ac24bcb228c25c3901b446ccffdd8feb673c5f23db6",
+  "cards.py": "dd8bf811bd6f220ef99ebb35549625984cc953c512085a211ade0b7a3f1162e1"
+ },
+ "identity": {
+  "git_head": "60ada8fcfaff55b27b5427e60e1b896f6b1f5d60",
+  "git_dirty_paths": [],
+  "code": {
+   "cards.py": "dd8bf811bd6f220ef99ebb35549625984cc953c512085a211ade0b7a3f1162e1",
+   "dk.py": "2eb8071b94495ae5c41318cd47f16babbfd04b755cd79f20969509ac0daafac9",
+   "draws.py": "a8255f2af08a43970e450ac24bcb228c25c3901b446ccffdd8feb673c5f23db6",
+   "evaluate.py": "516f2db9e7e28bbc89631a47617cd5312373c632712155ca79f413c4e011a573",
+   "facts.py": "7279cfc80f62c0e9e79cff31015b0cfef3607a089d1c75bd4d89872b6ec2f656",
+   "ingest.py": "4f854d3692b7a6f818e41e04e2860675945d87094bddde96775585552ad896e7",
+   "kit.py": "2d8b38cba9f322117dcb9f37a9946dc64a86fa29133795fec7b0ef5f8284b41b",
+   "link_chain.py": "d15153ec4fb0946684acde9ee74c2741c6947161a5a2b3d07a79604f9bddafe5",
+   "market.py": "b584f314b9f168010b617ce00d8bb0a621463986fb2b2f412f7114203166433b",
+   "optimize.py": "f43b9024f56a391468c6e677096f1232e94b97f6fb52acad00cf48e06d23e74a",
+   "participation.py": "a884d29ccf66e88820998b91c172e1bf1df7eaa58aeba6f3c70e8793a8a07b71",
+   "state.py": "c5a272fa621303a59ad4b0282a2c46c1ddf665802ac83077a1a6908a0f26f236"
+  },
+  "inputs": {
+   "data": {
+    "resolved": "/Users/cameroncatri/LocalWork/analytics/slate-kit/data",
+    "files": {
+     "ftn_charting_2023.csv.gz": {
+      "sha256": "ca201125ab0b4c7d175c8498c1160815c5d9b187f6c89d671c947da397546c83"
+     },
+     "ftn_charting_2024.csv.gz": {
+      "sha256": "678ba71b6c423ff73d585fb37fdfb9376cd080a0415e96cc65e0b8e2b18b7e08"
+     },
+     "ftn_charting_2025.csv.gz": {
+      "sha256": "90057747aef0b07c895149b6b5c3e94d98c80b448b5ba865bd4e49c75b279c00"
+     },
+     "games.csv": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/games.csv",
+      "size": 2320832
+     },
+     "injuries_2019.csv": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/injuries_2019.csv",
+      "size": 700757
+     },
+     "injuries_2020.csv": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/injuries_2020.csv",
+      "size": 737474
+     },
+     "injuries_2021.csv": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/injuries_2021.csv",
+      "size": 737083
+     },
+     "injuries_2023.csv": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/injuries_2023.csv",
+      "size": 738501
+     },
+     "injuries_2024.csv": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/injuries_2024.csv",
+      "size": 816989
+     },
+     "injuries_2025.csv": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/injuries_2025.csv",
+      "size": 696006
+     },
+     "pbp_2019.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/pbp_2019.csv.gz",
+      "size": 17992849
+     },
+     "pbp_2020.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/pbp_2020.csv.gz",
+      "size": 18143553
+     },
+     "pbp_2021.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/pbp_2021.csv.gz",
+      "size": 19022201
+     },
+     "pbp_2023.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/pbp_2023.csv.gz",
+      "size": 19169807
+     },
+     "pbp_2024.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/pbp_2024.csv.gz",
+      "size": 19362351
+     },
+     "pbp_2025.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/pbp_2025.csv.gz",
+      "size": 19105296
+     },
+     "pbp_participation_2019.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/pbp_participation_2019.csv.gz",
+      "size": 1733354
+     },
+     "pbp_participation_2020.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/pbp_participation_2020.csv.gz",
+      "size": 1666603
+     },
+     "pbp_participation_2021.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/pbp_participation_2021.csv.gz",
+      "size": 1716226
+     },
+     "pbp_participation_2023.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/pbp_participation_2023.csv.gz",
+      "size": 3001311
+     },
+     "pbp_participation_2024.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/pbp_participation_2024.csv.gz",
+      "size": 2980890
+     },
+     "pbp_participation_2025.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/pbp_participation_2025.csv.gz",
+      "size": 3001152
+     },
+     "rosters_2019.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/rosters_2019.csv.gz",
+      "size": 719358
+     },
+     "rosters_2020.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/rosters_2020.csv.gz",
+      "size": 708203
+     },
+     "rosters_2021.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/rosters_2021.csv.gz",
+      "size": 702841
+     },
+     "rosters_2023.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/rosters_2023.csv.gz",
+      "size": 676059
+     },
+     "rosters_2024.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/rosters_2024.csv.gz",
+      "size": 699786
+     },
+     "rosters_2025.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/rosters_2025.csv.gz",
+      "size": 708144
+     },
+     "snap_counts_2019.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/snaps_2019.csv.gz",
+      "size": 448821
+     },
+     "snap_counts_2020.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/snaps_2020.csv.gz",
+      "size": 470274
+     },
+     "snap_counts_2021.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/snaps_2021.csv.gz",
+      "size": 498521
+     },
+     "snap_counts_2023.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/snaps_2023.csv.gz",
+      "size": 500319
+     },
+     "snap_counts_2024.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/snaps_2024.csv.gz",
+      "size": 502822
+     },
+     "snap_counts_2025.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/snaps_2025.csv.gz",
+      "size": 504063
+     },
+     "snaps_2019.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/snaps_2019.csv.gz",
+      "size": 448821
+     },
+     "snaps_2020.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/snaps_2020.csv.gz",
+      "size": 470274
+     },
+     "snaps_2021.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/snaps_2021.csv.gz",
+      "size": 498521
+     },
+     "snaps_2023.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/snaps_2023.csv.gz",
+      "size": 500319
+     },
+     "snaps_2024.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/snaps_2024.csv.gz",
+      "size": 502822
+     },
+     "snaps_2025.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/snaps_2025.csv.gz",
+      "size": 504063
+     },
+     "stats_2019.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/stats_2019.csv.gz",
+      "size": 1155384
+     },
+     "stats_2020.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/stats_2020.csv.gz",
+      "size": 1176924
+     },
+     "stats_2021.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/stats_2021.csv.gz",
+      "size": 1254611
+     },
+     "stats_2023.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/stats_2023.csv.gz",
+      "size": 1237909
+     },
+     "stats_2024.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/stats_2024.csv.gz",
+      "size": 1244175
+     },
+     "stats_2025.csv.gz": {
+      "link": "/Users/cameroncatri/LocalWork/analytics/data/raw/stats_2025.csv.gz",
+      "size": 1262421
+     }
+    }
+   },
+   "facts": {
+    "resolved": "/Users/cameroncatri/LocalWork/analytics/slate-kit/facts",
+    "files": {
+     "facts_report.txt": {
+      "sha256": "984b63071141bb4bf04b6d6271fd11b227bfe65d151d9b74beb3ffcfaec0d3f9"
+     },
+     "game.csv.gz": {
+      "sha256": "19fc7c8fb34532b3d59359ef2172bda6e329cd2cb33d4ac639d498e2434656ce"
+     },
+     "pbp_crosscheck.csv": {
+      "sha256": "112e85008d027708ae9d06be20124f885ed728a339e009ffc38f1e346bfe5469"
+     },
+     "player_game.csv.gz": {
+      "sha256": "d3ba432fb5c2e2b33b6961a102e31fdc87820a83b25d38076e1b5bcf4e4cca4f"
+     },
+     "raw_manifest.json": {
+      "sha256": "6331fe8450942a619c1bf61262da0ff6da68bf1547b0527ad8a42fbb77c68119"
+     },
+     "team_game.csv.gz": {
+      "sha256": "f4b4e1b9f0531cd117043e254482cffee787724803a8b29171f0768ecc5fc6fb"
+     }
+    }
+   },
+   "sources": {
+    "resolved": "/Users/cameroncatri/LocalWork/analytics/slate-kit/sources",
+    "files": {
+     ".DS_Store": {
+      "sha256": "253453cdce5ee0d0ecb8e454bb8d34d3abd1a01b04853fc1d1a806cde3b0ffb1"
+     }
+    }
+   }
+  },
+  "raw_pin_sha": null
+ },
+ "live_proj_snapshot": {
+  "acceptance_ledger.json": "108a9ea91be8fa3ae5e55deae43205b1bf1c42da80e6c092b3b35c028e4268a7",
+  "at_t_rows.csv.gz": "2aa20954cd7810a5add5d2a962fbbfc8735b1d92ce81d1d3390c98b39c373729",
+  "atlas.csv": "5f16ec137093c10799de12c2b66a6c37f1221b817619e9899ac8df95d8838a37",
+  "atlas_coverage.csv": "f9170b672c62d6d67fda4426a8b783b1d3ed8122e5b44899dd77beb09a330b71",
+  "atlas_rows.csv.gz": "1ef2f13ff38856db0c6523ddd376429105856e132f7712fb57e2f519634dc29f",
+  "atlas_rows_batch83.csv.gz": "a5457db2307ef729c6603e7a0073002d52e6b71c79468851c8c92e0dee2f1c83",
+  "atlas_y_benchmark.csv": "932f18c002b9acebaafc0669a72a747fb22f03ab2d774f022149998bf315fe9e",
+  "card_2025_w16.csv": "6b774101fd9d96de09402442e782b47d8f77787dd2da2a108a04d89ac49e9398",
+  "card_2025_w16_candidates.csv": "bb25f4821cec89f1712c5da3f76e9aaf8d995cd599207e2989bf82009c6ef314",
+  "card_2025_w16_dst.csv": "7a6a25bdc75101f0fa0948a433d1d994413c846be7bb5c2f0e0eb0fcadbf6026",
+  "card_2025_w16_report.txt": "db5618ca4feeaa9b7d4f31a766dfa740a165118c9941fb956b0a837ec83caed0",
+  "dk_rows.csv.gz": "5acbcfed92c2d04fae98acec99a093cd4cea33130e0d6b7b5b3cd8e8c3be6de2",
+  "dstick_report.txt": "ae6ef38e7dbcd70b2bc51d8611020372b41b58df65cc24949ac6465fb453554c",
+  "events.jsonl": "b1b2aa0ca41251b1be093168b12ed84faee5e3c4c9e7e840612bf87e12fe0c88",
+  "frozen_draws_2025_w16.npz": "f7b7026336e2bc33ebebdf0dcb7946eb59897587902c65f29c4ef052bd784801",
+  "harness_dependence_report.txt": "e0b25121a719e78d7e113d866eb2433b9ee0467d04f4f141b267980248967cfb",
+  "harness_dependence_verdicts.csv": "a6cf9a19bf6fbcdcdb08d67ccbc5904c88e8a0ac2b3f0a07b7cbc79cf817bc63",
+  "harness_exact_report.txt": "40b59ca3d9e09e3c1487e86319b9ebeb34cf3ce4e49c4fa8b6771f2377694d61",
+  "harness_f6_report.txt": "2151cc0a405d938e2a71733066cb840c1ac9a0b965b72e7bb831038a3577bee8",
+  "harness_report.txt": "52f35d5fb480f1c2ce2afaebfce0d254ed45950bd8ba41a884311f98c72a965b",
+  "ladder.csv": "8501ef7730fc592ef97c3d077a96374388d3ea4a7f23c2d253ee0b1163e25d84",
+  "native_draw_week_2025_w16.csv.gz": "068dddf3ec8779dfb2d51c10ce4adb061ebe9ee43b40c5b9cd4264ddfa1b8ed2",
+  "participation_check_report.txt": "aca84b58c1676c83c505e0fc0cb8638e5ce551eb86a44a97e716306b137ece87",
+  "play_report.txt": "768d5bb48d05e021565f75efd43b73457b989450f287bec547a6902df86991ef",
+  "product_judgment.csv": "0d357a370301d8ef4e31e5db6bc126164b3c757c1176e44c6a64783890cda5db",
+  "replay_report.txt": "39eb0184bc0d233415af8cb56da24748b3e828a0eddac8469e69f897775afe60",
+  "t1_cells.json": "cbee6702d3a3c96eab7c8dda0c110b2afba0872058c081986414f4edac0261b1",
+  "team_draws_2025_w16.npz": "3adb0691b04499bbcf045911991467b4c258fd3604e54b32c4e9e7700be7a503",
+  "ystick_rows.csv.gz": "94547e0f1cd4f200ff9271f4cce7efebb083e37e05edd9b0923cd837966f0cf7"
+ },
+ "baseline_outputs": {
+  "atlas_rows.csv.gz": "d1fd7c77176536b166d892f6513089df09080e5587350640ae7625552b10ea79",
+  "dk_rows.csv.gz": "bbc3f3a3a6f08fb221fd656ac01d87024dddd26035a5a2ebb8122c2c1d4feebd",
+  "atlas.csv": "6cbeec3555f8f74da28b4f9a53bd4f9062248728900ede1ef1a1a3d2ab21e2b5",
+  "ladder.csv": "2738e2c804c05a466385c5472ce332fd74facba5a26d2c71469631e42e5c5ce1",
+  "product_judgment.csv": "c988b1034dfc7be824af401e283e1d6d0618965367a1c7e74982cdebff898e86",
+  "replay_report.txt": "9e054695e1d98cf2990fc5aa0be59b733fb940cd3b2c49243ecae051c268fb0a",
+  "card_2025_w16.csv": "3b1b14cc44aeee8186d81787961d57d461b055a9904d7cbbc2fdf57e7d52519a"
+ },
+ "removed_before_run": [
+  "atlas_rows.csv.gz",
+  "dk_rows.csv.gz",
+  "atlas.csv",
+  "ladder.csv",
+  "product_judgment.csv",
+  "replay_report.txt"
+ ],
+ "emitted": {
+  "atlas_rows.csv.gz": true,
+  "dk_rows.csv.gz": true,
+  "atlas.csv": true,
+  "ladder.csv": true,
+  "product_judgment.csv": true,
+  "replay_report.txt": true
+ },
+ "replay_exit": 0,
+ "grader": {
+  "cells": 9,
+  "paired": true,
+  "verdicts": {
+   "UNCHANGED": 9
+  }
+ },
+ "compared": {
+  "atlas_rows.csv.gz": {
+   "sha_equal": false,
+   "key": [
+    "season",
+    "week",
+    "term",
+    "position",
+    "key"
+   ],
+   "keys": 192330,
+   "key_set_equal": true,
+   "rows": 192330,
+   "differing_columns": {}
+  },
+  "dk_rows.csv.gz": {
+   "sha_equal": false,
+   "key": [
+    "season",
+    "week",
+    "term",
+    "position",
+    "key"
+   ],
+   "keys": 26722,
+   "key_set_equal": true,
+   "rows": 26722,
+   "differing_columns": {}
+  },
+  "atlas.csv": {
+   "sha_equal": true,
+   "sha256": "6cbeec3555f8f74da28b4f9a53bd4f9062248728900ede1ef1a1a3d2ab21e2b5"
+  },
+  "ladder.csv": {
+   "sha_equal": true,
+   "sha256": "2738e2c804c05a466385c5472ce332fd74facba5a26d2c71469631e42e5c5ce1"
+  }
+ },
+ "verdict": "PASS",
+ "lines": [
+  "run /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261107_153255\ncandidate draws.py a8255f2af08a cards.py dd8bf811bd6f | baseline (pre-adapter code) draws.py 4334cf0a05ef cards.py 8b0e8d9f6d1b",
+  "  candidate code is the code the baseline step recorded: PASS",
+  "  same run identity as the baseline step (git revision, kit code, resolved shared inputs, RAW_PIN): PASS | git 60ada8fcfaff, 0 dirty paths",
+  "  live proj/ is the snapshot the baseline copy was taken from: PASS | differs []",
+  "  baseline rows are the baseline step's outputs: PASS | atlas_rows.csv.gz d1fd7c771765 dk_rows.csv.gz bbc3f3a3a6f0",
+  "\n=== kit_new at /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261107_153255/replay/kit_new ===",
+  "  copied ['.DS_Store', 'CHARTER.md', 'README.md', 'TAXONOMY.md', 'TAXONOMY_short_names.tsv', 'cards.py', 'dk.py', 'draws.py', 'evaluate.py', 'facts.py', 'ingest.py', 'kit.py', 'link_chain.py', 'market.py', 'optimize.py', 'participation.py', 'proj/', 'state.py']\n  symlinked ['archive/', 'data/', 'facts/', 'sources/']\n  removed from the copy's proj/ before the run: ['atlas_rows.csv.gz', 'dk_rows.csv.gz', 'atlas.csv', 'ladder.csv', 'product_judgment.csv', 'replay_report.txt']",
+  "  kit_new holds the candidate code: PASS",
+  "  replay outputs absent in kit_new/proj before the run: PASS",
+  "\n=== A2 candidate replay (kit mode: SLATE variables removed; previous = the baseline rows) ===\n  cwd /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261107_153255/replay/kit_new\n  /Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -u kit.py replay /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261107_153255/replay/baseline_rows/atlas_rows.csv.gz /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261107_153255/replay/baseline_rows/dk_rows.csv.gz\n",
+  "\n  replay finished in 497 s",
+  "  A2 replay exit 0: PASS | exit 0",
+  "  A2 live proj/ untouched by the replay: PASS | changed []",
+  "  A2 replay freshly emitted all six outputs (absent before, present after): PASS | {'atlas_rows.csv.gz': True, 'dk_rows.csv.gz': True, 'atlas.csv': True, 'ladder.csv': True, 'product_judgment.csv': True, 'replay_report.txt': True}",
+  "\n=== A2 grader verdict (product_judgment.csv in kit_new/proj/, previous = baseline rows) - what the kit decided ===",
+  "  A2 grader: every cell paired == previous == new, > 0: PASS | cells 9",
+  "  A2 grader: every verdict UNCHANGED: PASS | {'UNCHANGED': 9}",
+  "\n=== A2 direct comparison: candidate outputs against the baseline's (same inputs, code before vs after) - independent of the grader ===",
+  "  atlas_rows.csv.gz: sha differs (d1fd7c771765 vs dd988781bb45); baseline (192330, 15) new (192330, 15); key columns on disk ['season', 'week', 'term', 'position', 'key']; columns ['season', 'week', 'key', 'term', 'position', 'state', 'outcome', 'draw_mean', 'outcome_rank', 'crps', 'bias', 'quantile_10', 'quantile_50', 'quantile_90', 'p_bonus']",
+  "  A2 atlas_rows.csv.gz: nonempty, same columns, same row count: PASS",
+  "  A2 atlas_rows.csv.gz: paired key set identical on ['season', 'week', 'term', 'position', 'key']: PASS | baseline keys 192330, new keys 192330, baseline only 0, new only 0",
+  "  A2 atlas_rows.csv.gz: every column identical by value after sorting (NaN as a value, no tolerance): PASS | differing columns {}",
+  "  dk_rows.csv.gz: sha differs (bbc3f3a3a6f0 vs 91b1da5b359d); baseline (26722, 15) new (26722, 15); key columns on disk ['season', 'week', 'term', 'position', 'key']; columns ['season', 'week', 'key', 'term', 'position', 'state', 'outcome', 'draw_mean', 'outcome_rank', 'crps', 'bias', 'quantile_10', 'quantile_50', 'quantile_90', 'p_bonus']",
+  "  A2 dk_rows.csv.gz: nonempty, same columns, same row count: PASS",
+  "  A2 dk_rows.csv.gz: paired key set identical on ['season', 'week', 'term', 'position', 'key']: PASS | baseline keys 26722, new keys 26722, baseline only 0, new only 0",
+  "  A2 dk_rows.csv.gz: every column identical by value after sorting (NaN as a value, no tolerance): PASS | differing columns {}",
+  "  A2 atlas.csv: identical to the baseline output (same sha256): PASS | 6cbeec3555f8",
+  "  A2 ladder.csv: identical to the baseline output (same sha256): PASS | 2738e2c804c0",
+  "\nA2 PAIRED REPLAY (kit mode): PASS | the overall verdict is issued by checks/test_handoff_final.py"
+ ]
+}
