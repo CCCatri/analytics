@@ -46,10 +46,10 @@ def self_test():
     conserved = budget - rng.integers(0, 4, size=budget.shape)
     s, r, u = verdicts(budget, conserved); assert r == 0 and u == 0, f"self-test: conserved slate must have 0 refuted, got {r}"
     planted = rng.binomial(budget.astype(int), 0.95) + rng.binomial(budget.astype(int), 0.10)
-    s, r, u = verdicts(budget, planted.astype(float)); assert r > 0, "self-test: planted independent slate must be refuted"
+    s, planted_refuted, u = verdicts(budget, planted.astype(float)); assert planted_refuted > 0, "self-test: planted independent slate must be refuted"
     missing = budget.copy(); missing[0] = np.nan
     s, r, u = verdicts(missing, conserved); assert u == 2000, f"self-test: a team without a parent must be UNKNOWN for all its draws, got {u}"
-    print(f"SELF-TEST PASS: conserved 0 refuted; planted {r} refuted; missing parent -> {u} unknown")
+    print(f"SELF-TEST PASS: conserved 0 refuted; planted {planted_refuted} refuted; missing parent -> {u} unknown")
 
 if __name__ == "__main__":
     if "--self-test" in sys.argv: self_test(); sys.exit(0)
