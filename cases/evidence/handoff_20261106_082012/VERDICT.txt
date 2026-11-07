@@ -1,0 +1,13 @@
+run /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261106_082012
+  all three records present: PASS | baseline present, components present, replay present
+  same run id: PASS
+  same candidate code in all three: PASS | {'draws.py': 'be959adb3025', 'cards.py': 'dd8bf811bd6f'}
+  baseline is the pre-adapter code: PASS | pre {'draws.py': '3c5f9c4779c2', 'cards.py': '8b0e8d9f6d1b'}
+  same run identity in baseline and replay: PASS | git d5f26277d876, 12 dirty paths, inputs ['data', 'facts', 'sources']
+  components' pinned inputs and A1 card are the baseline's outputs: PASS | {'atlas.csv': '60d9b5d6a1ce', 'ladder.csv': '0ee25a698079'}
+  replay copy taken from the baseline's live snapshot: PASS
+  baseline step: PASS | PASS
+  component checks A1, B, B2, C: PASS | PASS
+  A2 paired replay: PASS | PASS
+
+HANDOFF ADAPTER 20261106_082012: PASS

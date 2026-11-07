@@ -1,0 +1,41 @@
+run /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261105_220733
+candidate draws.py be959adb3025 cards.py dd8bf811bd6f | baseline (pre-adapter code) draws.py 3c5f9c4779c2 cards.py 8b0e8d9f6d1b
+  candidate code is the code the baseline step recorded: PASS
+  same run identity as the baseline step (git revision, kit code, resolved shared inputs, RAW_PIN): PASS | git a4dcd438b225, 10 dirty paths
+  live proj/ is the snapshot the baseline copy was taken from: PASS | differs []
+  baseline rows are the baseline step's outputs: PASS | atlas_rows.csv.gz 82d98e5ae235 dk_rows.csv.gz ed4d3bd8bc3e
+
+=== kit_new at /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261105_220733/replay/kit_new ===
+  copied ['.DS_Store', 'CHARTER.md', 'TAXONOMY.md', 'TAXONOMY_short_names.tsv', 'cards.py', 'chain.py', 'dk.py', 'draws.py', 'evaluate.py', 'facts.py', 'ingest.py', 'kit.py', 'market.py', 'optimize.py', 'participation.py', 'proj/', 'state.py']
+  symlinked ['data/', 'facts/', 'prices/', 'sources/']
+  removed from the copy's proj/ before the run: ['atlas_rows.csv.gz', 'dk_rows.csv.gz', 'atlas.csv', 'ladder.csv', 'product_judgment.csv', 'replay_report.txt']
+  kit_new holds the candidate code: PASS
+  replay outputs absent in kit_new/proj before the run: PASS
+
+=== A2 candidate replay (kit mode: SLATE variables removed; previous = the baseline rows) ===
+  cwd /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261105_220733/replay/kit_new
+  /Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -u kit.py replay /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261105_220733/replay/baseline_rows/atlas_rows.csv.gz /Users/cameroncatri/LocalWork/analytics/out/handoff/runs/20261105_220733/replay/baseline_rows/dk_rows.csv.gz
+
+
+  replay finished in 477 s
+  A2 replay exit 0: PASS | exit 0
+  A2 live proj/ untouched by the replay: PASS | changed []
+  A2 replay freshly emitted all six outputs (absent before, present after): PASS | {'atlas_rows.csv.gz': True, 'dk_rows.csv.gz': True, 'atlas.csv': True, 'ladder.csv': True, 'product_judgment.csv': True, 'replay_report.txt': True}
+
+=== A2 grader verdict (product_judgment.csv in kit_new/proj/, previous = baseline rows) - what the kit decided ===
+  A2 grader: every cell paired == previous == new, > 0: PASS | cells 9
+  A2 grader: every verdict UNCHANGED: PASS | {'UNCHANGED': 9}
+
+=== A2 direct comparison: candidate outputs against the baseline's (same inputs, code before vs after) - independent of the grader ===
+  atlas_rows.csv.gz: sha differs (82d98e5ae235 vs 00be272ce2c7); baseline (192330, 15) new (192330, 15); key columns on disk ['season', 'week', 'term', 'position', 'key']; columns ['season', 'week', 'key', 'term', 'position', 'state', 'outcome', 'draw_mean', 'outcome_rank', 'crps', 'bias', 'quantile_10', 'quantile_50', 'quantile_90', 'p_bonus']
+  A2 atlas_rows.csv.gz: nonempty, same columns, same row count: PASS
+  A2 atlas_rows.csv.gz: paired key set identical on ['season', 'week', 'term', 'position', 'key']: PASS | baseline keys 192330, new keys 192330, baseline only 0, new only 0
+  A2 atlas_rows.csv.gz: every column identical by value after sorting (NaN as a value, no tolerance): PASS | differing columns {}
+  dk_rows.csv.gz: sha differs (ed4d3bd8bc3e vs 50c0da09088d); baseline (26722, 15) new (26722, 15); key columns on disk ['season', 'week', 'term', 'position', 'key']; columns ['season', 'week', 'key', 'term', 'position', 'state', 'outcome', 'draw_mean', 'outcome_rank', 'crps', 'bias', 'quantile_10', 'quantile_50', 'quantile_90', 'p_bonus']
+  A2 dk_rows.csv.gz: nonempty, same columns, same row count: PASS
+  A2 dk_rows.csv.gz: paired key set identical on ['season', 'week', 'term', 'position', 'key']: PASS | baseline keys 26722, new keys 26722, baseline only 0, new only 0
+  A2 dk_rows.csv.gz: every column identical by value after sorting (NaN as a value, no tolerance): PASS | differing columns {}
+  A2 atlas.csv: identical to the baseline output (same sha256): PASS | 5f16ec137093
+  A2 ladder.csv: identical to the baseline output (same sha256): PASS | 8501ef7730fc
+
+A2 PAIRED REPLAY (kit mode): PASS | the overall verdict is issued by checks/test_handoff_final.py
