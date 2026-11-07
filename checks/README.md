@@ -6,3 +6,4 @@
 - `reconcile_root_counts_by_position.py` — the attempt/carry reconciliation (3,200 of 3,200).
 - `run_handoff.sh` → `test_handoff_baseline.py`, `test_handoff_adapter.py`, `test_handoff_replay.py`, `test_handoff_final.py`, with `handoff_identity.py` — the adapter harness: a baseline from the saved pre-adapter code, A1/B/B2/C, the isolated paired replay, one verdict per run id.
 - `demo_w15.py` — the portable demonstration from a clean checkout (`fixtures/demo_w15/`, origins and pins beside it); `fixtures/regression_cases.csv` serves the unit checks.
+- `check_targets_partition.py` — do receiver target draws add up to quarterback attempt draws, game by game (FAIL until the kit draws group slices jointly; `--self-test` proves it passes a conserved slate and fails a planted one).
