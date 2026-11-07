@@ -40,7 +40,7 @@ def set_mode(source, path=None): draws.ROOT_SOURCE = source; draws.ROOT_FILE = p
 artifacts = lambda d: sorted(f for f in os.listdir(d) if f.startswith("card_2024_w15") or f == "frozen_draws_2024_w15.npz")
 boundary, pending, held = [], [], {}; o_sub, o_link, o_week = draws.substream, draws.draw_link, draws.week_draws
 def sub_l(term, position, season, week, key, label):
-    if label == draws.CHAIN_STATE: pending.append((term, position, key))
+    if label == draws.LINK_CHAIN_STATE: pending.append((term, position, key))
     return o_sub(term, position, season, week, key, label)
 def link_l(cell, fit, rate, other, concentration, parent_draws, generator, sibling=None):
     out = o_link(cell, fit, rate, other, concentration, parent_draws, generator, sibling); who = pending.pop() if pending else None

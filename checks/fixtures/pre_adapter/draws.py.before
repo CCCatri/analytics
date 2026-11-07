@@ -19,7 +19,7 @@ from dk import skill_dk, qb_dk, dnp_zero, F8_TERM, DK_TERM, DST_TERM, BONUS_YARD
 from link_chain import link_chain_history, fit_link_chain, link_rates, sibling_law, sibling_luck_of, LINKS, LINK_ORDER, SIBLINGS, TEAM_KEY
 DRAW_COUNT = 2000
 QUANTILE_LEVELS = [0.10, 0.25, 0.50, 0.75, 0.90]; QUANTILE_NAMES = ["quantile_10", "quantile_25", "quantile_50", "quantile_75", "quantile_90"]
-LINK_CHAIN_STATE = "link link chain"
+LINK_CHAIN_STATE = "link chain"
 FAMILIES = {"level": "team volume: the league level shrunk by reliability x a measured ratio", "share": "beta-binomial on the team draw by the role law (mean and concentration by maximum likelihood)",
             "proportion": "beta-binomial on the parent draw, overdispersion measured around its center", "sibling": "beta-binomial on the parent draw given the sibling's yards luck (the sibling law)",
             "per unit": "the parent draw x the shrunk rate + sqrt(draw) x measured per-unit residuals"}
