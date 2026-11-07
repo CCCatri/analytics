@@ -1,4 +1,4 @@
-"""measure_season_rules.py - R7 v2 inside the rules-module stage (rules-module.md section 2, R7 v2): each season's rule values read from the record before the engine uses them. A record read, not product.
+"""measure_season_rules.py - R7 v2 inside the rules-module stage (rules-module.md section 2, R7 v2): each season's rule values read from the play-by-play record before the engine uses them. A record read, not product.
 For every season but 2022 (held_out: its values come from rule text only, never its record), each prediction prints before its number, and every measure prints
 what it counted (games or kicks) beside its value; a measure with nothing to count reads 'no games' or 'no kicks' and no prediction is judged there (v2 a):
   M1 the most common drive-start spot after a kickoff touchback (the next snap's own yard line), counted over touchback kickoffs with a next snap;
@@ -113,7 +113,7 @@ def grid(K):
 def main():
     seasons = [s for s in policy.SEASONS if s != policy.HOLD]
     tag = f"measure_season_rules.py {SELF} | {TARGETS} {sha(TARGETS)} | record read (the rules-module stage R7 v2), not product"
-    print(f"{tag} | seasons {seasons}; {SEALED} held_out: rule text only, UNKNOWN until read")
+    print(f"{tag} | seasons {seasons}; {SEALED} held_out: rule text only, INSUFFICIENT_EVIDENCE until read")
     rows, BR = [], {}
     for s in seasons:
         print(f"\n=== {s}: predictions, before the numbers ===")
@@ -147,13 +147,13 @@ def main():
         print(f"  {s}: {len(BR[s])} kicks")
         for k in BR[s]:
             print(f"    {k['game_id']} play {k['play_id']} q{k['qtr']} ({k['period']}) | kicking {k['kick']} {k['ks']}-{k['rs']} {k['score']} | {k['desc']}")
-    rows += [(SEALED, m, "UNKNOWN", "not read", "rule text only (held_out season)", "") for m in ("M1", "M2", "M3", "M4", "M5")]
+    rows += [(SEALED, m, "INSUFFICIENT_EVIDENCE", "not read", "rule text only (held_out season)", "") for m in ("M1", "M2", "M3", "M4", "M5")]
     R = pd.DataFrame(sorted(rows, key=lambda z: (z[0], z[1])), columns=["season", "measure", "value", "counted", "prediction", "prediction_held"])
     R["rule_change_page"] = "UNCHECKED"
     with open(OUT, "w") as f:
         f.write(f"# {tag}\n"); R.to_csv(f, index=False)
     held = R[R["season"] != SEALED]["prediction_held"].astype(str).value_counts().to_dict()
-    print(f"\nwritten, stamped on line 1: {OUT} rows {len(R)} sha {sha(OUT)} | predictions {held} | {SEALED} UNKNOWN")
+    print(f"\nwritten, stamped on line 1: {OUT} rows {len(R)} sha {sha(OUT)} | predictions {held} | {SEALED} INSUFFICIENT_EVIDENCE")
 
 
 if __name__ == "__main__":

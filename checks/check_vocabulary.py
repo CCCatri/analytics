@@ -20,7 +20,7 @@ TERMS = {  # label: pattern.  Canonical phrases that contain a retired word (qua
     "expected response -> reference answer": r"\bexpected response\b",
     "people management -> team leadership": r"\bpeople management\b",
     "unknown / UNKNOWN (verdict) -> INSUFFICIENT_EVIDENCE": r"\bunknown\b",
-    "\"right\" / \"yes\" (verdict) -> SUPPORTED": r'"(right|yes)"',
+    "\"right\" / \"yes\" (verdict) -> SUPPORTED": r'(?<!side=)(?<!, )"(right|yes)"',
     "chain (dependency -> link chain; execution -> run)": r"(?<!link )(?<!Link )(?<!LINK )(?<!link_)\bchains?\b",
     "gate (acceptance -> quality gate; .gate/ -> .quality-gate/)": r"(?<!quality )(?<!Quality )(?<!QUALITY )(?<!quality_)(?<!quality-)\bgates?\b|\.gate\b",
     "ledger (of a run -> run log; of the charter -> acceptance ledger)": r"(?<!acceptance )(?<!Acceptance )(?<!acceptance-)(?<!acceptance_)\bledgers?\b",

@@ -6,12 +6,12 @@ out/clock_reasons.csv (N7): every count of out/clock_counts.csv split by its rea
 Choices the targets do not fix, declared and printed:
  - no_play rows are rows between snaps, never snaps; their count is printed per season.
  - an empty flag on a row is read as not set (record.events convention); empty cells are counted per column and printed.
- - every event in an interval is placed at snap i's quarter clock (the record has no clock for the moment of a foul or an injury).
+ - every event in an interval is placed at snap i's quarter clock (the play-by-play record has no clock for the moment of a foul or an injury).
  - the offensive pre-snap fouls of 4-3-2e(3) are read from penalty_type by name (PRESNAP_OFFENSE), penalty_team = the next snap's offense; names met are counted and printed.
  - injury and Referee's timeouts are read from play text only (no column holds them); intervals classed that way are counted under their tags.
- - a window the record cannot place (an empty quarter clock) classes UNKNOWN (Interval rule class), reason printed.
- - postseason overtime: quarter 5 is its first period (all 7 postseason overtimes, 2019-2025); any interval past quarter 5 reads UNKNOWN, no quarter number assumed (Retired list).
- - the record logs no two-minute warning row (Retired list): the warning is placed by the quarter clock only; v5's text search (any mention) is kept only for the frozen 2023 reproduction (tmw_row_v5).
+ - a window the play-by-play record cannot place (an empty quarter clock) classes INSUFFICIENT_EVIDENCE (Interval rule class), reason printed.
+ - postseason overtime: quarter 5 is its first period (all 7 postseason overtimes, 2019-2025); any interval past quarter 5 reads INSUFFICIENT_EVIDENCE, no quarter number assumed (Retired list).
+ - the play-by-play record logs no two-minute warning row (Retired list): the warning is placed by the quarter clock only; v5's text search (any mention) is kept only for the frozen 2023 reproduction (tmw_row_v5).
  - every 'line N' printed is looked up in the targets file at run time by the line's opening words, so it cannot go stale.
  - game level margin = coarser W stamp + G's 1 s (Instruments, v13); D3 compares real-time stamps only (W, E), so its margin carries no G second.
  - v12's game level word (margin without G's second) is computed beside v13's in the same run and written to out/clock_counts.csv as GAME_LEVEL_PRIOR.
@@ -42,7 +42,7 @@ OUT_REASONS = "out/clock_reasons.csv"
 CLASS_EMPTY = {"RUN": "no stoppage on the stretch: the clock ran (4-3)"}   # a RUN stretch carries no stop or partial reason of its own
 GAME_LEVEL_REASON = {"WITHIN REAL TIME": "the game clock fell no faster than real time",
              "WITHIN RESOLUTION": "the game clock fell faster by no more than the stamps can tell apart (the real-time stamp's resolution plus the game clock's whole second)",
-             "FASTER not licensed": "the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the record logging it (4-1-4), so a correction and a record error cannot be told apart",
+             "FASTER not licensed": "the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the play-by-play record logging it (4-1-4), so a correction and a record error cannot be told apart",
              "FASTER licensed (runoff)": "a 10-second runoff removed game time with no play (4-7-1, 4-7-4)",
              "UNCHECKED": "a real-time clock stamp or the game clock is missing on one of the two snaps"}
 GAME_LEVEL_PRIOR_REASON = {"WITHIN REAL TIME": "v12 margin (the real-time stamp's resolution only), kept for comparison: within real time",
@@ -50,9 +50,9 @@ GAME_LEVEL_PRIOR_REASON = {"WITHIN REAL TIME": "v12 margin (the real-time stamp'
                 "FASTER licensed (runoff)": "v12 margin (the real-time stamp's resolution only), kept for comparison: a runoff (4-7-1, 4-7-4)",
                 "UNCHECKED": "v12 margin (the real-time stamp's resolution only), kept for comparison: a stamp missing"}
 D3_REASON = {"WITHIN 40": "the next snap came within 40 seconds of real time after the play ended (4-6-1)",
-             "OVER 40": "the next snap came more than 40 seconds of real time after the play ended; the play clock stops for interruptions the record does not log (4-6-3)",
+             "OVER 40": "the next snap came more than 40 seconds of real time after the play ended; the play clock stops for interruptions the play-by-play record does not log (4-6-3)",
              "N/A (ADMIN)": "an administrative stoppage (a change of possession, a timeout, the two-minute warning, a foul or a review) resets the play clock (4-6-2)",
-             "UNCHECKED": "an end-of-play stamp is missing or the two-minute warning cannot be placed (the record carries end stamps from 2023)"}
+             "UNCHECKED": "an end-of-play stamp is missing or the two-minute warning cannot be placed (the play-by-play record carries end stamps from 2023)"}
 TYPES = {"game_id": ("str", False), "season_type": ("str", False), "order_sequence": ("int", False), "posteam": ("str", True), "qtr": ("int", False),
          "quarter_seconds_remaining": ("int", True), "game_seconds_remaining": ("int", True), "play_type": ("str", True), "two_point_attempt": ("int", True),
          "incomplete_pass": ("int", True), "out_of_bounds": ("int", True), "touchdown": ("int", True), "field_goal_result": ("str", True), "safety": ("int", True),
@@ -318,7 +318,7 @@ def main():
     print(f"  PL9 2019_18_BUF_HOU 4363 -> 4392 (line {L('PL9 ')}):"); rows(G9, 4363, 4392)
     injected_fault(f"PL9 PARTIAL (4-3-2a; 16-1-4(h) no window in period 1) (got {None if r9 is None else (r9['q'], r9['pt'], r9['cls'], r9['why'])})", r9 is not None and r9["cls"] == "PARTIAL")
     F = G9.copy(); F.loc[F["order_sequence"].isin([4363, 4392]), "qtr"] = 6.0; r = find(again(F), "2019_18_BUF_HOU", 4363, 4392)
-    injected_fault(f"NEG9 PL9 quarter set to 6: {None if r9 is None else r9['cls']} -> {None if r is None else (r['cls'], r['why'])}", r is not None and r["cls"] == "UNKNOWN")
+    injected_fault(f"NEG9 PL9 quarter set to 6: {None if r9 is None else r9['cls']} -> {None if r is None else (r['cls'], r['why'])}", r is not None and r["cls"] == "INSUFFICIENT_EVIDENCE")
     G10 = game(2023, "2023_01_ARI_WAS"); r10 = find(again(G10), "2023_01_ARI_WAS", 77, 102)
     print(f"  PL10 2023_01_ARI_WAS seq 77 -> 102 (line {L('PL10 ')}; FASTER by +0.330 s in the frozen run):"); rows(G10, 77, 102)
     injected_fault(f"PL10 WITHIN RESOLUTION (got {None if r10 is None else (r10['game_level'], round(r10['dG'] - r10['dW'], 3), r10['res'])})", r10 is not None and r10["game_level"] == "WITHIN RESOLUTION")
@@ -350,7 +350,7 @@ def main():
         iv = IV[s]
         cl = Counter(iv["cls"]); tags = Counter(w for v in iv.loc[iv["cls"] != "STOP", "why"] for w in v.split("+") if w)
         print(f"\n{s}: intervals {len(iv)} | classes {dict(cl)} | ADMIN {int((iv['admin'] == True).sum())} | midnight wraps {int(iv['wrap'].sum())}")
-        print(f"   non-STOP reasons (PARTIAL and UNKNOWN), tagged: {dict(tags)}")
+        print(f"   non-STOP reasons (PARTIAL and INSUFFICIENT_EVIDENCE), tagged: {dict(tags)}")
         for k, n in cl.items(): crow.append((s, "CLASS", k, n))
         for k, n in tags.items(): crow.append((s, "TAG", k, n))
         for law in ("game_level", "game_level_prior", "d3"):

@@ -92,7 +92,7 @@ one name; different values -> two names. Standing: **in use**; **new** (code mov
 | Column | Judging | `outcome_rank`, `outcome_rank_scored` | result, result_u, outcome_pit, outcome_pit_scored | Where the result fell in the forecast; scored after the game | new |
 | Column | Judging | `outcome_percent` | result_pct, outcome_pit_pct | outcome_rank x 100 rounded to one decimal, display only, never tested (register.py) | new |
 | Column | Judging | `composed_rank` | pit_comp | Where the result fell in the composed distribution | new |
-| Column | Judging | `chain_class`, `tail_coverage_band` | stratum, status (calibration) | Chain study class; tail coverage against the +-2 slate standard error band | in use |
+| Column | Judging | `link_chain_class`, `tail_coverage_band` | stratum, status (calibration) | Link-chain study class; tail coverage against the +-2 slate standard error band | in use |
 | Column | Judging | `snap_effect` | role, snap_share_to_date (link_chain.py key) | Event minus control change in snap share | new |
 | Column | Judging | `finite_loss_baseline`, `finite_loss_candidate` | f0, f1 (loss masks) | Rows whose baseline / candidate loss is finite | new |
 | Column | Judging | `probability_collapse`, `probability_role_collapse`, `probability_role_collapse_twin`, `collapse_rate` | pi (regime_test.py), p_col, p_col_twin, base_col | Collapse-state probability; role-collapse probability; its twin; observed collapse rate | new |

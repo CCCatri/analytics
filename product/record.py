@@ -125,7 +125,7 @@ def header(name):
 
 
 def opened(name):
-    """The record's one reader: every file opened is fingerprinted against its pin before a byte is read."""
+    """The play-by-play record's one reader: every file opened is fingerprinted against its pin before a byte is read."""
     path = os.path.join(policy.RAW_DIR, name)
     pins = raw_pins()["pins"]
     if name not in pins:
@@ -308,7 +308,7 @@ def zero_sum(series, index):
 
 def holds_snap(text):
     """True where a play's text opens with a game clock in parentheses, "(m:ss)" or "(:ss)": a snap was run on that row.
-    15-1: a lost challenge is charged a timeout, and the record writes that charge onto the snapped play's row."""
+    15-1: a lost challenge is charged a timeout, and the play-by-play record writes that charge onto the snapped play's row."""
     out = np.zeros(len(text), dtype=bool)
     for i, t in enumerate(text):
         if isinstance(t, str) and t.startswith("(") and ")" in t:
@@ -580,7 +580,7 @@ def positions(season):
 def finished_pairs(season, ev, sets, pos):
     """FINISH per (game, player) over the participation pairs; the counts finished() prints are taken from this dict.
     TRUE: on a known snap of the team's final offensive drive. FALSE: every snap of that drive known and he is on none.
-    UNKNOWN: otherwise. A penalty no-play is a snap when its known set shows a QB and no K or P; unknown position = unknown snap."""
+    INSUFFICIENT_EVIDENCE: otherwise. A penalty no-play is a snap when its known set shows a QB and no K or P; unknown position = unknown snap."""
     sc = ev[ev["kind"].isin(policy.CALL_KINDS) & ev["posteam"].notna()]
     final = sc.groupby(["game_id", "posteam"])["fixed_drive"].max()
     team_games = ev[ev["posteam"].notna()].groupby(["game_id", "posteam"]).size()
@@ -617,17 +617,17 @@ def finished_pairs(season, ev, sets, pos):
         if unknown: tg_unknown += 1
         on = set().union(*known) if known else set()
         for m in players:
-            status[(g, m)] = "TRUE" if m in on else ("FALSE" if unknown == 0 else "UNKNOWN")
+            status[(g, m)] = "TRUE" if m in on else ("FALSE" if unknown == 0 else "INSUFFICIENT_EVIDENCE")
     return status, len(final), snaps_final, unknown_final, tg_unknown
 
 
 def finished(season, ev, sets, pos):
     """The S2 counts, taken from finished_pairs; byte-identical to the accepted printout."""
     status, n_tg, snaps_final, unknown_final, tg_unknown = finished_pairs(season, ev, sets, pos)
-    counts = {"TRUE": 0, "FALSE": 0, "UNKNOWN": 0}
+    counts = {"TRUE": 0, "FALSE": 0, "INSUFFICIENT_EVIDENCE": 0}
     for v in status.values():
         counts[v] += 1
     pairs = len(status); total = sum(counts.values())
-    print(f"FINISH {season} team-games {n_tg} participation pairs {pairs} TRUE {counts['TRUE']} FALSE {counts['FALSE']} UNKNOWN {counts['UNKNOWN']} "
+    print(f"FINISH {season} team-games {n_tg} participation pairs {pairs} TRUE {counts['TRUE']} FALSE {counts['FALSE']} INSUFFICIENT_EVIDENCE {counts['INSUFFICIENT_EVIDENCE']} "
           f"sum {total} {'PASS' if total == pairs else 'FAIL'} | final-drive known snaps {snaps_final} unknown snaps {unknown_final} team-games with an unknown final-drive snap {tg_unknown}")
     return counts

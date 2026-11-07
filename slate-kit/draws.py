@@ -29,7 +29,7 @@ if ROOT_SOURCE not in ("kit", "engine"): raise SystemExit(f"SLATE_ROOT_SOURCE={R
 ROOT_TERMS = {"F2 team attempts": "attempts", "F2 team carries": "carries"}
 ENGINE_ROOT = None
 QUANTILE_LEVELS = [0.10, 0.25, 0.50, 0.75, 0.90]; QUANTILE_NAMES = ["quantile_10", "quantile_25", "quantile_50", "quantile_75", "quantile_90"]
-LINK_CHAIN_STATE = "chain"
+LINK_CHAIN_STATE = "link chain"
 FAMILIES = {"level": "team volume: the league level shrunk by reliability x a measured ratio", "share": "beta-binomial on the team draw by the role law (mean and concentration by maximum likelihood)",
             "proportion": "beta-binomial on the parent draw, overdispersion measured around its center", "sibling": "beta-binomial on the parent draw given the sibling's yards luck (the sibling law)",
             "per unit": "the parent draw x the shrunk rate + sqrt(draw) x measured per-unit residuals"}

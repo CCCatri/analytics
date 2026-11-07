@@ -6,10 +6,10 @@ Injected faults run first, row by row; any FAIL stops the run before a count is 
 Writes out/downs_counts.csv, out/downs_other.csv and out/downs_reasons.csv, stamped on line 1 with this file's sha and the targets sha.
 out/downs_reasons.csv (N7): every count of out/downs_counts.csv split by its reason, plus C1's pairs not judged per season; the run stops if the split does not sum back.
 Choices the targets do not fix, declared and printed:
- - play order is the record's order_sequence (targets line 6, v16); the number of
+ - play order is the play-by-play record's order_sequence (targets line 6, v16); the number of
    adjacent down-carrying rows where the game clock runs backward under order_sequence is printed.
  - a down-carrying row is a snap (policy.CALL_KINDS, punt, field goal attempt) or a no_play row, with a down; Tries never are.
- - an accepted foul is the record's penalty flag set and the foul named; its side is the offense when penalty_team is the snapping team, else the defense.
+ - an accepted foul is the play-by-play record's penalty flag set and the foul named; its side is the offense when penalty_team is the snapping team, else the defense.
  - a no-play keeps v4's rule: repeated (3-8-4), unless a loss of down by name, or the next spot at or past the line to gain, or a defensive award (both 7-3-1(b), v11).
  - any other snap with an accepted foul is judged by v5/v6 C1 (a)-(c): S is the next snap's yardline_100, L the fouled down's yardline_100 minus its ydstogo.
    "The play itself reached L" is yards_gained on the fouled snap >= its ydstogo. Unnecessary Roughness by the offense is a foul after the whistle when its
@@ -17,7 +17,7 @@ Choices the targets do not fix, declared and printed:
  - one reason per item, one word; a reason never joins two reasons with ';' and never names a word; the count of such reasons is printed.
  - v7: on a snap not marked a no-play, accepted fouls by both teams (a 'PENALTY on' clause, any case, not followed within its clause by 'declined' or
    'offsetting', the team read before the first '-' or ',') are judged under (c) before (a).
- - v9/v10 C1 (c): a snap whose foul timing the record does not give (offensive Unnecessary Roughness enforced where the play ended, offensive Face
+ - v9/v10 C1 (c): a snap whose foul timing the play-by-play record does not give (offensive Unnecessary Roughness enforced where the play ended, offensive Face
    Mask, accepted fouls by both teams) reads EXPLAINED when the next snap fits one or more of the outcomes its possible rules allow, every fitting rule
    named, else OTHER. A both-teams clause gives the team (before the first '-' or ','), the foul (the next comma field, a parenthesized note dropped)
    and the side (against the snapping team); a team that is neither side, or a foul on no list for its side, reads OTHER. 'Ball at or past L' is the
@@ -50,7 +50,7 @@ OUT_COUNTS = "out/downs_counts.csv"
 OUT_OTHER = "out/downs_other.csv"
 OUT_REASONS = "out/downs_reasons.csv"
 ORD = {1: "1st", 2: "2nd", 3: "3rd", 4: "4th"}
-FLAG = "the record's foul columns disagree with its play text, which foul set the next down is not told apart"   # v19 3''
+FLAG = "the play-by-play record's foul columns disagree with its play text, which foul set the next down is not told apart"   # v19 3''
 FROM_EVENTS = ["game_id", "play_id", "posteam", "qtr", "game_seconds_remaining", "kind", "down", "ydstogo", "yardline_100", "yards_gained", "penalty", "two_point_attempt",
                "touchdown", "safety", "interception", "fumble_lost", "defteam"]
 EXTRA = {"game_id": ("str", False), "play_id": ("int", False), "order_sequence": ("int", False), "season_type": ("str", False), "first_down": ("int", True),
@@ -58,7 +58,7 @@ EXTRA = {"game_id": ("str", False), "play_id": ("int", False), "order_sequence":
          "own_kickoff_recovery": ("int", True), "fumble_recovery_1_team": ("str", True)}
 CALL = set(policy.CALL_KINDS)
 DBK = CALL | {"punt", "field_goal", "penalty"}
-FITS = "fits one of the rules the record cannot tell apart"   # v9/v10 C1 (c)
+FITS = "fits one of the rules the play-by-play record cannot tell apart"   # v9/v10 C1 (c)
 
 
 def side_rules(name, side_def, dn):
@@ -95,7 +95,7 @@ def text_named(text):
 
 
 def flagged(pt, ptype, text):
-    """v19 3'': the record's (penalty_team, penalty_type) is none of the fouls the text names as accepted (a text naming none is not flagged)."""
+    """v19 3'': the play-by-play record's (penalty_team, penalty_type) is none of the fouls the text names as accepted (a text naming none is not flagged)."""
     named = text_named(text)
     return bool(named) and (str(pt).upper(), norm(ptype)) not in named
 
@@ -154,7 +154,7 @@ def checks(g):
     def item(check, word, why, k, **kw):
         d = dict(check=check, word=word, why=why, game_id=c["game_id"][k], season=c["season"][k], season_type=c["season_type"][k], seq=int(c["order_sequence"][k]),
                  team=team[k], down=dn[k], ydstogo=c["ydstogo"][k], yardline_100=c["yardline_100"][k]); d.update(kw); items.append(d)
-    def cancelled(k): return kind[k] == "penalty"                      # v3: the record's no-play mark only
+    def cancelled(k): return kind[k] == "penalty"                      # v3: the play-by-play record's no-play mark only
     def between(a, b, kinds): return any(kind[x] in kinds for x in range(a + 1, b))
     DB = [k for k in range(n) if kind[k] in DBK and not one(c["two_point_attempt"][k]) and not nan(dn[k])]
     DB1 = [k for k in range(n) if (kind[k] in DBK or (kind[k] == "other" and one(c["penalty"][k]) and not nan(c["penalty_type"][k])))
@@ -164,11 +164,11 @@ def checks(g):
         if dn[k] not in (1, 2, 3, 4):
             item("C1", "OTHER", "down outside 1-4 (3-8-2)", k)
     # C1 pairs (3-8-5, 3-8-4, 7-3-1; v5/v6 C1 (a)-(c))
-    def accepted(k): return one(c["penalty"][k]) and not nan(c["penalty_type"][k])   # the record's penalty flag set and the foul named
+    def accepted(k): return one(c["penalty"][k]) and not nan(c["penalty_type"][k])   # the play-by-play record's penalty flag set and the foul named
     def fits(out, foul, j, kw):   # v9/v10 C1 (c): every fitting rule named, in the order given
         f = list(dict.fromkeys(lab for lab, d in out if d == dn[j]))
         if f: item("C1", "EXPLAINED", f"{FITS} ({' or '.join(f)}): {foul}", j, **kw)
-        else: item("C1", "OTHER", f"fits none of the rules the record cannot tell apart, next snap down {dn[j]}: {foul}", j, **kw)
+        else: item("C1", "OTHER", f"fits none of the rules the play-by-play record cannot tell apart, next snap down {dn[j]}: {foul}", j, **kw)
     yl, yt, yg = c["yardline_100"], c["ydstogo"], c["yards_gained"]
     for i, j in zip(DB1, DB1[1:]):
         if team[i] != team[j] or half_break(q[i], q[j]) or between(i, j, ("kickoff", "try")) or kind[i] in ("punt", "field_goal") \
@@ -235,7 +235,7 @@ def checks(g):
             continue
         txt = str(c["desc"][fx] or "").lower()
         ur_after = F == "Unnecessary Roughness" and ("between downs" in txt or (not nan(yg[i]) and yg[i] == 0))
-        if not fdef and (F == "Face Mask" or (F == "Unnecessary Roughness" and not ur_after)):   # v9/v10 C1 (c): the record does not give the foul's timing
+        if not fdef and (F == "Face Mask" or (F == "Unnecessary Roughness" and not ur_after)):   # v9/v10 C1 (c): the play-by-play record does not give the foul's timing
             fits([("during the play", dn[i]), ("after the whistle", dn[i] + 1)] + ([("ball at or past L", 1)] if past else []), F, j, kw)
         elif not fdef and F in OFF_DURING:
             ok = dn[j] == dn[i] and not nan(yt[j]) and yt[j] == S - L
@@ -294,7 +294,7 @@ def checks(g):
             f3 = k if one(c["penalty"][k]) else next(x for x in range(k + 1, nx) if one(c["penalty"][x])); pt3 = c["penalty_team"][f3]; nm3 = c["penalty_type"][f3]
             if isinstance(pt3, str) and pt3 != team[k]: item("C3", "EXPLAINED", f"a foul by the defense gave the offense a new series (7-3-1(b)): {nm3}", k, **kw)
             elif isinstance(pt3, str): item("C3", "EXPLAINED", f"a foul by the offense on 4th down, the 4th down replayed (3-8-4): {nm3}", k, **kw)
-            else: item("C3", "EXPLAINED", f"a foul by a side the record does not name, followed by the same team's snap: {nm3}", k, **kw)
+            else: item("C3", "EXPLAINED", f"a foul by a side the play-by-play record does not name, followed by the same team's snap: {nm3}", k, **kw)
         else: item("C3", "OTHER", f"followed by {kind[nx]} of {team[nx]}", k, **kw)
     # C4 kicking-team recovery (7-3-1d, 7-3-1e)
     for k in range(n):

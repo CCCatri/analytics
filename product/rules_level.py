@@ -12,8 +12,8 @@ SELF = hashlib.sha256(open(os.path.abspath(__file__), "rb").read()).hexdigest()[
 OUT = "out/rules_level.csv"
 TEMPLATE_FILE, TEMPLATE_KEY = "acceptance-criteria/PROGRESS.md", "the rules level"
 SRC = {"clock": "out/clock_reasons.csv", "possessions": "out/possessions_classes.csv", "downs": "out/downs_reasons.csv"}
-FITS = "fits one of the rules the record cannot tell apart"   # check_downs.py's FITS reason: the record does not say which rule applied
-NOT_APART = "not told apart"   # check_downs.py v17 4: a reason naming two readings the record does not tell apart
+FITS = "fits one of the rules the play-by-play record cannot tell apart"   # check_downs.py's FITS reason: the play-by-play record does not say which rule applied
+NOT_APART = "not told apart"   # check_downs.py v17 4: a reason naming two readings the play-by-play record does not tell apart
 COLS = ["clause", "part", "source", "season", "season_type", "check", "word", "label", "articles", "book", "count", "of", "share", "share_exact"]
 
 
@@ -44,7 +44,7 @@ def template():
 def part_of(source, check, word, label):
     if source == "clock":
         if check == "GAME_LEVEL_PRIOR": return "diagnostic"
-        if check == "CLASS": return {"RUN": "as rule", "UNKNOWN": "unsettled"}.get(word, "exception")
+        if check == "CLASS": return {"RUN": "as rule", "INSUFFICIENT_EVIDENCE": "unsettled"}.get(word, "exception")
         if check == "TAG": return "exception"
         if check == "GAME_LEVEL": return {"WITHIN REAL TIME": "as rule", "WITHIN RESOLUTION": "as rule", "FASTER licensed (runoff)": "exception"}.get(word, "unsettled")
         if check == "D3": return {"WITHIN 40": "as rule", "N/A (ADMIN)": "exception"}.get(word, "unsettled")

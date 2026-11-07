@@ -59,7 +59,7 @@ OFFICIAL_BASE = ("player_id", "position", "position_group", "season", "week", "s
 OFFICIAL_BASE_TYPES = {"player_id": ("str", False), "position": ("str", True), "position_group": ("str", True),
                        "season": ("int", False), "week": ("int", False), "season_type": ("str", False),
                        "game_id": ("str", False), "team": ("str", False), "opponent_team": ("str", True)}
-# a contradiction in the record raises DataGap (R2): (lesser, greater)
+# a contradiction in the play-by-play record raises DataGap (R2): (lesser, greater)
 # (rec_td, receptions) is not an identity: a lateral TD credits the scorer a receiving TD and no reception
 # (2024_03_DET_ARI 00-0039139, 2024_13_SF_BUF 00-0034857; ruled 2026-10-25 from the pbp lateral read).
 OFFICIAL_CONTRADICTIONS = (("completions", "attempts"), ("interceptions", "attempts"), ("pass_td", "completions"),

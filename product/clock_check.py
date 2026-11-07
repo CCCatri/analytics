@@ -2,7 +2,7 @@
 of a no-play down (down_row) and of an injury on a play (injury_text). Product code.
 Accepted from run e2b_v17_1725d9c82df1's shared library (lib_check) as 124c6a39e406; the warning's section label is an argument (warn_sec).
 v19 f: 4-3-2e(3)'s stop is located at the offense's own pre-snap foul (check_clock's definition of the event), not at the first foul row with no play. check_clock.py is not changed: its snap kinds and injury pattern are set for the call only.
-test_clock_check.py runs its known-right cases and proves its answers on the record byte-identical to the run's copy."""
+test_clock_check.py runs its known-right cases and proves its answers on the play-by-play record byte-identical to the run's copy."""
 import re
 from collections import Counter
 import numpy as np
@@ -27,7 +27,7 @@ class _InjRead:
 
 
 def down_row(play_type, timeout, penalty_type, desc):
-    """A no-play DOWN (c's category 1, one definition for the table, the race's rows and section 4, on the record and on the engine's games alike): a
+    """A no-play DOWN (c's category 1, one definition for the table, the race's rows and section 4, on the play-by-play record and on the engine's games alike): a
     no-play row that is not a timeout, whose foul is named (penalty_type or a 'PENALTY on' clause), and whose text describes a play before PENALTY."""
     return play_type == "no_play" and not one_(timeout) and (isinstance(penalty_type, str) or bool(check_downs.foul_clauses(desc))) and engine.has_play(desc)
 
@@ -71,8 +71,8 @@ def check_clock2(seasons, keep_rows=False, warn_sec=None):
             c = {k: g[k].tolist() for k in g.columns}
             idx = {int(v): k for k, v in enumerate(c["order_sequence"])}
             for x in iv:
-                if x["cls"] == "UNKNOWN":
-                    out["check_clock class UNKNOWN"] += 1; fails.append(("UNKNOWN", x["game_id"], x["sa"], x["sb"], np.nan, np.nan, x["why"], np.nan, s, x["q"], x["reg"])); continue
+                if x["cls"] == "INSUFFICIENT_EVIDENCE":
+                    out["check_clock class INSUFFICIENT_EVIDENCE"] += 1; fails.append(("INSUFFICIENT_EVIDENCE", x["game_id"], x["sa"], x["sb"], np.nan, np.nan, x["why"], np.nan, s, x["q"], x["reg"])); continue
                 if x["cls"] not in ("STOP", "PARTIAL"): continue
                 a, b = idx[x["sa"]], idx[x["sb"]]; bt = list(range(a + 1, b)); ab = [a] + bt
                 nro = sum(1 for k in ab if RUNOFF_RX.search(str(c["desc"][k] or "")))

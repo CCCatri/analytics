@@ -1,6 +1,6 @@
-"""rules.py - the rules-module stage, one rules module, to rules-module.md. The rules the record reads (check_possessions.py, check_clock.py, check_downs.py) and the engine (the engine stage) play by, each with its article.
+"""rules.py - the rules-module stage, one rules module, to rules-module.md. The rules the play-by-play record reads (check_possessions.py, check_clock.py, check_downs.py) and the engine (the engine stage) play by, each with its article.
 The book is rules/nfl_rulebook_2026.pdf (sha 144cec5bffd2). snap kinds; foul families; the next-down rule, next_down; the clock rule (windows, clock_class, the play clock);
-the next-possession rule, next_possession; the season rules, season_rules, read from out/season_rules.csv (written by measure_season_rules.py from the record; 2022 is held_out and stays UNKNOWN). No record is read here."""
+the next-possession rule, next_possession; the season rules, season_rules, read from out/season_rules.csv (written by measure_season_rules.py from the play-by-play record; 2022 is held_out and stays INSUFFICIENT_EVIDENCE). No record is read here."""
 import csv, hashlib, io, re, sys
 
 _ITEM5 = {}
@@ -17,7 +17,7 @@ def _nan(x):
 # snap kinds (3-8-1a, 3-29); Tries are not snaps of a series (11-3-1)
 SNAP_KINDS = ("pass", "run", "qb_kneel", "qb_spike", "punt", "field_goal")
 
-# foul families, by the record's foul name
+# foul families, by the play-by-play record's foul name
 PRESNAP_OFFENSE = ("False Start", "Delay of Game", "Illegal Formation", "Illegal Shift", "Illegal Motion", "Illegal Substitution")   # by the offense before the snap, the down replayed with yardage (14-4-9, 14-3)
 OFF_DURING = ("Offensive Holding", "Illegal Block Above the Waist", "Illegal Blindside Block", "Low Block", "Illegal Crackback", "Clipping", "Chop Block",
               "Tripping", "Illegal Peelback", "Lowering the Head to Initiate Contact")   # by the offense during the play, the down replayed from the spot (14-1-2 Item 1, 3-8-4)
@@ -28,7 +28,7 @@ DEF_AWARD = ("Unnecessary Roughness", "Defensive Holding", "Roughing the Passer"
              "Unsportsmanlike Conduct", "Tripping", "Hip Drop Tackle", "Illegal Blindside Block")   # by the defense, a first down (14-1-2 Item 5, 7-3-1(b))
 DEF_NEXT, DEF_SAME = ("Defensive Delay of Game",), ("Defensive Too Many Men on Field",)   # by the defense with no award: the next down, the same down (14-1-2 Item 5 Exceptions)
 BOOK, BSHA = "rules/nfl_rulebook_2026.pdf", "144cec5bffd2"   # Item 5's Exceptions are read from this book's Item 5 lines
-TMM = "Defensive Too Many Men on Field"   # Exception (8) or (9): the record cannot tell the snap from before it (R4 v17 point 2)
+TMM = "Defensive Too Many Men on Field"   # Exception (8) or (9): the play-by-play record cannot tell the snap from before it (R4 v17 point 2)
 TIE = True   # the tie holds while the measured count short of the line is 0; a read that re-measures it sets this False when it breaks
 TIE_MEASURED = {"same down": 145, "1st down, the ball at or past the line": 58, "1st down short of the line": 0}   # R4 v17 point 2, 203 plays, 2026-10-26
 
@@ -159,17 +159,17 @@ CLOCK_EVENTS = {   # what each event does to the game clock on the stretch it fa
     "injury after the warning 4-5-4": "STOP", "two-minute warning 3-41": "STOP",
     "out of bounds early 4-3-2a": "PARTIAL", "foul outside windows 4-3-2e": "PARTIAL", "injury, from play text 4-5-3": "PARTIAL",
     "referee timeout, from play text 4-5-5": "PARTIAL", "replay review 15-5-1": "PARTIAL",
-    "postseason overtime past quarter 5: NOT TESTABLE (Retired list)": "UNKNOWN", "out of bounds unread": "UNKNOWN", "out of bounds, window unread": "UNKNOWN",
-    "foul, window unread": "UNKNOWN", "warning placement unread": "UNKNOWN", "injury, warning placement unread": "UNKNOWN",
+    "postseason overtime past quarter 5: NOT TESTABLE (Retired list)": "INSUFFICIENT_EVIDENCE", "out of bounds unread": "INSUFFICIENT_EVIDENCE", "out of bounds, window unread": "INSUFFICIENT_EVIDENCE",
+    "foul, window unread": "INSUFFICIENT_EVIDENCE", "warning placement unread": "INSUFFICIENT_EVIDENCE", "injury, warning placement unread": "INSUFFICIENT_EVIDENCE",
 }
 
 
 def clock_class(events, past_q5):
-    """RUN / STOP / PARTIAL / UNKNOWN for a stretch, and its reasons joined by '+': events is [(name, happened)] in the read's order; a stretch past the
-    first postseason overtime period is UNKNOWN."""
+    """RUN / STOP / PARTIAL / INSUFFICIENT_EVIDENCE for a stretch, and its reasons joined by '+': events is [(name, happened)] in the read's order; a stretch past the
+    first postseason overtime period is INSUFFICIENT_EVIDENCE."""
     hit = [n for n, f in events if f]
-    stop = [n for n in hit if CLOCK_EVENTS[n] == "STOP"]; part = [n for n in hit if CLOCK_EVENTS[n] == "PARTIAL"]; unk = [n for n in hit if CLOCK_EVENTS[n] == "UNKNOWN"]
-    cls = "UNKNOWN" if past_q5 else ("STOP" if stop else ("UNKNOWN" if unk else ("PARTIAL" if part else "RUN")))
+    stop = [n for n in hit if CLOCK_EVENTS[n] == "STOP"]; part = [n for n in hit if CLOCK_EVENTS[n] == "PARTIAL"]; unk = [n for n in hit if CLOCK_EVENTS[n] == "INSUFFICIENT_EVIDENCE"]
+    cls = "INSUFFICIENT_EVIDENCE" if past_q5 else ("STOP" if stop else ("INSUFFICIENT_EVIDENCE" if unk else ("PARTIAL" if part else "RUN")))
     return cls, "+".join(unk if past_q5 else (stop if stop else (unk if unk else part)))
 
 
@@ -201,27 +201,27 @@ POSSESSION = {
 
 def next_possession(ending, scorer=None, scored_on=None, team=None, other=None):
     """Who has the ball next after an ending, and the rule: the receiving team after a score, the other team after a turnover on downs, the kickers after
-    their recovery; halftime and overtime return the rule only (the choice and the toss are not in the record)."""
+    their recovery; halftime and overtime return the rule only (the choice and the toss are not in the play-by-play record)."""
     who, why = POSSESSION[ending]
     return {"scored upon": scored_on, "scoring team": scorer, "other team": other, "kicking team": team}.get(who), why
 
 
-# the season rules, 2019-2025: measured by measure_season_rules.py into out/season_rules.csv; 2022 is the held_out season, its values from rule text only, UNKNOWN until read
+# the season rules, 2019-2025: measured by measure_season_rules.py into out/season_rules.csv; 2022 is the held_out season, its values from rule text only, INSUFFICIENT_EVIDENCE until read
 R7_FILE = "out/season_rules.csv"
 
 
 def season_rules(season):
     """{measure: (value, source)} for a season; a value is written where its prediction held, or where there was nothing to count ('no games', 'no kicks');
-    a broken prediction reads UNKNOWN until its plays are read."""
+    a broken prediction reads INSUFFICIENT_EVIDENCE until its plays are read."""
     if season == 2022:
-        return {"all": ("UNKNOWN", "rule text, not read; the held_out season's record is never read")}
+        return {"all": ("INSUFFICIENT_EVIDENCE", "rule text, not read; the held_out season's record is never read")}
     L = open(R7_FILE).read().split("\n")
     out = {}
     SRC = {"True": "measured (R7)", "not judged": "measured (R7): nothing to count, no prediction judged"}   # R7 v2 a
     for r in csv.DictReader(io.StringIO("\n".join(L[1:]))):
         if int(r["season"]) == season:
             h = r["prediction_held"]
-            out[r["measure"]] = (r["value"], SRC[h]) if h in SRC else ("UNKNOWN", "measured, prediction broken: read on its plays first")
+            out[r["measure"]] = (r["value"], SRC[h]) if h in SRC else ("INSUFFICIENT_EVIDENCE", "measured, prediction broken: read on its plays first")
     return out
 
 
@@ -369,7 +369,7 @@ def find_quote(book, quote):
 
 def season_rule_quotes(season, quotes=None):
     """The season's rules quoted from its pinned book: {rule: {'value', 'quote', 'book', 'sha', 'note', 'found_in', 'predicted', 'held', 'measured'}}; a rule whose quote is not found in an
-    article (or whose book reads no onside article where none is predicted, or whose book's sha differs from its pin) has value UNKNOWN."""
+    article (or whose book reads no onside article where none is predicted, or whose book's sha differs from its pin) has value INSUFFICIENT_EVIDENCE."""
     Q = RULE_QUOTES if quotes is None else quotes
     book, note = RULE_BOOK_OF[season]
     B = rule_book(book); meas = season_rules(season)
@@ -378,14 +378,14 @@ def season_rule_quotes(season, quotes=None):
         if bk != book: continue
         cell = {"book": B["file"], "sha": B["sha"], "note": note, "quote": quote, "predicted": pred, "measured": meas.get(RULE_MEASURE.get(rule, ""), None)}
         if B["sha"] != B["pinned"]:
-            cell.update(value="UNKNOWN", found_in=[], held=False, why=f"book sha {B['sha']} is not its pin {B['pinned']}")
+            cell.update(value="INSUFFICIENT_EVIDENCE", found_in=[], held=False, why=f"book sha {B['sha']} is not its pin {B['pinned']}")
         elif quote is None:
             n = B["onside"]
-            cell.update(value=val if n == 0 else "UNKNOWN", found_in=[], held=n == 0,
+            cell.update(value=val if n == 0 else "INSUFFICIENT_EVIDENCE", found_in=[], held=n == 0,
                         why=f"no sentence: the word 'onside' in the book's rules {n} times (must be 0)" if n is not None else "not a PDF: no count")
         else:
             hits = find_quote(book, quote)
-            cell.update(value=val if hits else "UNKNOWN", found_in=hits, held=any(pred and h.startswith(pred + ",") or h == pred for h in hits),
+            cell.update(value=val if hits else "INSUFFICIENT_EVIDENCE", found_in=hits, held=any(pred and h.startswith(pred + ",") or h == pred for h in hits),
                         why="found" if hits else "not found in the article")
         out[rule] = cell
     return out

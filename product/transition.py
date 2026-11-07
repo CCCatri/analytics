@@ -1,20 +1,20 @@
 """transition.py - the one transition: possession, down, distance and yard line after one event (NFL rules: 3-8, 7-3, 11-3 to 11-6, 14-1-2, Rule 6).
-Product code. The record's adapter (the rebuild of the record's states) and the engine both call after(); the record supplies an event's observed
+Product code. The play-by-play record's adapter (the rebuild of the play-by-play record's states) and the engine both call after(); the play-by-play record supplies an event's observed
 attributes (its row's columns), the engine its generated ones (its draws); neither computes the resulting state itself. A part whose inputs are missing
-comes back UNKNOWN with its reason, never filled.
+comes back INSUFFICIENT_EVIDENCE with its reason, never filled.
 Accepted from run e2b_v17_1725d9c82df1's shared library (lib_trans) as 96229f766489; tb_rules takes the Rule 11 Section 6 spots as an argument.
 the engine-vs-record stage v18 c adds one case: a foul on a play that stands (stand(), the event's 'foul_stand'): the play's result kept and the foul enforced on it, by the
 family rules.py's foul families lists name (rules.py 3d9b5a3b1985, each list citing its article) and the season's Dead Ball Foul article (rb: 'the down counts',
 'a taunting foul that occurs at any time'), from the row's own columns (yards_gained, penalty_yards, penalty_team, first_down_penalty) and the spot its
-text says the foul was enforced at; where those do not give a part, the parts are UNKNOWN with the reason. Every other answer is 96229f766489's.
+text says the foul was enforced at; where those do not give a part, the parts are INSUFFICIENT_EVIDENCE with the reason. Every other answer is 96229f766489's.
 the engine-vs-record stage v19 part 2: stand() reads the defense's foul with no award by rules.py's Item 5 Exceptions (DEF_NEXT the next down, DEF_SAME the same down); and the
 yards of a foul are computed here, by its article, from the spot it is enforced at (foul_yards: the book's distance, half the distance to the
-offender's goal where the book sets it; spot_foul_yards: pass interference by the defense, a spot foul), for the engine and the record check alike.
+offender's goal where the book sets it; spot_foul_yards: pass interference by the defense, a spot foul), for the engine and the play-by-play record check alike.
 the engine-vs-record stage v19 r: a distance foul whose enforcement would carry the ball to or past the fouling team's goal line is placed half the distance from the
 enforcement spot to that goal (goal_half: the book's half-the-distance article, printed by line in each run), in after_one and stand() alike, never
-UNKNOWN; pass interference by the defense takes the foul's depth (the record's penalty_yards on a wiped row) and, in the end zone, the 1-yard line or half
+INSUFFICIENT_EVIDENCE; pass interference by the defense takes the foul's depth (the play-by-play record's penalty_yards on a wiped row) and, in the end zone, the 1-yard line or half
 the distance from the previous spot, whichever is more beneficial (the season's book, printed by line).
-the engine-vs-record stage v19 s, t: a fraction of a yard is a spot (s1, t1: kept exactly however many times half the distance halves it, never rounded; the engine writes the record's columns in the record's marking); the offense's
+the engine-vs-record stage v19 s, t: a fraction of a yard is a spot (s1, t1: kept exactly however many times half the distance halves it, never rounded; the engine writes the play-by-play record's columns in the play-by-play record's marking); the offense's
 unnecessary roughness on a play that stands, enforced at the play's end (the succeeding spot), is a dead ball foul by the season's Dead Ball Foul article:
 'enforced from the succeeding spot, and the down counts' (s3: OFF_DEAD_BOOK; a play whose result stands carries no accepted live-ball foul by the offense).
 Its known-right cases (FIXTURES, each true by the article it names, built by hand) and its injected faults (INJECTED_FAULTS, each must fail a case) live here;
@@ -50,7 +50,7 @@ def kick_to_come(receiver, how, kind="normal"):
     return dict(off=receiver, down=None, togo=None, yl=None, kick=True, kick_kind=kind, new_series=False, unk=() if isinstance(receiver, str) else ("offense",), how=how)
 
 
-def unknown(off, how, parts=("down", "distance", "yard line")):
+def insufficient_evidence(off, how, parts=("down", "distance", "yard line")):
     return dict(off=off, down=None, togo=None, yl=None, kick=False, kick_kind=None, new_series=False,
                 unk=tuple(p for p in TPARTS if p in parts or (p == "offense" and not isinstance(off, str))), how=how)
 
@@ -70,7 +70,7 @@ def tb_rules(season, x6cell, scrim_tb):
 def goal_half(yl, yd, by):
     """A distance foul of yd yards (enforced yards, more than 0) from the offense's yard line yl, by 'offense' or 'defense', that would carry the ball to or
     past the fouling team's goal line: the ball half the distance from yl to that goal (the book's half-the-distance article). None where yl is not on
-    the field or yd is not a distance toward the fouling team's goal (the spot stays UNKNOWN)."""
+    the field or yd is not a distance toward the fouling team's goal (the spot stays INSUFFICIENT_EVIDENCE)."""
     if not (_k(yl, yd) and by in ("offense", "defense") and 0 < yl < 100 and yd > 0): return None
     if by == "offense": return yl + (100 - yl) / 2 if yl + yd >= 100 else None
     return yl / 2 if yl - yd <= 0 else None
@@ -92,16 +92,16 @@ def kick_end(y0, kd, ret):
 
 
 def _spot(team, end, how, miss):
-    return series(team, end, how) if (_k(end) and 0 < end < 100) else unknown(team, miss)
+    return series(team, end, how) if (_k(end) and 0 < end < 100) else insufficient_evidence(team, miss)
 
 
 def second(r, ev):
     """A combined event (v15 b): the play's text names a later recovery (its last 'RECOVERED by') by a team other than the one the event's own columns give
     the ball to: a second change of possession the row's yard columns do not place. The ball is that team's (the text's last recovery); the down, distance
-    and yard line are UNKNOWN. A kick to come, a turnover on downs (7-3-2a) and a result already UNKNOWN are not changed."""
+    and yard line are INSUFFICIENT_EVIDENCE. A kick to come, a turnover on downs (7-3-2a) and a result already INSUFFICIENT_EVIDENCE are not changed."""
     pa = ev.get("poss_after")
     if not isinstance(pa, str) or r["kick"] or r["unk"] or r["off"] == pa or r["how"].startswith("turnover on downs") or r["how"].startswith("a loss of down"): return r
-    return unknown(pa, "a second change of possession on the play (the text's last recovery): the spot is not in the row's yard columns (UNKNOWN)")
+    return insufficient_evidence(pa, "a second change of possession on the play (the text's last recovery): the spot is not in the row's yard columns (INSUFFICIENT_EVIDENCE)")
 
 
 def after(st, ev, rb):
@@ -126,19 +126,19 @@ def after_one(st, ev, rb):
             return kick_to_come(next_possession("try_or_field_goal", scorer=sc, scored_on=kicker if sc == recv else recv)[0], "kickoff returned for a touchdown: a Try and a kick to come")
         if isinstance(ev.get("rec_by"), str) and ev["rec_by"] == kicker:
             who = next_possession("kickers_recovery", team=kicker)[0]
-            return _spot(who, ev.get("end"), "a free kick recovered by the kickers: their first down (7-3-1(e))", "a free kick recovered by the kickers: the spot is not in the row (UNKNOWN)")
+            return _spot(who, ev.get("end"), "a free kick recovered by the kickers: their first down (7-3-1(e))", "a free kick recovered by the kickers: the spot is not in the row (INSUFFICIENT_EVIDENCE)")
         if ev.get("foul_unread"):
-            return unknown(recv, "a kickoff with a foul: the spot is not in the row (UNKNOWN)")
+            return insufficient_evidence(recv, "a kickoff with a foul: the spot is not in the row (INSUFFICIENT_EVIDENCE)")
         if ev.get("tb"):
             if rb.get("two_spots"):
                 cond = ev.get("tb_cond"); spot = rb.get("kick") if cond == "in the air" else (rb.get("kick_lz") if cond == "acceptance zone" else None)
                 if spot is None:
-                    return unknown(recv, "kickoff touchback: the book names two spots and which one applies is not in the row (UNKNOWN)" if cond is None else "kickoff touchback: the spot unread from the book (UNKNOWN)")
+                    return insufficient_evidence(recv, "kickoff touchback: the book names two spots and which one applies is not in the row (INSUFFICIENT_EVIDENCE)" if cond is None else "kickoff touchback: the spot unread from the book (INSUFFICIENT_EVIDENCE)")
             else:
                 spot = rb.get("kick")
-                if spot is None: return unknown(recv, "kickoff touchback: the season rules's spot unread (UNKNOWN)")
+                if spot is None: return insufficient_evidence(recv, "kickoff touchback: the season rules's spot unread (INSUFFICIENT_EVIDENCE)")
             return series(recv, 100 - spot, "kickoff touchback: the season rules's spot (the season's book)")
-        return _spot(recv, ev.get("end"), "kickoff: where the return ended", "kickoff: the return's spot is not in the row (UNKNOWN)")
+        return _spot(recv, ev.get("end"), "kickoff: where the return ended", "kickoff: the return's spot is not in the row (INSUFFICIENT_EVIDENCE)")
     # a snap: a scrimmage play, a punt or a field goal try
     if ev.get("td"):
         sc = ev.get("scorer") or off
@@ -150,20 +150,20 @@ def after_one(st, ev, rb):
         return kick_to_come(next_possession("safety", scorer=dfn, scored_on=off)[0], "safety: a free kick to come", "safety")
     down, togo, yl = st.get("down"), st.get("togo"), st.get("yl")
     if ev.get("offsetting_dead") and not rb.get("dead_counts", True):
-        return unknown(off, "fouls offsetting after the ball is dead: the season's book does not state that the down counts (UNKNOWN)")
+        return insufficient_evidence(off, "fouls offsetting after the ball is dead: the season's book does not state that the down counts (INSUFFICIENT_EVIDENCE)")
     if ev.get("offsetting"):   # v16 b: a double foul during a live ball (rb's double_replay: the season's book's article read and printed by the run)
-        if not rb.get("double_replay", True): return unknown(off, "fouls offsetting during the down: the season's book's double-foul article not read (UNKNOWN)")
-        return same(st, down, togo, yl, "fouls offsetting during the down: the down replayed (3-8-4, the double-foul article)") if _k(down, togo, yl) else unknown(off, "fouls offsetting: the down's columns empty (UNKNOWN)")
+        if not rb.get("double_replay", True): return insufficient_evidence(off, "fouls offsetting during the down: the season's book's double-foul article not read (INSUFFICIENT_EVIDENCE)")
+        return same(st, down, togo, yl, "fouls offsetting during the down: the down replayed (3-8-4, the double-foul article)") if _k(down, togo, yl) else insufficient_evidence(off, "fouls offsetting: the down's columns empty (INSUFFICIENT_EVIDENCE)")
     # offsetting_dead (v16 b): fouls offsetting after the ball is dead leave the play's result standing (the Dead Ball Foul article: the down counts); the result follows
     if k == "foul":
         by, yd, oc = ev.get("by"), ev.get("yards"), ev.get("outcome")
         if not (_k(yd, down, togo, yl) and by in ("offense", "defense") and isinstance(off, str)):
-            return unknown(off, "a foul: penalty_yards, penalty_team or the down's columns empty (UNKNOWN)")
+            return insufficient_evidence(off, "a foul: penalty_yards, penalty_team or the down's columns empty (INSUFFICIENT_EVIDENCE)")
         why = rules.NEXT_DOWN[oc][1]
         yl2 = yl + yd if by == "offense" else yl - yd; mv = yd
         if not (0 < yl2 < 100):   # v19 r: the book's half-the-distance article where the ball would reach or pass the fouling team's goal line
             yl2 = goal_half(yl, yd, by)
-            if yl2 is None: return unknown(off, "a foul: the enforced spot outside the field (UNKNOWN)")
+            if yl2 is None: return insufficient_evidence(off, "a foul: the enforced spot outside the field (INSUFFICIENT_EVIDENCE)")
             mv = abs(yl2 - yl); why = why + "; half the distance to the goal (the book's half-the-distance article)"
         if by == "offense":
             tg2 = togo + mv
@@ -178,31 +178,31 @@ def after_one(st, ev, rb):
     if ev.get("foul_stand") is not None and k == "snap" and not ev.get("turnover"):   # v18 c: a foul on a play that stands
         return stand(st, ev, rb)
     if ev.get("foul_unread") and k in ("snap", "field_goal") and not ev.get("turnover"):
-        return unknown(off, "a foul on the play: its enforcement spot is not in the play's columns (UNKNOWN)")
+        return insufficient_evidence(off, "a foul on the play: its enforcement spot is not in the play's columns (INSUFFICIENT_EVIDENCE)")
     if k == "snap" and ev.get("turnover"):
         team = ev.get("turn_team") or dfn; what = ev["turnover"]
-        if ev.get("foul_unread"): return unknown(team, f"{what} with a foul: the spot is not in the row (UNKNOWN)")
+        if ev.get("foul_unread"): return insufficient_evidence(team, f"{what} with a foul: the spot is not in the row (INSUFFICIENT_EVIDENCE)")
         if ev.get("turn_tb"):
             sp = rb.get("scrim")
-            return series(team, 100 - sp, f"{what}, touchback: Rule 11 Section 6's spot (the season's book)") if sp else unknown(team, f"{what}, touchback: Rule 11 Section 6's spot unread (UNKNOWN)")
-        return _spot(team, ev.get("turn_end"), f"{what}: where the return ended", f"{what}: the spot is not in the row (UNKNOWN)")
+            return series(team, 100 - sp, f"{what}, touchback: Rule 11 Section 6's spot (the season's book)") if sp else insufficient_evidence(team, f"{what}, touchback: Rule 11 Section 6's spot unread (INSUFFICIENT_EVIDENCE)")
+        return _spot(team, ev.get("turn_end"), f"{what}: where the return ended", f"{what}: the spot is not in the row (INSUFFICIENT_EVIDENCE)")
     if k == "punt":
         recv = dfn
         if isinstance(ev.get("rec_by"), str) and ev["rec_by"] == off:
-            return _spot(off, ev.get("end"), "a punt recovered by the kickers: their first down (7-3-1(d))", "a punt recovered by the kickers: the spot is not in the row (UNKNOWN)")
-        if ev.get("foul_unread"): return unknown(recv, "a punt with a foul: the spot is not in the row (UNKNOWN)")
+            return _spot(off, ev.get("end"), "a punt recovered by the kickers: their first down (7-3-1(d))", "a punt recovered by the kickers: the spot is not in the row (INSUFFICIENT_EVIDENCE)")
+        if ev.get("foul_unread"): return insufficient_evidence(recv, "a punt with a foul: the spot is not in the row (INSUFFICIENT_EVIDENCE)")
         if ev.get("tb"):
             sp = rb.get("scrim")
-            return series(recv, 100 - sp, "punt, touchback: Rule 11 Section 6's spot (the season's book)") if sp else unknown(recv, "punt, touchback: Rule 11 Section 6's spot unread (UNKNOWN)")
-        return _spot(recv, ev.get("end"), "punt: where the return ended", "punt: the return's spot is not in the row (UNKNOWN)")
+            return series(recv, 100 - sp, "punt, touchback: Rule 11 Section 6's spot (the season's book)") if sp else insufficient_evidence(recv, "punt, touchback: Rule 11 Section 6's spot unread (INSUFFICIENT_EVIDENCE)")
+        return _spot(recv, ev.get("end"), "punt: where the return ended", "punt: the return's spot is not in the row (INSUFFICIENT_EVIDENCE)")
     if k == "field_goal":
-        return _spot(dfn, ev.get("end"), "missed field goal: where the defense takes the ball", "missed field goal: the spot (11-4-3) is not in its columns (UNKNOWN)")
+        return _spot(dfn, ev.get("end"), "missed field goal: where the defense takes the ball", "missed field goal: the spot (11-4-3) is not in its columns (INSUFFICIENT_EVIDENCE)")
     g = ev.get("gain")
     if not (_k(g, down, togo, yl) and isinstance(off, str)):
-        return unknown(off, "the play's own columns empty (UNKNOWN)")
+        return insufficient_evidence(off, "the play's own columns empty (INSUFFICIENT_EVIDENCE)")
     end = yl - g
     if not (0 < end < 100):
-        return unknown(off, "the play's result off the field with no score marked (UNKNOWN)")
+        return insufficient_evidence(off, "the play's result off the field with no score marked (INSUFFICIENT_EVIDENCE)")
     if end <= yl - togo:
         return series(off, end, "a first down: the line to gain reached (7-3-1(a))")
     nd = next_down(down, "next")[0]
@@ -217,7 +217,7 @@ ENF_RX = re.compile(r"enforced at (?:the )?([A-Z]{2,3}) (\d{1,2})\b|enforced at 
 
 def enforced_at(clause, holder):
     """The spot one accepted foul's clause says it was enforced at ('enforced at NYJ 35'), as the yard line of the team holding the ball (holder);
-    None when the clause names no spot (one reading, shared by the record's adapter and the engine's pool)."""
+    None when the clause names no spot (one reading, shared by the play-by-play record's adapter and the engine's pool)."""
     m = ENF_RX.search(str(clause))
     if not m or not isinstance(holder, str): return None
     if m.group(3): return 50.0
@@ -233,29 +233,29 @@ def stand(st, ev, rb):
     """The state after a scrimmage play that stands with one accepted foul on it (ev['foul_stand']: by 'offense'/'defense', yards (penalty_yards),
     name (penalty_type), award (first_down_penalty), spot (enforced_at of the foul's clause)). The play's end is the yard line less yards_gained; the foul
     is enforced from that end only where the text's own enforcement spot is that end (the two readings agree); a spot foul or a previous-spot enforcement
-    (the readings differ) is UNKNOWN. Then, by family:
+    (the readings differ) is INSUFFICIENT_EVIDENCE. Then, by family:
       the defense: a first down where first_down_penalty marks the award or the enforced spot reaches the line to gain (7-3-1(b), 14-1-2 Item 5); with
         neither, the next down where the foul is a dead ball foul by the season's book (taunting, 'a taunting foul that occurs at any time': the down
-        counts), else UNKNOWN (the row does not say whether the down counts or is replayed);
+        counts), else INSUFFICIENT_EVIDENCE (the row does not say whether the down counts or is replayed);
       the offense: rules.LOSS_OF_DOWN, the next down (14-1-2 Item 2); rules.OFF_DURING, the down replayed from the enforced spot (14-1-2 Item 1,
         3-8-4), a first down where the enforced spot still reaches the line; rules.OFF_AFTER, the down counts (the Dead Ball Foul article, read in the
-        season's book) from the succeeding spot, UNKNOWN after a down that made a first down (the article's Item 1 is not read); any other name UNKNOWN.
+        season's book) from the succeeding spot, INSUFFICIENT_EVIDENCE after a down that made a first down (the article's Item 1 is not read); any other name INSUFFICIENT_EVIDENCE.
     A loss of down past 4th down is a turnover on downs (7-3-2a). v19 r: an enforcement that would carry the ball to or past the fouling team's goal line
     is placed half the distance from the play's end to that goal (goal_half)."""
     fs = ev["foul_stand"]; off, dfn = st.get("off"), st.get("dfn"); down, togo, yl = st.get("down"), st.get("togo"), st.get("yl")
     g, yd, by, name, sp = ev.get("gain"), fs.get("yards"), fs.get("by"), fs.get("name"), fs.get("spot")
     P = STAND_PREFIX
     if not (_k(g, down, togo, yl, yd) and isinstance(off, str) and by in ("offense", "defense")):
-        return unknown(off, f"{P}: penalty_yards, penalty_team or the play's own columns empty (UNKNOWN)")
+        return insufficient_evidence(off, f"{P}: penalty_yards, penalty_team or the play's own columns empty (INSUFFICIENT_EVIDENCE)")
     end = yl - g; line = yl - togo
-    if not (0 < end < 100): return unknown(off, f"{P}: the play's end off the field (UNKNOWN)")
-    if not _k(sp): return unknown(off, f"{P}: its clause names no enforcement spot (UNKNOWN)")
+    if not (0 < end < 100): return insufficient_evidence(off, f"{P}: the play's end off the field (INSUFFICIENT_EVIDENCE)")
+    if not _k(sp): return insufficient_evidence(off, f"{P}: its clause names no enforcement spot (INSUFFICIENT_EVIDENCE)")
     if abs(sp - end) >= 0.5:
-        return unknown(off, f"{P}: the text's enforcement spot is not the play's end (a spot foul or the previous spot; UNKNOWN)")
+        return insufficient_evidence(off, f"{P}: the text's enforcement spot is not the play's end (a spot foul or the previous spot; INSUFFICIENT_EVIDENCE)")
     yl2 = end - yd if by == "defense" else end + yd
     if not (0 < yl2 < 100):   # v19 r: the book's half-the-distance article where the ball would reach or pass the fouling team's goal line
         yl2 = goal_half(end, yd, by)
-        if yl2 is None: return unknown(off, f"{P}: the enforced spot outside the field (UNKNOWN)")
+        if yl2 is None: return insufficient_evidence(off, f"{P}: the enforced spot outside the field (INSUFFICIENT_EVIDENCE)")
     if by == "defense":
         if fs.get("award") or yl2 <= line:
             return series(off, yl2, f"{P}, the defense's: a first down (7-3-1(b), 14-1-2 Item 5)")
@@ -269,7 +269,7 @@ def stand(st, ev, rb):
             return same(st, nd, yl2 - line, yl2, f"{P}, the defense's with no award (14-1-2 Item 5 Exceptions): the next down")
         if name in rules.DEF_SAME:   # 14-1-2 Item 5 Exceptions (rules.py foul families): the defense's foul with no award, the same down
             return same(st, down, yl2 - line, yl2, f"{P}, the defense's with no award (14-1-2 Item 5 Exceptions): the same down")
-        return unknown(off, f"{P}, the defense's, no award and the line not reached: whether the down counts or is replayed is not in the row (UNKNOWN)")
+        return insufficient_evidence(off, f"{P}, the defense's, no award and the line not reached: whether the down counts or is replayed is not in the row (INSUFFICIENT_EVIDENCE)")
     if name in rules.LOSS_OF_DOWN:
         nd = next_down(down, "loss_of_down")[0]
         if nd > 4: return series(dfn, 100 - yl2, f"{P}, the offense's: a loss of down on 4th down, turnover on downs (14-1-2 Item 2, 7-3-2a)")
@@ -278,19 +278,19 @@ def stand(st, ev, rb):
         if yl2 <= line: return series(off, yl2, f"{P}, the offense's during the down: the enforced spot reaches the line (7-3-1(a))")
         return same(st, next_down(down, "off_during")[0], yl2 - line, yl2, f"{P}, the offense's during the down: the down replayed from the enforced spot (14-1-2 Item 1, 3-8-4)")
     if name in rules.OFF_AFTER or name in OFF_DEAD_BOOK:   # OFF_DEAD_BOOK by the Dead Ball Foul article
-        if not rb.get("dead_counts", True): return unknown(off, f"{P}, the offense's after the down: the season's book does not state that the down counts (UNKNOWN)")
-        if end <= line: return unknown(off, f"{P}, the offense's after a down that made a first down: the Dead Ball Foul article's Item 1 not read (UNKNOWN)")
+        if not rb.get("dead_counts", True): return insufficient_evidence(off, f"{P}, the offense's after the down: the season's book does not state that the down counts (INSUFFICIENT_EVIDENCE)")
+        if end <= line: return insufficient_evidence(off, f"{P}, the offense's after a down that made a first down: the Dead Ball Foul article's Item 1 not read (INSUFFICIENT_EVIDENCE)")
         nd = next_down(down, "off_after")[0]
         if nd > 4: return series(dfn, 100 - yl2, f"{P}, the offense's after the down: the down counts, turnover on downs (7-3-2a)")
         return same(st, nd, yl2 - line, yl2, f"{P}, the offense's after the down: the down counts (the Dead Ball Foul article)")
-    return unknown(off, f"{P}, the offense's: its name is in none of rules.py's offense families (UNKNOWN)")
+    return insufficient_evidence(off, f"{P}, the offense's: its name is in none of rules.py's offense families (INSUFFICIENT_EVIDENCE)")
 
 
 # ---------------- v19 part 2: a foul's yards by its article, from the spot it is enforced at ----------------
 def foul_yards(N, side, spot, rnd):
     """The yards a foul moves the ball from its enforcement spot (the offense's yard line): N, its book's distance ('Loss of N yards'), or half the
     distance to the fouling team's goal line where N is more than half (the book's half-the-distance sentence: the offense's goal 100 - spot behind it,
-    the defense's spot ahead); rnd: how the record marks a half that is not whole ('floor', 'ceil' or 'exact', measured by the caller). None where an
+    the defense's spot ahead); rnd: how the play-by-play record marks a half that is not whole ('floor', 'ceil' or 'exact', measured by the caller). None where an
     input is unread."""
     if not (_k(N, spot) and side in ("offense", "defense") and rnd in ("floor", "ceil", "exact")): return None
     half = (100 - spot) / 2 if side == "offense" else spot / 2
@@ -300,7 +300,7 @@ def foul_yards(N, side, spot, rnd):
 
 def spot_foul_yards(depth, yl):
     """Pass interference by the defense, a spot foul ('first down for the offensive team at the spot of the foul'): the spot is the foul's depth beyond the
-    line of scrimmage (the record's penalty_yards on a wiped row where the ball did not go to the 1, its uncensored rows); a spot in the end zone puts the
+    line of scrimmage (the play-by-play record's penalty_yards on a wiped row where the ball did not go to the 1, its uncensored rows); a spot in the end zone puts the
     ball at the 1-yard line or half the distance to the goal from the previous spot, whichever is more beneficial (the season's book). None where the
     depth is unread or not beyond the line."""
     if not _k(depth, yl) or depth <= 0 or not (0 < yl < 100): return None
@@ -335,8 +335,8 @@ YARD_INJECTED_FAULTS = {"half the distance never applied": ("foul_yards", lambda
                "the half yard rounded down": ("foul_yards", lambda N, side, spot, rnd: (lambda v: None if v is None else float(math.floor(v)))(foul_yards(N, side, spot, "exact")))}
 
 
-# known-right cases, true by the rules they cite (built by hand, independent of the record and of the engine); each (case, state before, event, season's
-# spots, the state that must come back: off, down, togo, yl, kick, the UNKNOWN parts)
+# known-right cases, true by the rules they cite (built by hand, independent of the play-by-play record and of the engine); each (case, state before, event, season's
+# spots, the state that must come back: off, down, togo, yl, kick, the INSUFFICIENT_EVIDENCE parts)
 _RB = dict(kick=25, kick_lz=None, two_spots=False, scrim=20)
 _RB2 = dict(kick=30, kick_lz=20, two_spots=True, scrim=20)
 _S0 = lambda dn, tg, yl: dict(off="AAA", dfn="BBB", down=dn, togo=tg, yl=yl)
@@ -364,15 +364,15 @@ FIXTURES = [
      dict(kind="snap", gain=12, offsetting_dead=True), _RB, ("AAA", 1, 10, 32, False, ())),
     ("v16 b fouls offsetting after a punt is dead: the punt stands (a touchback, Rule 11 Section 6)", _S0(4, 3, 42), dict(kind="punt", tb=True, offsetting_dead=True), _RB,
      ("BBB", 1, 10, 80, False, ())),
-    ("v16 b the season's book not stating that the down counts: UNKNOWN", _S0(2, 6, 44), dict(kind="snap", gain=12, offsetting_dead=True), dict(_RB, dead_counts=False),
+    ("v16 b the season's book not stating that the down counts: INSUFFICIENT_EVIDENCE", _S0(2, 6, 44), dict(kind="snap", gain=12, offsetting_dead=True), dict(_RB, dead_counts=False),
      ("AAA", None, None, None, False, ("down", "distance", "yard line"))),
-    ("v16 b the season's double-foul article not read: a live-ball double foul UNKNOWN", _S0(2, 6, 44), dict(kind="foul", offsetting=True), dict(_RB, double_replay=False),
+    ("v16 b the season's double-foul article not read: a live-ball double foul INSUFFICIENT_EVIDENCE", _S0(2, 6, 44), dict(kind="foul", offsetting=True), dict(_RB, double_replay=False),
      ("AAA", None, None, None, False, ("down", "distance", "yard line"))),
     ("3-8-4 fouls offsetting on a down whose play they wiped: 3rd and 7 at the 35, replayed", _S0(3, 7, 35), dict(kind="foul", offsetting=True), _RB, ("AAA", 3, 7, 35, False, ())),
     ("14-1-2 Item 1, 3-8-4 the offense's foul during the play: 2nd and 4 at the 30, 10 yards", _S0(2, 4, 30), dict(kind="foul", by="offense", yards=10, outcome="off_during"), _RB, ("AAA", 2, 14, 40, False, ())),
     ("14-1-2 Item 5, 7-3-1(b) the defense's foul during the play with the award: 3rd and 8 at the 50, 23 yards", _S0(3, 8, 50), dict(kind="foul", by="defense", yards=23, outcome="def_award"), _RB, ("AAA", 1, 10, 27, False, ())),
     ("14-1-2 Item 5 Exceptions, short of the line: 2nd and 9 at the 40, 5 yards on the play", _S0(2, 9, 40), dict(kind="foul", by="defense", yards=5, outcome="def_exception"), _RB, ("AAA", 2, 4, 35, False, ())),
-    ("a foul during the play, the enforced spot past the offense's goal line: half the distance, 96 to 98 (v17's case read UNKNOWN)", _S0(1, 10, 96), dict(kind="foul", by="offense", yards=10, outcome="off_during"), _RB, ("AAA", 1, 12.0, 98.0, False, ())),
+    ("a foul during the play, the enforced spot past the offense's goal line: half the distance, 96 to 98 (v17's case read INSUFFICIENT_EVIDENCE)", _S0(1, 10, 96), dict(kind="foul", by="offense", yards=10, outcome="off_during"), _RB, ("AAA", 1, 12.0, 98.0, False, ())),
     ("a fumble lost, its spot not in the row", _S0(1, 10, 60), dict(kind="snap", gain=3, turnover="fumble", turn_team="BBB"), _RB, ("BBB", None, None, None, False, ("down", "distance", "yard line"))),
     ("a foul on the play, its enforcement unread", _S0(1, 10, 60), dict(kind="snap", gain=3, foul_unread=True), _RB, ("AAA", None, None, None, False, ("down", "distance", "yard line"))),
     ("11-6 a punt touchback with Rule 11-6 unread", _S0(4, 9, 45), dict(kind="punt", tb=True), dict(_RB, scrim=None), ("BBB", None, None, None, False, ("down", "distance", "yard line"))),
@@ -394,11 +394,11 @@ FIXTURES = [
      dict(kind="snap", gain=30, foul_stand=dict(by="offense", yards=10, name="Offensive Holding", award=False, spot=30.0)), _RB, ("AAA", 1, 10, 40, False, ())),
     ("14-1-2 Item 2 intentional grounding, 3rd and 7 at the 40, enforced at the previous spot: the next down", _S0(3, 7, 40),
      dict(kind="snap", gain=0, foul_stand=dict(by="offense", yards=10, name="Intentional Grounding", award=False, spot=40.0)), _RB, ("AAA", 4, 17, 50, False, ())),
-    ("a spot foul: the text's enforcement spot not the play's end, UNKNOWN", _S0(1, 10, 70),
+    ("a spot foul: the text's enforcement spot not the play's end, INSUFFICIENT_EVIDENCE", _S0(1, 10, 70),
      dict(kind="snap", gain=20, foul_stand=dict(by="offense", yards=10, name="Offensive Holding", award=False, spot=60.0)), _RB, ("AAA", None, None, None, False, ("down", "distance", "yard line"))),
-    ("the defense's foul with no award and the line not reached: UNKNOWN (counts or replayed not in the row)", _S0(3, 12, 50),
+    ("the defense's foul with no award and the line not reached: INSUFFICIENT_EVIDENCE (counts or replayed not in the row)", _S0(3, 12, 50),
      dict(kind="snap", gain=2, foul_stand=dict(by="defense", yards=5, name="Illegal Use of Hands", award=False, spot=48.0)), _RB, ("AAA", None, None, None, False, ("down", "distance", "yard line"))),
-    ("the offense's dead ball foul after a down that made a first down: Item 1 not read, UNKNOWN", _S0(3, 2, 40),
+    ("the offense's dead ball foul after a down that made a first down: Item 1 not read, INSUFFICIENT_EVIDENCE", _S0(3, 2, 40),
      dict(kind="snap", gain=5, foul_stand=dict(by="offense", yards=15, name="Unsportsmanlike Conduct", award=False, spot=35.0)), _RB, ("AAA", None, None, None, False, ("down", "distance", "yard line"))),
     # v19 part 2
     ("14-1-2 Item 5 Exceptions: the defense's delay of game on a play that stands, 1st and 10 at the 92, 2 yards: the next down", _S0(1, 10, 92),
