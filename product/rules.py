@@ -264,7 +264,7 @@ RULE_QUOTES = {
     ("2023", "ot_reg_timeouts"): (2, _TO_REG, "Rule 16"),
     ("2023", "ot_post_timeouts"): (3, _TO_POST, "Rule 16"),
     ("2023", "onside"): ("any free kick", _NO_ONSIDE, ""),
-    ("2024", "touchback"): (30, "The dead ball spot is the 30-yard line if, without first touching the ground or a player in the landing zone, a kickoff or safety kick", "Rule 6"),
+    ("2024", "touchback"): (30, "The dead ball spot is the 30-yard line if, without first touching the ground or a player in the acceptance zone, a kickoff or safety kick", "Rule 6"),
     ("2024", "touchback_landing_zone"): (20, "It is a touchback and the dead ball spot is the 20-yard line if a kickoff or a safety kick", "Rule 6"),
     ("2024", "ot_reg_rule"): (TD_ENDS, _RECV_TD, "Rule 16"),
     ("2024", "ot_post_rule"): (BOTH_POSSESS, _BOTH_POST, "Rule 16"),

@@ -1,4 +1,4 @@
-"""Gate 1 of the handoff (acceptance-criteria/engine-to-kit-handoff.md section 4; engine-legality.md section 4): the record checks' rule functions run unchanged
+"""Quality quality gate 1 of the handoff (acceptance-criteria/engine-to-kit-handoff.md section 4; engine-legality.md section 4): the record checks' rule functions run unchanged
 on one generated draw. python3 checks/check_generated.py SEASON WEEK DRAW. Stages out/handoff/stage/: the 44 untouched raw files linked from data/raw and
 pbp_{season}.csv.gz replaced by the draw's rows, pinned by sha in its own pins file with its own data version; policy pointed at it for this process only.
 Record-only sections (pinned record cases, run-log line 322, EXPECTED_FASTER, FROZEN_2023) do not run here: NOT APPLICABLE on generated input, printed, never a pass."""
@@ -65,5 +65,5 @@ from collections import Counter as _C; print(f"  kickoff touchbacks {len(spots)}
 verdict["season rule: kickoff touchback spot == quoted (30)"] = len(spots) > 0 and set(spots) == {30}
 print("\n=== verdict (engine-legality.md section 4; coverage above) ===")
 for k, v in verdict.items(): print(f"  {k}: {'PASS' if v else 'FAIL'}")
-print("GATE 1 ALL LINES PASS:", "PASS" if all(verdict.values()) else "FAIL")
+print("QUALITY GATE 1 ALL LINES PASS:", "PASS" if all(verdict.values()) else "FAIL")
 sys.exit(0 if all(verdict.values()) else 1)

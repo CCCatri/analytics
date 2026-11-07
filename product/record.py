@@ -64,7 +64,7 @@ def deficiencies(pins=None, shas=None):
 
 def identity(pins=None, shas=None):
     """R1 DATA IDENTITY. Prints PASS or raises DataGap. FAILS WHEN any deficiency exists or the derived
-    data_version != policy.DATA_VERSION. REPLAY is declared UNBUILT until the credits chain lands."""
+    data_version != policy.DATA_VERSION. REPLAY is declared UNBUILT until the credits run is accepted."""
     pins = raw_pins() if pins is None else pins
     defs, shas = deficiencies(pins, shas)
     dv = data_version(pins)
@@ -75,7 +75,7 @@ def identity(pins=None, shas=None):
         print(line + " FAIL")
         raise DataGap("R1 FAIL: " + "; ".join(defs or [f"data_version {dv} pinned {pins['data_version']} contract {policy.DATA_VERSION}"]))
     print(line + " PASS")
-    print("R1 REPLAY per stat: UNBUILT (credits chain not accepted); no read runs before it prints")
+    print("R1 REPLAY per stat: UNBUILT (credits run not accepted); no read runs before it prints")
     return {"data_version": dv, "shas": shas}
 
 
@@ -366,7 +366,7 @@ def events(season):
                 print(f"  {r['game_id']} play {r['play_id']} kind {r['kind']} play_type {r['play_type']} yards {r['yards_gained']} down {r['down']} penalty {r['penalty']}")
             raise DataGap(f"events {season}: {col} missing on {n} rows (section 9 KIND_NEEDS)")
     print(f"events {season} rows {len(df)} kinds {df['kind'].value_counts().to_dict()} scrimmage {int(sc.sum())} "
-          f"null flags on non-scrimmage rows (read as not set) {null_flags} wall {time.time() - t0:.1f}s")
+          f"null flags on non-scrimmage rows (read as not set) {null_flags} elapsed {time.time() - t0:.1f}s")
     df = df.drop(columns=["desc"])   # read only for the snap test; events returns EVENT_COLUMNS + kind
     return df
 
@@ -463,8 +463,8 @@ def credits(ev):
 def replay_vs_official(season, ev, built):
     """R7 AGREE. Every (player, game, stat) where events and the official file differ is listed with its rule (section 9):
     lateral_penalty - named on a lateral play carrying a flag (official yards are not the pbp's yards_gained);
-    lateral_chain   - a yards stat in a game with a lateral play, where the game's yard disagreements conserve
-                      (receivers' sum == passer's sum, rushing sum == 0; the pbp names one lateral receiver, the official file a chain);
+    lateral_sequence   - a yards stat in a game with a lateral play, where the game's yard disagreements conserve
+                      (receivers' sum == passer's sum, rushing sum == 0; the pbp names one lateral receiver, the official file a lateral sequence);
     penalty         - named on a no_play row (a foul after the ball is dead does not nullify the play; the official file counts it).
     FAILS WHEN any disagreement has no rule."""
     off = official(season)
@@ -497,17 +497,17 @@ def replay_vs_official(season, ev, built):
         sub = D.loc[pairs]
         nonyard = bool(diff.loc[pairs, [s for s in policy.STATS if s not in yards]].any().any())
         conserved = (not nonyard) and sub["rec_yards"].sum() == sub["pass_yards"].sum() and sub["rush_yards"].sum() == 0
-        print(f"  lateral game {g}: disagreeing pairs {len(pairs)} rec sum {int(sub['rec_yards'].sum())} pass sum {int(sub['pass_yards'].sum())} rush sum {int(sub['rush_yards'].sum())} non-yard stat differs {nonyard} -> {'lateral_chain' if conserved else 'NOT CONSERVED'}")
+        print(f"  lateral game {g}: disagreeing pairs {len(pairs)} rec sum {int(sub['rec_yards'].sum())} pass sum {int(sub['pass_yards'].sum())} rush sum {int(sub['rush_yards'].sum())} non-yard stat differs {nonyard} -> {'lateral_sequence' if conserved else 'NOT CONSERVED'}")
         if conserved:
             chain_games.add(g)
     per_stat = {s: int(diff[s].sum()) for s in policy.STATS}
     print(f"AGREE {season} pairs compared {len(idx)} (events only {int((in_b & ~in_o).sum())}, official only {int((~in_b & in_o).sum())}) disagreeing pairs {int(rows.sum())} per stat {per_stat}")
-    rules = ("lateral_penalty", "lateral_chain", "penalty")
-    counts = {"lateral_penalty": 0, "lateral_chain": 0, "penalty": 0, "UNEXPLAINED": 0}
+    rules = ("lateral_penalty", "lateral_sequence", "penalty")
+    counts = {"lateral_penalty": 0, "lateral_sequence": 0, "penalty": 0, "UNEXPLAINED": 0}
     for (p, g), r in zip(idx[rows.to_numpy()], diff[rows].itertuples(index=False)):
         t = set(tags.get((p, g), set()))
         if g in chain_games and "lateral_penalty" not in t:
-            t.add("lateral_chain")
+            t.add("lateral_sequence")
         pos = idx.get_loc((p, g))
         if not in_o[pos]: t.add("official_absent")
         if not in_b[pos]: t.add("events_absent")

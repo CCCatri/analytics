@@ -12,8 +12,8 @@ Not a check: summing game-clock changes into parts equals the total by construct
 ## Instruments (names read from the header before use)
 G = game clock at each snap (game_seconds_remaining), recorded in whole seconds (measured, every value, six seasons): each dG carries 1 s of resolution.
 Scrimmage snap = every down that starts with a snap (3-8-1a, 3-29): pass, run, kneel, spike, punt, field goal attempt. Tries are excluded (untimed, 11-3-1).
-W = revision-clock time at the start of each play (time_of_day). Both recorded formats parsed; an interval's resolution is the coarser of its two W stamps plus G's 1 s.
-E = revision-clock time the play ended (end_clock_time).
+W = real-time clock time at the start of each play (time_of_day). Both recorded formats parsed; an interval's resolution is the coarser of its two W stamps plus G's 1 s.
+E = real-time clock time the play ended (end_clock_time).
 
 ## Counting: three counts, never merged, never a range
 Every check runs on every season where its check is present at all, and reports per season its counts under the names its own line gives (the game level: WITHIN REAL TIME / WITHIN RESOLUTION / FASTER / UNCHECKED; D3: WITHIN 40 / OVER 40 / UNCHECKED):
@@ -39,7 +39,7 @@ Every interval gets exactly one class; none matching prints UNKNOWN.
 
 ## Laws: none the play-by-play record can grade exactly. Both clock relations carry rule-licensed exceptions the play-by-play record does not always log.
 the game level read, not a law: the game clock can fall faster than real time by rule: a 10-second runoff takes 10 s off with no play (4-7-1 Item 1, 4-5-1 penalty, 4-5-4 Note 3, 4-7-2, 4-7-4, 15-5-2), and the officials may correct the game clock before the next snap (4-1-4), which the play-by-play record does not log. Four counts, never merged: WITHIN REAL TIME (dG <= dW); WITHIN RESOLUTION (0 < dG - dW <= resolution: the two clocks cannot tell these apart); FASTER (dG - dW > resolution), each listed with dG - dW and whether play text between the snaps names a runoff (licensed) or not (a correction by the officials or a record error, not told apart; none is called a violation); UNCHECKED.
-the team level withdrawn as a law: 4-6-1 limits the play clock, not the revision clock, and the play clock stops and keeps its time for any interruption before the snap, including Referee's timeouts for a measurement, a pileup, spotting the ball, a conference or equipment (4-6-3, 4-5-5), which the play-by-play record does not log. A revision-clock gap over 40 s after the play ends keeps the rules whenever such an interruption occurred. Corrected after the frozen 2023 counts were seen; grounded only in 4-6-3 and 4-5-5; the counts stay frozen.
+the team level withdrawn as a law: 4-6-1 limits the play clock, not the revision clock, and the play clock stops and keeps its time for any interruption before the snap, including Referee's timeouts for a measurement, a pileup, spotting the ball, a conference or equipment (4-6-3, 4-5-5), which the play-by-play record does not log. A real-time clock gap over 40 s after the play ends keeps the rules whenever such an interruption occurred. Corrected after the frozen 2023 counts were seen; grounded only in 4-6-3 and 4-5-5; the counts stay frozen.
 
 ## Reads (distributions printed, not graded)
 D1 (4-3-2, 4-4) dW - dG for RUN, PARTIAL and STOP intervals, per season: count, median, 90th and 99th percentile. The rules say RUN sits at the clock operator's lag (4-1-4) and STOP above it; the read is how far the classes separate (share of RUN intervals above the STOP median, share of STOP intervals below the RUN 90th percentile). The RUN distribution is the measured operator lag; nothing is assumed for it.

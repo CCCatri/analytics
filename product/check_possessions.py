@@ -6,7 +6,7 @@ Back-to-back possessions (one team twice in a row) are classed by the rule that 
   A9 the kicking team recovered; A7 a safety before the receiving side's own snap, the scored-on side read from the score change (11-5-1(b), 11-5-2).
 Reads record.events (the columns it carries) joined one-to-one on (game_id, play_id) to record.raw_frame + record.typed for the rest:
 order_sequence, season_type, return_touchdown, touchback, own_kickoff_recovery, fumble_recovery_1_team, fumble_recovery_2_team.
-Plants run first, row by row; any FAIL, or any count off run_log line 322, stops the run before the file is written.
+Injected faults run first, row by row; any FAIL, or any count off run_log line 322, stops the run before the file is written.
 Writes out/possessions_possessions.csv and out/possessions_classes.csv, stamped on line 1 with this file's sha and rules-level.md's sha.
 out/possessions_classes.csv (N7): possessions and back-to-back possessions per season and class, each class with the articles rules-level.md cites on its line
 (A7-A11; halftime and overtime start are A11), read verbatim, and in a book column rules-level.md's Book line, read verbatim, on every row that carries articles;

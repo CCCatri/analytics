@@ -2,7 +2,7 @@
 Reads record.events (down, ydstogo, yardline_100, yards_gained, posteam, penalty, kind, two_point_attempt, qtr, game clock, scores and turnovers) joined one-to-one
 on (game_id, play_id) to record.raw_frame + record.typed for: order_sequence, season_type, first_down, first_down_penalty, penalty_team, penalty_type,
 desc, own_kickoff_recovery, fumble_recovery_1_team.
-Plants run first, row by row; any FAIL stops the run before a count is read or a file is written.
+Injected faults run first, row by row; any FAIL stops the run before a count is read or a file is written.
 Writes out/downs_counts.csv, out/downs_other.csv and out/downs_reasons.csv, stamped on line 1 with this file's sha and the targets sha.
 out/downs_reasons.csv (N7): every count of out/downs_counts.csv split by its reason, plus C1's pairs not judged per season; the run stops if the split does not sum back.
 Choices the targets do not fix, declared and printed:

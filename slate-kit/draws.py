@@ -1,15 +1,15 @@
 """draws.py - THE PRODUCT (Slate Kit module map: draws; the ground-up rewrite of Oct 7 2026, rules R1-R5).  One sampler for history and issue: every link of
-THE ONE CHAIN (chain.py) draws DRAW_COUNT values for each member of a slate from its own keyed substream (term|position|season|week|key|chain), its parent's draw
+THE ONE LINK CHAIN (link_chain.py) draws DRAW_COUNT values for each member of a slate from its own keyed substream (term|position|season|week|key|link chain), its parent's draw
 in hand - a team's volume, each player's share of it, his conversions and yards of his own draws - so draw j of every row is one world: the identities of the
 box score hold by construction (a catch needs a target, yards need a touch) and teammates share their team's volume.  F5 TDs is the sum of its two parts; F8
 is dk's transform of the player's own draws.  DST: OLS on state's pregame DST inputs fit on seasons < s, measured residuals.
-Batch 63: a count beside a yards link under the same parent draws given that yards draw (THE SIBLING LAW, chain.fit_sibling).
-Batch 61: a player's share of his team's count draws by THE ROLE LAW (chain.fit_share); the share link's pooled overdispersion is deleted.
+Batch 63: a count beside a yards link under the same parent draws given that yards draw (THE SIBLING LAW, link_chain.fit_sibling).
+Batch 61: a player's share of his team's count draws by THE ROLE LAW (link_chain.fit_share); the share link's pooled overdispersion is deleted.
 R3 ONE PRODUCT, ONE JUDGMENT (replay): the product is replayed whole at every cutoff and judged once, against the previous product's graded rows named by the
 caller, on F8 at every position - a rise beyond chance refuses the product.  No law here reads a verdict, a judgment, a recorded forecast or a parameter file.
 R4: the judgment is trinary against the season chance test, plus UNCHANGED, and is written before any reading is printed.
 Engine root (2026-11-05, acceptance-criteria/engine-to-kit-handoff.md section 6): with SLATE_ROOT_SOURCE=engine the two root cells (F2 team attempts, F2 team
-carries) are taken from an engine draw file (SLATE_ROOT_FILE, a .npz with its manifest beside it) instead of the chain's own level draw: kit column j takes
+carries) are taken from an engine draw file (SLATE_ROOT_FILE, a .npz with its manifest beside it) instead of the link chain's own level draw: kit column j takes
 engine source draw j mod K, both teams of a game from the same engine draw; the root center is the engine draws' mean; a missing file, a manifest hash that
 differs from the file, a team with a game but no draws, or a declared draw count that differs from the arrays refuse the issue by name - never a fallback to the
 kit's own root draw.  With SLATE_ROOT_SOURCE unset or 'kit' nothing here differs from before."""
@@ -21,15 +21,15 @@ from evaluate import crps, rank, atlas_cells, share_band, ALPHA_FAMILY
 from state import issue_frames, dst_frame, DST_INPUTS, ISSUE_WEEKS, HISTORY_MINIMUM, RECEIVER_POSITIONS
 from participation import week_participation, who_plays_inputs, who_plays_fit, who_plays_probability, model_rows_of
 from dk import skill_dk, qb_dk, dnp_zero, F8_TERM, DK_TERM, DST_TERM, BONUS_YARDS
-from chain import chain_history, fit_chain, link_rates, sibling_law, sibling_luck_of, LINKS, LINK_ORDER, SIBLINGS, TEAM_KEY
+from link_chain import link_chain_history, fit_link_chain, link_rates, sibling_law, sibling_luck_of, LINKS, LINK_ORDER, SIBLINGS, TEAM_KEY
 DRAW_COUNT = 2000
-ROOT_SOURCE = os.environ.get("SLATE_ROOT_SOURCE", "kit")   # 'kit': the chain's own root draw; 'engine': the root cells from an engine draw file (handoff section 6)
+ROOT_SOURCE = os.environ.get("SLATE_ROOT_SOURCE", "kit")   # 'kit': the link chain's own root draw; 'engine': the root cells from an engine draw file (handoff section 6)
 ROOT_FILE = os.environ.get("SLATE_ROOT_FILE")              # engine mode: the .npz; its manifest is <path without .npz>.manifest.json
 if ROOT_SOURCE not in ("kit", "engine"): raise SystemExit(f"SLATE_ROOT_SOURCE={ROOT_SOURCE!r} is not a root source: unset, kit or engine - refused; nothing issued")
 ROOT_TERMS = {"F2 team attempts": "attempts", "F2 team carries": "carries"}
 ENGINE_ROOT = None
 QUANTILE_LEVELS = [0.10, 0.25, 0.50, 0.75, 0.90]; QUANTILE_NAMES = ["quantile_10", "quantile_25", "quantile_50", "quantile_75", "quantile_90"]
-CHAIN_STATE = "chain"
+LINK_CHAIN_STATE = "chain"
 FAMILIES = {"level": "team volume: the league level shrunk by reliability x a measured ratio", "share": "beta-binomial on the team draw by the role law (mean and concentration by maximum likelihood)",
             "proportion": "beta-binomial on the parent draw, overdispersion measured around its center", "sibling": "beta-binomial on the parent draw given the sibling's yards luck (the sibling law)",
             "per unit": "the parent draw x the shrunk rate + sqrt(draw) x measured per-unit residuals"}
@@ -111,30 +111,30 @@ def draw_slate(history, fits, season, week, teams, players, active):
             if engine is not None and parent is None and term in ROOT_TERMS:
                 if (key, term) not in engine["draws"]: raise SystemExit(f"engine root: team {key} has a game in {season} w{week} but no draws in {engine['file']} - refused; nothing issued (no fallback to the kit's root draw)")
                 draws[(key, term)] = engine["draws"][(key, term)]; rates_of[(key, term)] = rate; centers[(key, term)] = engine["center"][(key, term)]
-                law_rows.append(dict(season=season, week=week, key=key, team=key, term=term, position=position, family=ENGINE_FAMILY, state=CHAIN_STATE, layer=depth(cell),
+                law_rows.append(dict(season=season, week=week, key=key, team=key, term=term, position=position, family=ENGINE_FAMILY, state=LINK_CHAIN_STATE, layer=depth(cell),
                                      provenance=f"engine root: {engine['file']} sha {engine['sha'][:12]}, source draws {engine['source_draws']} -> {engine['columns']} columns (column j = source j mod {engine['source_draws']}); center = the engine draws' mean",
                                      conditioned_on_draw=np.nan, rate=float(rate), earlier_units=float(earlier_units)))
                 continue
             if not np.isfinite(rate): undrawn.append((season, week, key, term, position, "pregame state undefined (his team has no earlier game this season)")); continue
             sibling = (draws[(key, SIBLINGS[cell][0])], rates_of[(key, SIBLINGS[cell][0])], fits[SIBLINGS[cell]]) if cell in SIBLINGS else None
-            draws[(key, term)] = draw_link(cell, fits[cell], rate, other, concentration, None if parent is None else draws[(parent_key, parent[0])], substream(term, position, season, week, key, CHAIN_STATE), sibling)
+            draws[(key, term)] = draw_link(cell, fits[cell], rate, other, concentration, None if parent is None else draws[(parent_key, parent[0])], substream(term, position, season, week, key, LINK_CHAIN_STATE), sibling)
             rates_of[(key, term)] = rate
             expected = float(sibling_law(fits[cell]["theta"], rate, 0.0)) if cell in SIBLINGS else rate
             centers[(key, term)] = expected if parent is None else centers[(parent_key, parent[0])] * expected
-            law_rows.append(dict(season=season, week=week, key=key, team=key if position == TEAM_KEY else team_of[key], term=term, position=position, family=FAMILIES["sibling" if cell in SIBLINGS else LINKS[cell][3]], state=CHAIN_STATE,
-                                 layer=depth(cell), provenance=f"the one chain: {LINKS[cell][1]} per {LINKS[cell][2] or 'team-game'}, fit on seasons < {season}", conditioned_on_draw=f"{parent[0]} draw" if parent else np.nan,
+            law_rows.append(dict(season=season, week=week, key=key, team=key if position == TEAM_KEY else team_of[key], term=term, position=position, family=FAMILIES["sibling" if cell in SIBLINGS else LINKS[cell][3]], state=LINK_CHAIN_STATE,
+                                 layer=depth(cell), provenance=f"the one link chain: {LINKS[cell][1]} per {LINKS[cell][2] or 'team-game'}, fit on seasons < {season}", conditioned_on_draw=f"{parent[0]} draw" if parent else np.nan,
                                  rate=float(rate), earlier_units=float(earlier_units)))
     for (term, position), parts in TD_PARTS.items():
         for key in players[players.position == position].key:
             if all((key, part[0]) in draws for part in parts):
                 draws[(key, term)] = sum(draws[(key, part[0])] for part in parts); centers[(key, term)] = sum(centers[(key, part[0])] for part in parts)
-                law_rows.append(dict(season=season, week=week, key=key, team=team_of[key], term=term, position=position, family="the sum of its parts' draws", state=CHAIN_STATE, layer=1 + max(depth(part) for part in parts),
+                law_rows.append(dict(season=season, week=week, key=key, team=team_of[key], term=term, position=position, family="the sum of its parts' draws", state=LINK_CHAIN_STATE, layer=1 + max(depth(part) for part in parts),
                                      provenance="F5 receiving TDs + F5 rushing TDs, draw by draw", conditioned_on_draw=np.nan, rate=np.nan, earlier_units=np.nan))
-    composed = [(key, position, CHAIN_STATE, F8_TRANSFORM[position](*[draws[(key, term)] for term in F8_PARTS[position]])) for key, position in zip(players.key, players.position) if all((key, term) in draws for term in F8_PARTS[position])]
+    composed = [(key, position, LINK_CHAIN_STATE, F8_TRANSFORM[position](*[draws[(key, term)] for term in F8_PARTS[position]])) for key, position in zip(players.key, players.position) if all((key, term) in draws for term in F8_PARTS[position])]
     return dict(draws={**draws, **{(key, F8_TERM): f8_draws for key, position, form, f8_draws in composed}}, centers={**centers, **{(key, F8_TERM): float(f8_draws.mean()) for key, position, form, f8_draws in composed}},
                 laws=pd.DataFrame(law_rows), undrawn=undrawn, composed=composed)
 def outcome_frame(history, player_rows):
-    """Every played game's outcome per (key, season, week): the box score of chain_history (whole, by state.box_zero), F5 TDs, and dk_points - the team-games' counts on the team rows."""
+    """Every played game's outcome per (key, season, week): the box score of link_chain_history (whole, by state.box_zero), F5 TDs, and dk_points - the team-games' counts on the team rows."""
     outcomes = history.assign(**{"F5 TDs": history.receiving_tds + history.rushing_tds}).merge(player_rows[player_rows.played == 1].drop_duplicates(["player_id", "season", "week"])[["player_id", "season", "week", "dk_points"]].rename(columns={"player_id": "key"}), on=["key", "season", "week"], how="left")
     return outcomes.drop_duplicates(["key", "season", "week", "position"]).set_index(["key", "season", "week"])
 DK_TEAM_TERM = "DK team total"
@@ -154,7 +154,7 @@ def grade_dk(dk_draws, players, outcomes, season, week):
     rows = pd.DataFrame(dict(key=keys + teams, term=[DK_TERM] * len(keys) + [DK_TEAM_TERM] * len(teams), position=[position_of[key] for key in keys] + [TEAM_KEY] * len(teams)))
     matrix, outcome = np.vstack([matrix, team_matrix]), np.concatenate([points, team_points]); finite = np.isfinite(outcome); rows, matrix, outcome = rows[finite].reset_index(drop=True), matrix[finite], outcome[finite]
     quantiles = np.quantile(matrix, [0.10, 0.50, 0.90], axis=1)
-    return rows.assign(season=season, week=week, state=CHAIN_STATE, outcome=outcome, draw_mean=matrix.mean(1), outcome_rank=rank(matrix, outcome, substream("dk rank", "slate", season, week, "", CHAIN_STATE)),
+    return rows.assign(season=season, week=week, state=LINK_CHAIN_STATE, outcome=outcome, draw_mean=matrix.mean(1), outcome_rank=rank(matrix, outcome, substream("dk rank", "slate", season, week, "", LINK_CHAIN_STATE)),
                        crps=crps(matrix, outcome), bias=matrix.mean(1) - outcome, quantile_10=quantiles[0], quantile_50=quantiles[1], quantile_90=quantiles[2], p_bonus=np.nan)[GRADED_COLUMNS]
 def outcome_column(term, position):
     """The facts column a term is graded against: a link its numerator, F5 TDs its sum, F8 dk_points (DraftKings' recorded points)."""
@@ -168,11 +168,11 @@ def grade_slate(slate, outcomes, season, week):
     matrix = np.vstack([slate["draws"][(key, term)] for key, term, position, outcome in graded]); outcome = np.array([row[3] for row in graded]); quantiles = np.quantile(matrix, [0.10, 0.50, 0.90], axis=1)
     threshold = np.array([float(BONUS_YARDS.get(outcome_column(term, position), np.nan)) for key, term, position, unused in graded])   # batch 69: the tail a yardage bonus is paid on (dk.BONUS_YARDS)
     p_bonus = np.where(np.isfinite(threshold), (matrix >= np.nan_to_num(threshold)[:, None]).mean(1), np.nan)
-    return pd.DataFrame(dict(season=season, week=week, key=[row[0] for row in graded], term=[row[1] for row in graded], position=[row[2] for row in graded], state=CHAIN_STATE, outcome=outcome,
-                             draw_mean=matrix.mean(1), outcome_rank=rank(matrix, outcome, substream("atlas rank", "slate", season, week, "", CHAIN_STATE)), crps=crps(matrix, outcome),
+    return pd.DataFrame(dict(season=season, week=week, key=[row[0] for row in graded], term=[row[1] for row in graded], position=[row[2] for row in graded], state=LINK_CHAIN_STATE, outcome=outcome,
+                             draw_mean=matrix.mean(1), outcome_rank=rank(matrix, outcome, substream("atlas rank", "slate", season, week, "", LINK_CHAIN_STATE)), crps=crps(matrix, outcome),
                              bias=matrix.mean(1) - outcome, quantile_10=quantiles[0], quantile_50=quantiles[1], quantile_90=quantiles[2], p_bonus=p_bonus))[GRADED_COLUMNS]
 def season_chance(season_gains):
-    """THE SEASON GATE's chance test (owner ruling Oct 7 2026; gate_proof_read: false pass .037-.051): one-sided t on the season mean gains, df = seasons - 1.
+    """THE SEASON QUALITY GATE's chance test (project owner ruling Oct 7 2026; quality_gate_proof_read: false pass .037-.051): one-sided t on the season mean gains, df = seasons - 1.
     Returns p = P(T >= t) under a zero mean gain (NaN with fewer than two seasons)."""
     gains = np.asarray(season_gains, float)
     if len(gains) < 2: return np.nan
@@ -184,7 +184,7 @@ def chance_label(differences, season_gains):
     if len(differences) and not np.any(differences): return "UNCHANGED", better, worse
     return ("BETTER" if better <= ALPHA_FAMILY else "WORSE" if worse <= ALPHA_FAMILY else "UNKNOWN"), better, worse
 def season_gains_of(paired, before, after):
-    """Per season the mean over slates of before - after (the season gate's gains), seasons in order."""
+    """Per season the mean over slates of before - after (the season quality gate's gains), seasons in order."""
     slates = (paired[before] - paired[after]).groupby([paired.season, paired.week]).mean()
     return slates.groupby(level=0).mean().sort_index()
 def product_judgment(graded_rows, previous_rows, terms=(F8_TERM,)):
@@ -228,14 +228,14 @@ def ladder_cells(graded_rows, atlas):
     return pd.DataFrame(cells).merge(atlas[["term", "position", "state", "qualification"]], on=["term", "position", "state"], how="left")
 def replay(previous_path, previous_dk_path=None):
     """python3 kit.py replay PREVIOUS_ATLAS_ROWS: THE ONE REPLAY and THE ONE JUDGMENT (R3, R4).  The product at every cutoff - each season s <= FROZEN_THRU with an
-    earlier season, fit once on seasons < s (fit_chain), every issue week drawn from its own information set - graded on played rows; judged against the previous
+    earlier season, fit once on seasons < s (fit_link_chain), every issue week drawn from its own information set - graded on played rows; judged against the previous
     product's graded rows at PREVIOUS_ATLAS_ROWS (product_judgment), the judgment written (proj/product_judgment.csv) before any reading; then the readings:
     proj/atlas_rows.csv.gz, atlas.csv, ladder.csv and replay_report.txt.  Exit 0 iff the product is ISSUED."""
-    report = Report(); player_rows, team_games = load(), team_game(); history = chain_history(player_rows); outcomes = outcome_frame(history, player_rows); previous_rows = read_table(previous_path); active = active_keys()
+    report = Report(); player_rows, team_games = load(), team_game(); history = link_chain_history(player_rows); outcomes = outcome_frame(history, player_rows); previous_rows = read_table(previous_path); active = active_keys()
     seasons = sorted(int(season) for season in history.season.unique() if season <= FROZEN_THRU and (history.season < season).any()); graded, fit_lines, coverage = [], [], []
     who_rows = model_rows_of(who_plays_inputs(player_rows, team_games, sorted(int(season) for season in history.season.unique() if season <= FROZEN_THRU))); dk_graded = []   # batch 73: who plays, fit once per season
     for season in seasons:
-        fits = fit_chain(history, season, active); who_laws, unused = who_plays_fit(who_rows[who_rows.season < season]); season_rows = who_rows[who_rows.season == season]
+        fits = fit_link_chain(history, season, active); who_laws, unused = who_plays_fit(who_rows[who_rows.season < season]); season_rows = who_rows[who_rows.season == season]
         season_rows = season_rows.assign(probability_plays=who_plays_probability(who_laws, season_rows))
         fit_lines.append(f"   s {season}: " + "; ".join(f"{term} {position} " + (f"delta {fit['delta']:.3f} w-ratio sd {np.std(fit['ratio']):.3f}" if "delta" in fit else (f"sibling law t {np.round(fit['theta'], 3).tolist()} rho {fit['rho']:.4f}" if "sibling" in fit else f"role law t {np.round(fit['theta'], 3).tolist()}") if "theta" in fit else f"rho {fit['rho']:.4f}" if "rho" in fit else f"residual sd {np.std(fit['residuals']):.3f}") + f" mu {fit.get('mu', np.nan):.4f}"
                                              for (term, position), fit in fits.items()))
@@ -291,20 +291,20 @@ def summary_frame(rows):
                         columns=["season", "week", "key", "term", "position", "family", "state", "center", "center_source", "draw_mean"] + QUANTILE_NAMES)
 def week_draws(issue_season, issue_week):
     """Week N issued (one producer for kit.py draws, the card and the market): the information set through week N-1 (refused while a scheduled team-game before
-    week N has no plays on disk), the chain fit on seasons < N's season, the slate drawn, F8, P(plays) and DK draws with DNP = 0, DST laws, and per-row summaries.
+    week N has no plays on disk), the link chain fit on seasons < N's season, the slate drawn, F8, P(plays) and DK draws with DNP = 0, DST laws, and per-row summaries.
     In engine mode the root cells come from the engine draw file (engine_root) and the issue carries root_record()."""
     player_rows, team_games = load(), team_game(); unplayed = team_games[(team_games.season == issue_season) & (team_games.week < issue_week) & team_games.plays.isna()]
     if len(unplayed): raise SystemExit(f"week_draws {issue_season} w{issue_week}: {len(unplayed)} scheduled team-games before week {issue_week} have no plays on disk - fetch them first; nothing issued")
     if ROOT_SOURCE == "engine": engine_root(issue_season, issue_week)   # the engine file is checked before any fit: a broken input refuses here, nothing issued
-    known = player_rows[(player_rows.season < issue_season) | ((player_rows.season == issue_season) & (player_rows.week < issue_week))]; history = chain_history(known)
-    teams, players, candidate_rows = slate_members(player_rows, team_games, issue_season, issue_week); active = active_keys(); slate = draw_slate(history, fit_chain(history, issue_season, active), issue_season, issue_week, teams, players, active)
+    known = player_rows[(player_rows.season < issue_season) | ((player_rows.season == issue_season) & (player_rows.week < issue_week))]; history = link_chain_history(known)
+    teams, players, candidate_rows = slate_members(player_rows, team_games, issue_season, issue_week); active = active_keys(); slate = draw_slate(history, fit_link_chain(history, issue_season, active), issue_season, issue_week, teams, players, active)
     participation_rows, participation_cells = week_participation(issue_season, issue_week); probability_of = participation_rows.dropna(subset=["probability_plays"]).set_index("player_id").probability_plays.to_dict()
     dk_draws = dk_draws_of(slate["composed"], probability_of, issue_season, issue_week)
     dst_rows, dst_draws, dst_without = dst_week(issue_season, issue_week); laws = slate["laws"]
-    root_center_source = {law.key + "|" + law.term: ("the engine draws' mean" if str(law.family) == ENGINE_FAMILY else "the one chain: the parent's center x the pregame rate") for law in laws.itertuples(index=False)}
+    root_center_source = {law.key + "|" + law.term: ("the engine draws' mean" if str(law.family) == ENGINE_FAMILY else "the one link chain: the parent's center x the pregame rate") for law in laws.itertuples(index=False)}
     summaries = summary_frame([(issue_season, issue_week, law.key, law.term, law.position, law.family, law.state, slate["centers"][(law.key, law.term)], root_center_source[law.key + "|" + law.term], slate["draws"][(law.key, law.term)]) for law in laws.itertuples(index=False)]
                               + [(issue_season, issue_week, key, F8_TERM, position, "dk transform of the player's own draws", form, f8_draws.mean(), "mean of the F8 transform's draws", f8_draws) for key, position, form, f8_draws in slate["composed"]]
-                              + [(issue_season, issue_week, row.team, DST_TERM, "DST", "DST: OLS center + measured residuals (whole points)", CHAIN_STATE, row.center, "law center", dst_draws[(row.team, DST_TERM)]) for row in dst_rows.itertuples(index=False)]
+                              + [(issue_season, issue_week, row.team, DST_TERM, "DST", "DST: OLS center + measured residuals (whole points)", LINK_CHAIN_STATE, row.center, "law center", dst_draws[(row.team, DST_TERM)]) for row in dst_rows.itertuples(index=False)]
                               + [(issue_season, issue_week, key, DK_TERM, position, "F8 x Bernoulli(P(plays)), DNP = 0", form, dk_draws[(key, DK_TERM)].mean(), "mean of the DK draws", dk_draws[(key, DK_TERM)]) for key, position, form, f8_draws in slate["composed"] if (key, DK_TERM) in dk_draws])
     return dict(issued=dict(candidates=candidate_rows, teams=teams, players=players), laws=laws, draws={**slate["draws"], **dk_draws, **dst_draws}, undrawn=slate["undrawn"], composed=slate["composed"],
                 participation=(participation_rows, participation_cells), dst=dict(rows=dst_rows, without=dst_without, draws=dst_draws), dk=dict(draws=dk_draws, without=[key for key, position, form, f8_draws in slate["composed"] if key not in probability_of]), summaries=summaries,

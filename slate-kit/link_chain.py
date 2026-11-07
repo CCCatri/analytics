@@ -1,8 +1,8 @@
-"""chain.py - THE ONE CHAIN (Slate Kit module map: chain; the ground-up rewrite of Oct 7 2026, rules R1 and R2).  The one producer of every center, rate and spread.
-R1 ONE PRODUCER PER CENTER: every center is made by one chain from facts at the cutoff - the team's volume at the league's drifting level, each player's share of
+"""link_chain.py - THE ONE LINK CHAIN (Slate Kit module map: link chain; the ground-up rewrite of Oct 7 2026, rules R1 and R2).  The one producer of every center, rate and spread.
+R1 ONE PRODUCER PER CENTER: every center is made by one link chain from facts at the cutoff - the team's volume at the league's drifting level, each player's share of
 his team's draw, his rate per unit of his parent's draw.  No recorded forecast, frozen atlas, recorded rank, verdict or parameter file is an input: this module
 reads facts' played rows through state.team_volume and nothing else.
-R2 ONE FIT, REFIT WHOLE: every parameter is fit at the cutoff season s on seasons < s (fit_chain), each link's spread around the very center it is fit with.
+R2 ONE FIT, REFIT WHOLE: every parameter is fit at the cutoff season s on seasons < s (fit_link_chain), each link's spread around the very center it is fit with.
 Batch 62: the luck map's moments of every player link and the role law are measured on the issue domain - the rows the product applies them to (R5).
 The shrink of a pregame rate is THE LUCK MAP's (empirical Bayes, method of moments, nothing chosen): mu the population rate, s2 the per-unit sampling variance,
 tau2 the between-key variance of the true rate; w = tau2 / (tau2 + s2 / units).  Moments read every training game with earlier units; a spread is measured on
@@ -55,11 +55,11 @@ def link_order(links):
     return tuple(ordered)
 LINK_ORDER = link_order(LINKS)
 PLAYER_COUNTS = sorted(set(skill_columns + qb_columns) - {"redzone_targets", "redzone_carries", "redzone_attempts"})
-def chain_history(player_rows):
-    """The facts the chain reads, one row per game: every played player-game (key = player_id, the box score made whole by state.box_zero for its own group, his
+def link_chain_history(player_rows):
+    """The facts the link chain reads, one row per game: every played player-game (key = player_id, the box score made whole by state.box_zero for its own group, his
     team's counts that game as team_*) and every team-game (key = team, position TEAM, the counts of state.team_volume - one producer)."""
     played = player_rows[player_rows.played == 1].drop_duplicates(["player_id", "season", "week"])
-    played = pd.concat([box_zero(played[played.position.isin(RECEIVER_POSITIONS)], skill_columns, "chain receivers"), box_zero(played[played.position == "QB"], qb_columns, "chain QB")], ignore_index=True)
+    played = pd.concat([box_zero(played[played.position.isin(RECEIVER_POSITIONS)], skill_columns, "link chain receivers"), box_zero(played[played.position == "QB"], qb_columns, "link chain QB")], ignore_index=True)
     volume = team_volume(player_rows)
     players = played[["player_id", "season", "week", "team", "position", "opponent", "snap_share"] + PLAYER_COUNTS].rename(columns={"player_id": "key"})   # batch 82: the opponent, for the team environment
     players = players.assign(**{column: players[column].fillna(0.0) for column in PLAYER_COUNTS}).merge(volume.rename(columns={column: f"team_{column}" for column in count_columns}), on=["season", "week", "team"], how="left")
@@ -151,7 +151,7 @@ def vacancy(history, cell, rows, active):
     """THE NEXT-UP VACANCY (batch 77; active_share_read_v1 / v2, absorption_read_v1, vacancy_next_up_read_v1): for each target row (key, team, season, week)
     the share vacated (out) or reclaimed (back) by the teammates he is next up to, measured against his own earlier games.  The members of a team-week: the
     cell's position's players with an earlier played game for the team this season, each with his season-to-date share before week N.  A member is active
-    when he is in active[(season, week, team)] - the owner's final active list (facts.active_keys), for training and issue rows alike (batch 78).  Teammate A's next up: the active members of his position with the largest share below his (ties share it).  A gives them rate_A x (p(A, B) -
+    when he is in active[(season, week, team)] - the project owner's final active list (facts.active_keys), for training and issue rows alike (batch 78).  Teammate A's next up: the active members of his position with the largest share below his (ties share it).  A gives them rate_A x (p(A, B) -
     [A active]), p(A, B) = the fraction of B's earlier played games this season in which A played: out when positive, back when negative.  A routine absence
     (A out in all of B's earlier games) gives nothing - it is already in B's rate.  Returns (out, back) in row order, share units."""
     numerator, denominator = LINKS[cell][1], LINKS[cell][2]; rows = rows.reset_index(drop=True); keys = rows.key.to_numpy(); out, back = np.zeros(len(rows)), np.zeros(len(rows))
@@ -175,11 +175,11 @@ def vacancy(history, cell, rows, active):
     return out, back
 def role_law(theta, shrunk, previous, vacated_out, vacated_back, edge, participation):
     """THE ROLE LAW (batch 61; nested_law_read): logit(mean) = logit(shrunk share) + t0 + t1 (previous share - shrunk share) + t5 vacated out + t6 vacated back
-    (batch 77, chain.vacancy); log concentration = t2 + t3 previous + t4 shrunk.  t0 = t1 = t5 = t6 = 0 is the luck map's share.  Returns (mean, 1 - mean,
+    (batch 77, link_chain.vacancy); log concentration = t2 + t3 previous + t4 shrunk.  t0 = t1 = t5 = t6 = 0 is the luck map's share.  Returns (mean, 1 - mean,
     concentration), the two sides computed apart so neither rounds to 0."""
     z = np.log(shrunk / (1 - shrunk)) + theta[0] + theta[1] * (previous - shrunk) + theta[5] * vacated_out + theta[6] * vacated_back + theta[7] * edge + participation @ theta[8:11]   # batch 81: work follows efficiency   # batch 83: participation
     return 1 / (1 + np.exp(-z)), 1 / (1 + np.exp(z)), np.exp(theta[2] + theta[3] * previous + theta[4] * shrunk)
-ROLE_TERMS_HELD = {("Q1 attempts", "QB"): (8,), ("F5 targets", "WR"): (1,), ("F5 targets", "TE"): (1,)}   # batch 85 (masked_gate_read_v2, the gate's ruler): t8 in QB attempts BETTER held at 0 (F8 QB p .028, DK QB p .020); t1 in WR / TE targets carries nothing (all UNKNOWN)
+ROLE_TERMS_HELD = {("Q1 attempts", "QB"): (8,), ("F5 targets", "WR"): (1,), ("F5 targets", "TE"): (1,)}   # batch 85 (masked_gate_read_v2, the quality gate's ruler): t8 in QB attempts BETTER held at 0 (F8 QB p .028, DK QB p .020); t1 in WR / TE targets carries nothing (all INSUFFICIENT_EVIDENCE)
 def fit_share(history, s, cell, active, fits):
     """A player's share of his team's count on seasons < s (the cell's own position): the luck map's moments of the season-to-date share (mu, s2 = mu (1 - mu),
     tau2), then THE ROLE LAW by maximum likelihood (beta-binomial of his count in his team's count) - both measured on the training games of the issue domain
@@ -195,7 +195,7 @@ def fit_share(history, s, cell, active, fits):
     used = np.isfinite(previous) & np.isfinite(edge) & (n > 0) & domain; x, n, shrunk, previous, vacated_out, vacated_back, edge, played_part = x[used], n[used], shrunk[used], previous[used], vacated_out[used], vacated_back[used], edge[used], played_part[used]
     def loss(theta):
         mean, other, concentration = role_law(theta, shrunk, previous, vacated_out, vacated_back, edge, played_part); return -float(betabinom.logpmf(x, n, mean * concentration, other * concentration).sum())
-    result = minimize(loss, np.array([0.0, 0.0, 3.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]), method="L-BFGS-B", bounds=[(0.0, 0.0) if index in ROLE_TERMS_HELD.get(cell, ()) else (None, None) for index in range(11)])   # batch 83: momentum, vacated, returning on the field   # batch 85: terms the gate holds at 0
+    result = minimize(loss, np.array([0.0, 0.0, 3.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]), method="L-BFGS-B", bounds=[(0.0, 0.0) if index in ROLE_TERMS_HELD.get(cell, ()) else (None, None) for index in range(11)])   # batch 83: momentum, vacated, returning on the field   # batch 85: terms the quality gate holds at 0
     if not result.success: raise SystemExit(f"fit_share {cell[0]} {cell[1]}: seasons < {s} did not converge ({result.message}) - refused")
     return dict(mu=mu, s2=s2, tau2=tau2, theta=result.x, rows=int(used.sum()))
 def sibling_luck_of(sibling_fit, values, trials, rate):
@@ -266,9 +266,9 @@ def fit_efficiency(history, s, cell, fit, active):
 CAST_CELLS = (("Q2 completions", "QB"), ("Q3 passing yards", "QB"), ("Q4 passing TDs", "QB"))
 def cast_vacancy(history, cell, rows, active):
     """Batch 80 (qb_cast_read_v1): for each QB row (key, team, season, week) the target share his usual receivers leave vacant, measured against his own
-    earlier games as chain.vacancy measures a teammate: receiver A (RB / WR / TE with an earlier played game for the team this season) holds share_A = his
+    earlier games as link_chain.vacancy measures a teammate: receiver A (RB / WR / TE with an earlier played game for the team this season) holds share_A = his
     targets / the team's receivers' targets over weeks < N and gives share_A x (p(A, QB) - [A active]), p = the fraction of the QB's earlier played games this
-    season in which A played; active = the owner's final active list.  A routine absence gives nothing; a return gives back.  Returns the sum in row order."""
+    season in which A played; active = the project owner's final active list.  A routine absence gives nothing; a return gives back.  Returns the sum in row order."""
     rows = rows.reset_index(drop=True); out = np.zeros(len(rows)); seasons = rows.season.unique()
     receivers = history[history.position.isin(["RB", "WR", "TE"]) & history.season.isin(seasons)][["key", "team", "season", "week", "targets"]]
     passers = history[(history.position == "QB") & history.season.isin(seasons)][["key", "team", "season", "week"]]
@@ -302,7 +302,7 @@ def efficiency_edge(history, fits, cell, rows, active):
     joined = pd.merge_asof(target.sort_values("week"), weekly.sort_values("week"), on="week", by="season", allow_exact_matches=False, direction="backward").sort_values("order")
     with np.errstate(divide="ignore", invalid="ignore"): return own - (joined[numerator] / joined[denominator]).to_numpy(float)
 def team_environment(history, fits, rows, active):
-    """Batch 82 (team_td_wall_read_v2): per target row (key, team, season, week, opponent) - its team's TD margin going in (the team's receiving + rushing
+    """Batch 82 (team_td_revision_read_v2): per target row (key, team, season, week, opponent) - its team's TD margin going in (the team's receiving + rushing
     TDs minus its opponents' in the same games, mean over this season's earlier games), the conversion law's efficiency edge of its usual starter (the QB
     with the most attempts this season before week N; efficiency_edge on Q1 attempts), its opponent's TD margin going in.  Returns an (n, 3) array."""
     rows = rows.reset_index(drop=True); players = history[history.position != TEAM_KEY]
@@ -342,7 +342,7 @@ def participation(history, rows, position, active):
     played = set(zip(games.key, games.season, games.game_week))
     returning = np.array([float(week == week and (key, season, week) not in played) for key, season, week in zip(previous.key, previous.season, previous.game_week)])
     return np.column_stack([momentum, vacated, returning])
-def fit_chain(history, s, active):
+def fit_link_chain(history, s, active):
     """Every link fit at the cutoff s on seasons < s, in dependency order (R2) - the only parameters the product draws from.  A count with a sibling is fit given it."""
     fits = {}
     for cell in [c for c in LINK_ORDER if LINKS[c][3] != "share" and c not in SIBLINGS] + [c for c in LINK_ORDER if c in SIBLINGS] + [c for c in LINK_ORDER if LINKS[c][3] == "share"]:   # batch 82: TD links read the QB fits   # batch 81: a share's edge reads the conversion fits

@@ -276,10 +276,10 @@ def build():
 PBP_BOX_COLUMNS = {"carries": "carries", "rushing_yards": "rushing_yards", "rushing_tds": "rushing_tds", "targets": "targets", "receptions": "receptions", "receiving_yards": "receiving_yards",
                    "receiving_tds": "receiving_tds", "attempts": "attempts", "completions": "completions", "passing_yards": "passing_yards", "passing_tds": "passing_tds", "interceptions": "passing_interceptions"}   # play-by-play aggregate -> stats file column
 def pbp_box_crosscheck(seasons, report):
-    """The box scores' independent check (owner's ruling, Oct 6 2026: the stats file is the source of record; play-by-play cross-checks).  Each season's player-games
+    """The box scores' independent check (project owner's ruling, Oct 6 2026: the stats file is the source of record; play-by-play cross-checks).  Each season's player-games
     rebuilt from its plays - rushes; targets as pass attempts with a receiver, sacks excluded; passes, sacks excluded; two-point tries excluded; lateral yards credited
     to the player who gained them - against the stats file, column by column.  Every disagreeing value is written to facts/pbp_crosscheck.csv and counted here.  A
-    reading, not a gate: the measured disagreements (23 of 34,460 player-games, Oct 6 2026) read as corrections that reached one file and not the other."""
+    reading, not a quality gate: the measured disagreements (23 of 34,460 player-games, Oct 6 2026) read as corrections that reached one file and not the other."""
     needed = ["week", "two_point_attempt", "rush_attempt", "pass_attempt", "sack", "complete_pass", "rusher_player_id", "receiver_player_id", "passer_player_id", "rushing_yards",
               "receiving_yards", "passing_yards", "rush_touchdown", "pass_touchdown", "interception", "lateral_rusher_player_id", "lateral_rushing_yards", "lateral_receiver_player_id", "lateral_receiving_yards"]
     disagreements = []
@@ -320,7 +320,7 @@ def schedule():
     return pd.read_csv(os.path.join(FACTS_DIR, "game.csv.gz"), low_memory=False)[["game_id", "season", "week", "gameday", "gametime", "home_team", "away_team"]]
 GAME_STATUSES = ("Out", "Doubtful", "Questionable")   # the injury report's game designations as its file records them (batch 71; a listing without one carries none)
 def game_status_as_of(seasons):
-    """THE INJURY REPORT AS OF THE FREEZE (owner, Oct 8 2026; batch 71): the one door through which week N's report enters the information set.  One row per
+    """THE INJURY REPORT AS OF THE FREEZE (project owner, Oct 8 2026; batch 71): the one door through which week N's report enters the information set.  One row per
     player-week of the given seasons with a game designation (GAME_STATUSES): player_id, season, week, game_status_as_of; and each season's construction
     (a season with a file has one, whether or not any designation survives).  Returns (rows, {season: construction}).
     A season whose file stamps its rows (date_modified): the latest row stamped at or before the boundary - the earlier of the freeze (Saturday 03:00 ET: the
@@ -350,7 +350,7 @@ def game_status_as_of(seasons):
         frames.append(report_rows[report_rows.report_status.isin(GAME_STATUSES)].rename(columns={"gsis_id": "player_id", "report_status": "game_status_as_of"})[["player_id", "season", "week", "game_status_as_of"]])
     return (pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=["player_id", "season", "week", "game_status_as_of"])), constructions
 def active_keys():
-    """THE FINAL ACTIVE LIST (owner, Oct 8 2026: at decision time the active / inactive list published about 90 minutes before kickoff is known; batch 77):
+    """THE FINAL ACTIVE LIST (project owner, Oct 8 2026: at decision time the active / inactive list published about 90 minutes before kickoff is known; batch 77):
     {(season, week, team): frozenset of player_ids whose game-day roster status is ACT}.  The one door through which week N's roster status enters the
     information set; a player with no status row that week is not active (status_door_read_v1: no non-ACT player played, 0 of 3,103)."""
     rows = pd.read_csv(os.path.join(FACTS_DIR, "player_game.csv.gz"), usecols=["player_id", "season", "week", "team", "roster_status"], low_memory=False)

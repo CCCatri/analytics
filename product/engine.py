@@ -29,10 +29,10 @@ OUT_SIM = "out/sim_games.csv"
 OUT_CHECKS = "out/engine_checks.csv"
 SEED = 20261026
 MIN_BIN = 30
-R1A = True        # the engine-vs-record stage R1a (engine-vs-record.md the engine-vs-record stage v2 d): how long each stretch lasts. False plays v0's clock exactly (checked byte for byte by the chain)
+R1A = True        # the engine-vs-record stage R1a (engine-vs-record.md the engine-vs-record stage v2 d): how long each stretch lasts. False plays v0's clock exactly (checked byte for byte by the run)
 PACE_SPLIT = {}   # the engine-vs-record stage v4 a: the clock classes whose stretches in the last 2:00 of a half are keyed by score state (one test per class, each keyed cell MIN_BIN or more)
 PLAY_CLOCK = 40   # 4-6-1: the 40 seconds rules.play_clock reads; with this much game clock or less left after a play on a running clock, the offense decides whether to snap again before 0:00
-QE_BAND = 10      # the engine-vs-record stage v4 e: the quarter-end cell's coarser width in seconds left (a chosen number, compared at 5, 10 and 20 by the chain)
+QE_BAND = 10      # the engine-vs-record stage v4 e: the quarter-end cell's coarser width in seconds left (a chosen number, compared at 5, 10 and 20 by the run)
 R1B = True        # the engine-vs-record stage R1b (engine-vs-record.md the engine-vs-record stage v4 c): how often the clock stops. False plays R1a's clock exactly
 R1D = True        # the engine-vs-record stage v12-v13 (the race, v10 b): the seconds after a running-clock play, the stopped-clock timeouts and the pre-snap fouls from the fitted race; False plays the floor (R1a+R1b) exactly
 RACE_CHUNK = 48    # computing only: the walk asks the race for this many seconds at a time
@@ -40,7 +40,7 @@ RACE_STOP_ACTS = ["snap STOP", "snap PARTIAL", "foul", "kickoff", "try", "timeou
 RUNOFF_RESTART = {}   # the engine-vs-record stage v14 d: 15-5-2 per season's book: True when its printed article adds 'or a clock that would have otherwise restarted before the next snap'
 SIM_SEASONS = [s for s in policy.SEASONS if s != policy.HOLD]
 CALL = set(policy.CALL_KINDS)
-HALF_TIMEOUTS = 3       # rule text (Rule 4, Section 5), not read from the book in this chain (overtime's timeouts are the season rules's, quoted from Rule 16)
+HALF_TIMEOUTS = 3       # rule text (Rule 4, Section 5), not read from the book in this run (overtime's timeouts are the season rules's, quoted from Rule 16)
 COLS = ["game_id", "play_id", "order_sequence", "season", "week", "season_type", "home_team", "away_team", "posteam", "defteam", "qtr",
         "quarter_seconds_remaining", "game_seconds_remaining", "time_of_day", "end_clock_time", "play_type", "down", "ydstogo", "yardline_100",
         "yards_gained", "desc", "fixed_drive", "pass", "rush", "sack", "qb_scramble", "complete_pass", "incomplete_pass", "interception", "fumble_lost",
@@ -81,7 +81,7 @@ def choices():
         "A kick is an onside try when its text says 'onside' (E1a v2 a: section 0's short kicks without it were squibs, played as kickoffs). When one may be tried is"
         " the season rules's rule, quoted from the season's book: 2019-2023 any free kick (no article names an onside kick), 2024 the 4th period by a team trailing, 2025 any"
         " period by a team trailing; within what the rule allows, how often one is tried is the five other seasons' rate in the (period, score) cell.",
-        "Timeouts are drawn after a snap by (time, score), for the offense or the defense of the next snap, while the team has one left: three a half in regulation (rule text, Rule 4 Section 5, not read in this chain);"
+        "Timeouts are drawn after a snap by (time, score), for the offense or the defense of the next snap, while the team has one left: three a half in regulation (rule text, Rule 4 Section 5, not read in this run);"
         " in overtime the season rules's quoted timeouts (two in the regular-season period, three in each postseason overtime half).",
         "Clock: the class after each play is rules.clock_class over the play's own events (the same events check_clock reads); STOP holds the clock to the next snap, PARTIAL"
         " restarts it after a stopped part drawn from the record's PARTIAL stretches, RUN runs it. After a foul outside the windows on a running clock (4-3-2e) the"
@@ -849,7 +849,7 @@ class Game:
     def mark(self, r):
         """v19 s1, t1: yardline_100, ydstogo and yards_gained hold whole yards in the record's columns (record.py reads them as integers). A row written from
         a state off a whole yard (any fraction) is written in the record's marking: each spot (the ball, the line to gain, the play's end) rounded toward the goal the offense
-        attacks (the record's own marking at 0.871, measured by the s chain; the other way 0.129)."""
+        attacks (the record's own marking at 0.871, measured by the s run; the other way 0.129)."""
         yl, tg, yg = r.get("yardline_100"), r.get("ydstogo"), r.get("yards_gained")
         nw = lambda v: v is not None and not isinstance(v, str) and not nan(v) and float(v) != int(float(v))
         if not (nw(yl) or nw(tg) or nw(yg)) or yl is None or nan(yl): return
@@ -1691,7 +1691,7 @@ def season_rule_check(seasons, season_rules):
 
 
 def main():
-    print("main is run by the E1a chain block")
+    print("main is run by the E1a run block")
 
 
 if __name__ == "__main__":
@@ -1699,11 +1699,11 @@ if __name__ == "__main__":
 
 
 # ---------------- engine alone (the engine-vs-record stage v19 q, r3): the model files in out/engine/, each sha checked on load; the games played from them, nothing else read ----------------
-# out/engine/MANIFEST.json names every file with its sha (and the chain and engine.py that wrote them): conf.pkl (the caller-set values: PACE_SPLIT,
+# out/engine/MANIFEST.json names every file with its sha (and the run and engine.py that wrote them): conf.pkl (the caller-set values: PACE_SPLIT,
 # RUNOFF_RESTART, SCRIM_TB, BOOKY, ENF_CLOCK; the race's flags R1A, R1B, R1D, QE_BAND; the play clock T_CAP; the seasons), tables.pkl (each season's pools' rows,
 # prep()), season_rules.pkl (each season's quoted rule cells), sched.pkl (the games to play, in the order their generators are numbered), race_<season>.pkl (the race and the
 # stopped part fitted for that season: the race as its parts, the fitted logistic model, the numbers' means and spreads and the play clock, rebuilt here as
-# _LRRace, the chain's estimator's own design; the stopped part the fitted trees). A file missing, or not the sha its manifest names, stops the load.
+# _LRRace, the run's estimator's own design; the stopped part the fitted trees). A file missing, or not the sha its manifest names, stops the load.
 import pickle as _pk, threading as _th
 ENGINE_DIR = "out/engine"
 
@@ -1742,7 +1742,7 @@ def race_design(X, mu, sd, tcap):
 
 
 class _LRRace:
-    """The race as the chain fitted it (its LRRace): its inputs by race_design (v19 w1), the fit's means and spreads, the play clock."""
+    """The race as the run fitted it (its LRRace): its inputs by race_design (v19 w1), the fit's means and spreads, the play clock."""
     def __init__(self, m, mu, sd, tcap):
         self.m, self.mu, self.sd, self.tcap = m, mu, sd, tcap; self.classes_ = m.classes_
 

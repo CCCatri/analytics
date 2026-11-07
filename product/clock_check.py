@@ -1,8 +1,8 @@
 """clock_check.py - section 4's stopped-clock check (4-3, 4-4, 4-5, 3-41, 15-5-2 runoff), its bound an explicit assumption, and the one definition
 of a no-play down (down_row) and of an injury on a play (injury_text). Product code.
-Landed from chain e2b_v17_1725d9c82df1's shared library (lib_check) as 124c6a39e406; the warning's section label is an argument (warn_sec).
+Accepted from run e2b_v17_1725d9c82df1's shared library (lib_check) as 124c6a39e406; the warning's section label is an argument (warn_sec).
 v19 f: 4-3-2e(3)'s stop is located at the offense's own pre-snap foul (check_clock's definition of the event), not at the first foul row with no play. check_clock.py is not changed: its snap kinds and injury pattern are set for the call only.
-test_clock_check.py runs its known-right cases and proves its answers on the record byte-identical to the chain's copy."""
+test_clock_check.py runs its known-right cases and proves its answers on the record byte-identical to the run's copy."""
 import re
 from collections import Counter
 import numpy as np

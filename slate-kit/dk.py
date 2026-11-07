@@ -1,4 +1,4 @@
-"""dk.py - the DraftKings transform (Slate Kit module map: dk).  Mechanical: native stat draws (or values) -> DraftKings Classic points under the owner's offense rules;
+"""dk.py - the DraftKings transform (Slate Kit module map: dk).  Mechanical: native stat draws (or values) -> DraftKings Classic points under the project owner's offense rules;
 fits nothing.  Omits fumbles lost, 2-point conversions and return / recovery TDs.  DST points are DraftKings points already (facts.dstpts scores them; the DST law draws
 them), so DST needs no transform here.  DNP = 0 (M8b): a player's DK draw is his F8 draw where his participation draw says he plays, else 0.  The realized-points
 reconstruction that checks this transform is facts.dkpts / facts.dstpts (DraftKings' recorded points, guard's independent check)."""

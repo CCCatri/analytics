@@ -83,7 +83,7 @@ def week_participation(issue_season, issue_week):
     return week_rows, {"seasons": sorted(int(season) for season in set(fit_rows.season)), "rows": int(len(fit_rows)), "positions": sorted(laws)}
 def participation_check():
     """python3 kit.py participation-check: the law's walk-forward (each season fit on the stamped seasons before it) beside T1's recorded walk-forward witness
-    (proj/at_t_rows.csv.gz) on the rows both cover: per season, rows, mean P / played and log loss of each.  A reading; the verdict is the landing's (draws.chance_label)."""
+    (proj/at_t_rows.csv.gz) on the rows both cover: per season, rows, mean P / played and log loss of each.  A reading; the verdict is the acceptance's (draws.chance_label)."""
     report = Report(); player_rows, team_games = load(), team_game(); rows = model_rows_of(who_plays_inputs(player_rows, team_games, sorted(set(player_rows.season[player_rows.season <= FROZEN_THRU]))))
     recorded_walk = plain(read_table(os.path.join(PROJ_DIR, "at_t_rows.csv.gz")))[["player_id", "season", "week", "probability_plays_transition_walkforward"]]
     report.say(f"kit.py participation-check (batch 71): the who-plays law's walk-forward vs T1's recorded walk-forward (at_t_rows, {len(recorded_walk)} rows)")

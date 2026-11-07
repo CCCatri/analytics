@@ -1,6 +1,6 @@
 """test_transition.py: transition.py's own test. Each check names, before it runs, the output that fails it; exit 0 only when every check passes.
 1. the known-right cases (transition.FIXTURES, each true by the article it names) and the yards cases: FAILS if any case comes back other than it must.
-2. the injected faults (transition.PLANTS, STAND_PLANTS, YARD_PLANTS): FAILS if a fault makes no case fail (the cases could not see that line).
+2. the injected faults (transition.INJECTED_FAULTS, STAND_INJECTED_FAULTS, YARD_INJECTED_FAULTS): FAILS if a fault makes no case fail (the cases could not see that line).
 3. 100,000 generated events with a foul on a play that stands: every answer either UNKNOWN with its reason, or the ball at the play's end less (the
    defense's foul) or plus (the offense's) penalty_yards, half the distance where that would reach the goal; FAILS on any other.
 The byte-identity comparison against a frozen copy of the version-4 run script lives in the archive with that script; it needs it and the full record."""
@@ -25,13 +25,13 @@ check("yards cases", ny_ == 10 and not bady_, f"{ny_} cases, {len(bady_)} failed
 
 print("2. the injected faults (FAILS: an injected fault that makes no case fail)")
 SRC = inspect.getsource(T.after_one)
-for nm_, (o_, w_) in T.PLANTS.items():
+for nm_, (o_, w_) in T.INJECTED_FAULTS.items():
     _, bp_ = T.run_fixtures(T.injected(SRC, o_, w_))
     check(f"injected_fault, {nm_}", bool(bp_), f"{len(bp_)} of {n_} cases fail")
-for nm_, (o_, w_) in T.STAND_PLANTS.items():
+for nm_, (o_, w_) in T.STAND_INJECTED_FAULTS.items():
     _, bp_ = T.run_fixtures(T.injected_fault_stand(o_, w_))
     check(f"injected_fault, {nm_}", bool(bp_), f"{len(bp_)} of {n_} cases fail")
-for nm_, (fn_, f_) in T.YARD_PLANTS.items():
+for nm_, (fn_, f_) in T.YARD_INJECTED_FAULTS.items():
     _, bp_ = T.run_yard_cases({fn_: f_})
     check(f"injected_fault, {nm_}", bool(bp_), f"{len(bp_)} of {ny_} yards cases fail")
 

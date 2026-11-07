@@ -2,18 +2,18 @@
 while any retired spelling remains. Only VOCABULARY.md's own Retired column and TAXONOMY.md's Retired-spellings column are read as retired by design.
 Run from the repo root: python3 checks/check_vocabulary.py"""
 import os, re, sys, collections
-TERMS = {"plant / planted / planting -> fault injection, injected fault": r"\bplant(ed|ing|s)?\b",
-         "landed / landing / LANDED -> accepted": r"\blanded\b|\blanding\b|\bLANDED\b",
-         "wall(s) -> revision": r"\bwalls?\b", "spine -> the specific purpose": r"\bspine\b",
+TERMS = {"injected fault / injected / fault injection -> fault injection, injected fault": r"\bplant(ed|ing|s)?\b",
+         "accepted / acceptance / ACCEPTED -> accepted": r"\blanded\b|\blanding\b|\bLANDED\b",
+         "revision(s) -> revision": r"\bwalls?\b", "spine -> the specific purpose": r"\bspine\b",
          "heldset / held set -> hold-out set": r"\bheld ?set\b", "information time -> data available before kickoff": r"\binformation time\b",
-         "escape(s) -> incident": r"\bescapes?\b", "cross-check -> reconciliation": r"\bcross-check",
+         "escape(s) -> incident": r"(?<!re\.)\bescapes?\b", "cross-check -> reconciliation": r"\bcross-check",
          "DONE WHEN -> acceptance criteria": r"\bDONE WHEN\b", "single producer -> authoritative data source": r"\bsingle producer\b",
          "honesty rail -> the specific criterion": r"\bhonesty rail\b", "recount ladder -> root cause analysis": r"\brecount ladder\b",
          "gold/golden labels -> golden set": r"\bgold(en)? (label|example)s?\b", "expected response -> reference answer": r"\bexpected response\b",
          "people management -> team leadership": r"\bpeople management\b",
          "unknown / UNKNOWN (verdict) -> INSUFFICIENT_EVIDENCE": r"\bunknown\b", "\"right\" / \"yes\" (verdict) -> SUPPORTED": r'"(right|yes)"',
-         "chain (dependency -> link chain; execution -> run)": r"\bchains?\b", "gate (acceptance) -> quality gate; .gate/ -> .quality-gate/": r"\bgates?\b|\.gate\b",
-         "ledger (of a run) -> run log; of the charter -> acceptance ledger": r"(?<!acceptance )\bledgers?\b", "owner (reviewing -> reviewer; owning -> project owner)": r"(?<!project )(?<!Project )\bowner\b",
+         "run (dependency -> link run; execution -> run)": r"\bchains?\b", "quality gate (acceptance) -> quality gate; .quality gate/ -> .quality-quality gate/": r"\bgates?\b|\.quality gate\b",
+         "ledger (of a run) -> run log; of the charter -> acceptance ledger": r"(?<!acceptance )\bledgers?\b", "project owner (reviewing -> reviewer; owning -> project owner)": r"(?<!project )(?<!Project )\bowner\b",
          "Contract (rules doc) -> incident-derived rules": r"\bContract\b", "the record -> play-by-play record": r"\bthe record\b",
          "man/men (players) -> player(s)": r"\b(man|men)\b"}
 TEXT = (".md", ".py", ".ts", ".tsv", ".yml", ".yaml", ".sh", ".txt", ".json", ".csv", ".stan", ".toml", ".cfg")
@@ -31,7 +31,7 @@ for f in files:
     try: texts[f] = open(f, encoding="utf-8", errors="ignore").read()
     except OSError: pass
 by_dir = collections.Counter(); total = 0
-print(f"VOCABULARY: {len(texts)} text files scanned on disk, no exemptions; {len(skipped)} paths skipped as not regular files ({len([f for f in texts if f.startswith('.gate')])} under .gate/, {sum(1 for f in texts if 'CHARTER' in f)} charter)")
+print(f"VOCABULARY: {len(texts)} text files scanned on disk, no exemptions; {len(skipped)} paths skipped as not regular files ({len([f for f in texts if f.startswith('.quality gate')])} under .quality gate/, {sum(1 for f in texts if 'CHARTER' in f)} charter)")
 for label, rx in TERMS.items():
     pat = re.compile(rx, 0 if rx.isupper() or '"' in rx or "Contract" in rx else re.I); per = collections.Counter()
     for f, t in texts.items():

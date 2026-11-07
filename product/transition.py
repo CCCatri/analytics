@@ -2,7 +2,7 @@
 Product code. The record's adapter (the rebuild of the record's states) and the engine both call after(); the record supplies an event's observed
 attributes (its row's columns), the engine its generated ones (its draws); neither computes the resulting state itself. A part whose inputs are missing
 comes back UNKNOWN with its reason, never filled.
-Landed from chain e2b_v17_1725d9c82df1's shared library (lib_trans) as 96229f766489; tb_rules takes the Rule 11 Section 6 spots as an argument.
+Accepted from run e2b_v17_1725d9c82df1's shared library (lib_trans) as 96229f766489; tb_rules takes the Rule 11 Section 6 spots as an argument.
 the engine-vs-record stage v18 c adds one case: a foul on a play that stands (stand(), the event's 'foul_stand'): the play's result kept and the foul enforced on it, by the
 family rules.py's foul families lists name (rules.py 3d9b5a3b1985, each list citing its article) and the season's Dead Ball Foul article (rb: 'the down counts',
 'a taunting foul that occurs at any time'), from the row's own columns (yards_gained, penalty_yards, penalty_team, first_down_penalty) and the spot its
@@ -11,14 +11,14 @@ the engine-vs-record stage v19 part 2: stand() reads the defense's foul with no 
 yards of a foul are computed here, by its article, from the spot it is enforced at (foul_yards: the book's distance, half the distance to the
 offender's goal where the book sets it; spot_foul_yards: pass interference by the defense, a spot foul), for the engine and the record check alike.
 the engine-vs-record stage v19 r: a distance foul whose enforcement would carry the ball to or past the fouling team's goal line is placed half the distance from the
-enforcement spot to that goal (goal_half: the book's half-the-distance article, printed by line in each chain), in after_one and stand() alike, never
+enforcement spot to that goal (goal_half: the book's half-the-distance article, printed by line in each run), in after_one and stand() alike, never
 UNKNOWN; pass interference by the defense takes the foul's depth (the record's penalty_yards on a wiped row) and, in the end zone, the 1-yard line or half
 the distance from the previous spot, whichever is more beneficial (the season's book, printed by line).
 the engine-vs-record stage v19 s, t: a fraction of a yard is a spot (s1, t1: kept exactly however many times half the distance halves it, never rounded; the engine writes the record's columns in the record's marking); the offense's
 unnecessary roughness on a play that stands, enforced at the play's end (the succeeding spot), is a dead ball foul by the season's Dead Ball Foul article:
 'enforced from the succeeding spot, and the down counts' (s3: OFF_DEAD_BOOK; a play whose result stands carries no accepted live-ball foul by the offense).
-Its known-right cases (FIXTURES, each true by the article it names, built by hand) and its injected faults (PLANTS, each must fail a case) live here;
-test_transition.py runs them and proves this file byte-identical in its answers to the chain's copy."""
+Its known-right cases (FIXTURES, each true by the article it names, built by hand) and its injected faults (INJECTED_FAULTS, each must fail a case) live here;
+test_transition.py runs them and proves this file byte-identical in its answers to the run's copy."""
 import math, re
 import pandas as pd
 import rules, record
@@ -61,7 +61,7 @@ def same(st, down, togo, yl, how):
 
 def tb_rules(season, x6cell, scrim_tb):
     """A season's touchback spots, each from its pinned rule: a free kick's from the season rules (rules.season_x6, the season's book; from 2024 the book names a second
-    spot for a kick that first lands in the landing zone), any other touchback's from Rule 11 Section 6 (scrim_tb: season -> (yard line, where it was read),
+    spot for a kick that first lands in the acceptance zone), any other touchback's from Rule 11 Section 6 (scrim_tb: season -> (yard line, where it was read),
     read by the caller from the season's book; a season missing reads unread)."""
     v = lambda k: int(x6cell[k]["value"]) if (k in x6cell and str(x6cell[k]["value"]).isdigit()) else None
     return dict(kick=v("touchback"), kick_lz=v("touchback_landing_zone"), two_spots="touchback_landing_zone" in x6cell, scrim=scrim_tb.get(season, (None, "unread"))[0])
@@ -131,7 +131,7 @@ def after_one(st, ev, rb):
             return unknown(recv, "a kickoff with a foul: the spot is not in the row (UNKNOWN)")
         if ev.get("tb"):
             if rb.get("two_spots"):
-                cond = ev.get("tb_cond"); spot = rb.get("kick") if cond == "in the air" else (rb.get("kick_lz") if cond == "landing zone" else None)
+                cond = ev.get("tb_cond"); spot = rb.get("kick") if cond == "in the air" else (rb.get("kick_lz") if cond == "acceptance zone" else None)
                 if spot is None:
                     return unknown(recv, "kickoff touchback: the book names two spots and which one applies is not in the row (UNKNOWN)" if cond is None else "kickoff touchback: the spot unread from the book (UNKNOWN)")
             else:
@@ -151,7 +151,7 @@ def after_one(st, ev, rb):
     down, togo, yl = st.get("down"), st.get("togo"), st.get("yl")
     if ev.get("offsetting_dead") and not rb.get("dead_counts", True):
         return unknown(off, "fouls offsetting after the ball is dead: the season's book does not state that the down counts (UNKNOWN)")
-    if ev.get("offsetting"):   # v16 b: a double foul during a live ball (rb's double_replay: the season's book's article read and printed by the chain)
+    if ev.get("offsetting"):   # v16 b: a double foul during a live ball (rb's double_replay: the season's book's article read and printed by the run)
         if not rb.get("double_replay", True): return unknown(off, "fouls offsetting during the down: the season's book's double-foul article not read (UNKNOWN)")
         return same(st, down, togo, yl, "fouls offsetting during the down: the down replayed (3-8-4, the double-foul article)") if _k(down, togo, yl) else unknown(off, "fouls offsetting: the down's columns empty (UNKNOWN)")
     # offsetting_dead (v16 b): fouls offsetting after the ball is dead leave the play's result standing (the Dead Ball Foul article: the down counts); the result follows
@@ -330,7 +330,7 @@ def run_yard_cases(fns=None):
     return len(YARD_CASES), bad
 
 
-YARD_PLANTS = {"half the distance never applied": ("foul_yards", lambda N, side, spot, rnd: float(N) if _k(N) else None),
+YARD_INJECTED_FAULTS = {"half the distance never applied": ("foul_yards", lambda N, side, spot, rnd: float(N) if _k(N) else None),
                "pass interference in the end zone not brought to the 1": ("spot_foul_yards", lambda depth, yl: float(depth) if _k(depth, yl) and depth > 0 else None),
                "the half yard rounded down": ("foul_yards", lambda N, side, spot, rnd: (lambda v: None if v is None else float(math.floor(v)))(foul_yards(N, side, spot, "exact")))}
 
@@ -453,13 +453,13 @@ def injected(src, old, new):
 
 
 # each injected_fault: one line of after_one replaced; each must make a known-right case fail (an injected fault that fails none means the cases cannot see that line)
-PLANTS = {"the next down not counted (3-8-5)": ('    nd = next_down(down, "next")[0]\n    if nd > 4:   # 3-8-2: four downs', '    nd = down\n    if nd > 4:   # 3-8-2: four downs'),
+INJECTED_FAULTS = {"the next down not counted (3-8-5)": ('    nd = next_down(down, "next")[0]\n    if nd > 4:   # 3-8-2: four downs', '    nd = down\n    if nd > 4:   # 3-8-2: four downs'),
           "the yards copied whole past the goal line (no half-the-distance article)": ("            yl2 = goal_half(yl, yd, by)\n", "            yl2 = None\n"),
           "a state that holds only half yards (the spot rounded to the nearest half)": ("            yl2 = goal_half(yl, yd, by)\n", "            yl2 = goal_half(yl, yd, by); yl2 = None if yl2 is None else round(2 * yl2) / 2\n"),
           "the half yard rounded (the ball put on a whole yard)": ("            yl2 = goal_half(yl, yd, by)\n", "            yl2 = goal_half(yl, yd, by); yl2 = None if yl2 is None else float(round(yl2))\n"),
           "a punt touchback at the 25 (Rule 11 Section 6 says the 20)": ('return series(recv, 100 - sp, "punt, touchback', 'return series(recv, 100 - 25, "punt, touchback')}
 # v18 c's injected_fault, in stand(): the defense's foul enforced toward the defense (the yards added, not taken)
-STAND_PLANTS = {"the defense's foul on a play that stands enforced the wrong way": ('    yl2 = end - yd if by == "defense" else end + yd\n', '    yl2 = end + yd if by == "defense" else end + yd\n'),
+STAND_INJECTED_FAULTS = {"the defense's foul on a play that stands enforced the wrong way": ('    yl2 = end - yd if by == "defense" else end + yd\n', '    yl2 = end + yd if by == "defense" else end + yd\n'),
                 "the offense's unnecessary roughness not read by the Dead Ball Foul article": ("    if name in rules.OFF_AFTER or name in OFF_DEAD_BOOK:", "    if name in rules.OFF_AFTER:"),
                 "14-1-2 Item 5 Exceptions' next down read as the same down": ('            nd = next_down(down, "next")[0]\n            if nd > 4: return series(dfn, 100 - yl2, f"{P}, the defense\'s with no award',
                                                                                '            nd = down\n            if nd > 4: return series(dfn, 100 - yl2, f"{P}, the defense\'s with no award')}

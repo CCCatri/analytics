@@ -72,7 +72,7 @@ def dst_frame(team_games):
     opponent_rows = team_rows[["season", "week", "team", "team_pts_for_mean_season_pregame", "team_giveaways_mean_season_pregame", "team_sacks_taken_mean_season_pregame"]].rename(columns={"team": "opponent",
         "team_pts_for_mean_season_pregame": "opponent_offense_pts_for_mean_season_pregame", "team_giveaways_mean_season_pregame": "opponent_offense_giveaways_mean_season_pregame", "team_sacks_taken_mean_season_pregame": "opponent_offense_sacks_taken_mean_season_pregame"})
     return team_rows.merge(opponent_rows, on=["season", "week", "opponent"], how="left")
-# ---------------- the stat-spine frames: team series, skill and QB windows (history, or padded with week-N candidate rows carrying no outcomes) ----------------
+# ---------------- the law-table frames: team series, skill and QB windows (history, or padded with week-N candidate rows carrying no outcomes) ----------------
 def weighted_mean(line_text, decay_weight):
     weighted_values = np.full(len(line_text), np.nan); s = weight_total = 0.0
     for row_number, current_value in enumerate(line_text):
@@ -93,7 +93,7 @@ def history_frames(player_rows, team_games):
     """Every season <= FROZEN_THRU, outcomes present: team frame, skill window, QB window."""
     return build_frames(player_rows[player_rows.season <= FROZEN_THRU], team_games, team_games.season <= FROZEN_THRU, [], [])
 def route_rule_b(player_rows, candidate_rows):
-    """B POSITION RULE (owner ruling (b), Oct 4 2026): a week-N candidate's position = the most frequent stats label over his earlier played games of the season
+    """B POSITION RULE (project owner ruling (b), Oct 4 2026): a week-N candidate's position = the most frequent stats label over his earlier played games of the season
     (weeks < N), ties to the most recent tied label; domain = the door's played rows (QB / RB / WR / TE).  No earlier played labelled game this season ->
     UNRESOLVED POSITION (not routed, counted).  The rule changes routing, never membership or the historical law keys.  Returns the candidates with previous_label
     (the previous team-game label), label_sequence (earlier played labels in week order) and position (the routed label, or UNRESOLVED POSITION)."""
@@ -175,7 +175,7 @@ def sufficient(skill_forecast, qb_forecast):
 # ---------------- THE BOX-SCORE GRAPH AND THE THREE ZEROS (CHARTER THE THREE ZEROS, Oct 6 2026: one constructor, one graph, for facts, laws and draws) ----------------
 TERM_COLUMNS = {"F5 targets": ("targets",), "F5 carries": ("carries",), "F5 receptions": ("receptions",), "F5 receiving yards": ("receiving_yards",), "F5 rushing yards": ("rushing_yards",),
                 "F5 TDs": ("rushing_tds", "receiving_tds"), "Q1 attempts": ("attempts",), "Q2 completions": ("completions",), "Q3 passing yards": ("passing_yards",), "Q4 passing TDs": ("passing_tds",),
-                "Q5 interceptions": ("passing_interceptions",), "QB carries": ("carries",), "QB rushing yards": ("rushing_yards",), "QB rushing TDs": ("rushing_tds",)}   # each term's facts columns, witnessed against the recorded spine by score-week
+                "Q5 interceptions": ("passing_interceptions",), "QB carries": ("carries",), "QB rushing yards": ("rushing_yards",), "QB rushing TDs": ("rushing_tds",)}   # each term's facts columns, witnessed against the recorded law table by score-week
 HISTORY_SUMS = {"F5 targets": "targets_ps", "F5 carries": "carries_ps", "F5 receptions": "receptions_ps", "F5 receiving yards": "receiving_yards_ps", "F5 rushing yards": "rushing_yards_ps", "F5 TDs": "td_ps",
                 "Q1 attempts": "attempts_ps", "Q2 completions": "completions_ps", "Q3 passing yards": "passing_yards_ps", "Q4 passing TDs": "passing_tds_ps", "Q5 interceptions": "passing_interceptions_ps",
                 "QB carries": "carries_ps", "QB rushing yards": "rushing_yards_ps", "QB rushing TDs": "rushing_tds_ps"}   # each term's season-to-date sum among the sufficient statistics (sufficient)
@@ -209,7 +209,7 @@ def zero_kinds(term, rows, observed):
 def history_kinds(sufficient_rows):
     """The history kind of every term of every sufficient-statistics row (sufficient: the season-to-date sums before week N, games = earlier played games on the team this
     season) - zero_kind_of on HISTORY_SUMS, observed iff games > 0; skill terms on RB / WR / TE rows, QB terms on QB rows.  Long frame: term, position, key, season,
-    week, history_kind.  One producer for the laws' routing on the recorded spine and on the issue path."""
+    week, history_kind.  One producer for the laws' routing on the recorded law table and on the issue path."""
     parts = []
     for term, column in HISTORY_SUMS.items():
         rows = sufficient_rows[sufficient_rows.position.isin(["QB"] if term.startswith(("Q", "QB")) else RECEIVER_POSITIONS)]
@@ -219,7 +219,7 @@ def history_kinds(sufficient_rows):
                                        history_kind=zero_kind_of(term, rows.games.to_numpy(float) > 0, rows[column].to_numpy(float), parent))))
     return pd.concat(parts, ignore_index=True).drop_duplicates(["term", "position", "key", "season", "week"])
 def box_outcomes(player_rows):
-    """Played rows' box scores under box_zero (a played row with a wholly absent record is recorded zeros, anything partial refuses) - the spine's own rule - one row
+    """Played rows' box scores under box_zero (a played row with a wholly absent record is recorded zeros, anything partial refuses) - the law table's own rule - one row
     per player-week: the skill columns for RB / WR / TE, the QB columns for QB."""
     played_rows = player_rows[player_rows.played == 1].drop_duplicates(["player_id", "season", "week"])
     skill = box_zero(played_rows[played_rows.position.isin(RECEIVER_POSITIONS)], skill_columns, "skill")[["player_id", "season", "week", "dk_points"] + skill_columns]

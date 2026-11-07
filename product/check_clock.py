@@ -1,6 +1,6 @@
 """check_clock.py - rules-level clause 1, the clock, to clock-check.md v16 (dfff5f9d7de8). A record read, not product.
 Reads through record.raw_frame + record.typed (pinned file, betting refused, every column typed; empties counted, never filled).
-Plants and negatives run first, row by row; any FAIL stops the run before a count is read or a file is written.
+Injected faults and negatives run first, row by row; any FAIL stops the run before a count is read or a file is written.
 Writes out/clock_counts.csv, out/clock_faster.csv, out/clock_over40.csv and out/clock_reasons.csv, each stamped on line 1 with this file's sha and the targets sha.
 out/clock_reasons.csv (N7): every count of out/clock_counts.csv split by its reason; the run stops if the split does not sum back to the counts.
 Choices the targets do not fix, declared and printed:
@@ -13,7 +13,7 @@ Choices the targets do not fix, declared and printed:
  - postseason overtime: quarter 5 is its first period (all 7 postseason overtimes, 2019-2025); any interval past quarter 5 reads UNKNOWN, no quarter number assumed (Retired list).
  - the record logs no two-minute warning row (Retired list): the warning is placed by the quarter clock only; v5's text search (any mention) is kept only for the frozen 2023 reproduction (tmw_row_v5).
  - every 'line N' printed is looked up in the targets file at run time by the line's opening words, so it cannot go stale.
- - game level margin = coarser W stamp + G's 1 s (Instruments, v13); D3 compares wall stamps only (W, E), so its margin carries no G second.
+ - game level margin = coarser W stamp + G's 1 s (Instruments, v13); D3 compares real-time stamps only (W, E), so its margin carries no G second.
  - v12's game level word (margin without G's second) is computed beside v13's in the same run and written to out/clock_counts.csv as GAME_LEVEL_PRIOR.
  - the rules-module stage: the snap kinds, the pre-snap foul list, the clock windows, the clock class, the administrative stoppage and the play clock are read from rules.py (rules-module.md snap kinds, foul families, the clock rule)."""
 import hashlib, os, re, sys, datetime
@@ -41,14 +41,14 @@ OUT_OVER40 = "out/clock_over40.csv"
 OUT_REASONS = "out/clock_reasons.csv"
 CLASS_EMPTY = {"RUN": "no stoppage on the stretch: the clock ran (4-3)"}   # a RUN stretch carries no stop or partial reason of its own
 GAME_LEVEL_REASON = {"WITHIN REAL TIME": "the game clock fell no faster than real time",
-             "WITHIN RESOLUTION": "the game clock fell faster by no more than the stamps can tell apart (the wall stamp's resolution plus the game clock's whole second)",
+             "WITHIN RESOLUTION": "the game clock fell faster by no more than the stamps can tell apart (the real-time stamp's resolution plus the game clock's whole second)",
              "FASTER not licensed": "the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the record logging it (4-1-4), so a correction and a record error cannot be told apart",
              "FASTER licensed (runoff)": "a 10-second runoff removed game time with no play (4-7-1, 4-7-4)",
-             "UNCHECKED": "a wall-clock stamp or the game clock is missing on one of the two snaps"}
-GAME_LEVEL_PRIOR_REASON = {"WITHIN REAL TIME": "v12 margin (the wall stamp's resolution only), kept for comparison: within real time",
-                "FASTER not licensed": "v12 margin (the wall stamp's resolution only), kept for comparison: faster than real time",
-                "FASTER licensed (runoff)": "v12 margin (the wall stamp's resolution only), kept for comparison: a runoff (4-7-1, 4-7-4)",
-                "UNCHECKED": "v12 margin (the wall stamp's resolution only), kept for comparison: a stamp missing"}
+             "UNCHECKED": "a real-time clock stamp or the game clock is missing on one of the two snaps"}
+GAME_LEVEL_PRIOR_REASON = {"WITHIN REAL TIME": "v12 margin (the real-time stamp's resolution only), kept for comparison: within real time",
+                "FASTER not licensed": "v12 margin (the real-time stamp's resolution only), kept for comparison: faster than real time",
+                "FASTER licensed (runoff)": "v12 margin (the real-time stamp's resolution only), kept for comparison: a runoff (4-7-1, 4-7-4)",
+                "UNCHECKED": "v12 margin (the real-time stamp's resolution only), kept for comparison: a stamp missing"}
 D3_REASON = {"WITHIN 40": "the next snap came within 40 seconds of real time after the play ended (4-6-1)",
              "OVER 40": "the next snap came more than 40 seconds of real time after the play ended; the play clock stops for interruptions the record does not log (4-6-3)",
              "N/A (ADMIN)": "an administrative stoppage (a change of possession, a timeout, the two-minute warning, a foul or a review) resets the play clock (4-6-2)",

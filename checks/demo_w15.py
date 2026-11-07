@@ -34,7 +34,7 @@ else:
 if not os.path.isdir(os.path.join(KIT, "facts")): sys.exit("slate-kit/facts missing - refused (it is tracked; the checkout is incomplete)")
 # --- the kit, pointed at a fresh project directory holding only the pinned atlas and ladder
 sys.path.insert(0, KIT); os.chdir(KIT); import draws, cards
-from chain import LINKS
+from link_chain import LINKS
 PROJ = os.path.join(OUT, "proj"); os.makedirs(PROJ); [shutil.copy(os.path.join(FIXD, n), PROJ) for n in ("atlas.csv", "ladder.csv")]; draws.PROJ_DIR = cards.PROJ_DIR = PROJ
 def set_mode(source, path=None): draws.ROOT_SOURCE = source; draws.ROOT_FILE = path; draws.ENGINE_ROOT = None
 artifacts = lambda d: sorted(f for f in os.listdir(d) if f.startswith("card_2024_w15") or f == "frozen_draws_2024_w15.npz")

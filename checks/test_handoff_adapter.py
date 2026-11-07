@@ -3,7 +3,7 @@ kit_pre/proj (pre-adapter code on the same inputs). Reports only its own result;
 A1: kit mode reproduces the baseline card by key, column set and value (NaN as a value, no tolerance). B: engine mode on the 2024 w15 fixture - card with the
 computed file hash and 30 -> 2,000; root columns 29, 30, 31 = source 29, 0, 1 for both teams of one game and both root terms. B2: the value the player calculation
 received at the boundary (draw_link's parent array for the traced player's cell, bound to his team's root), then a controlled change of that source draw: the team root
-must move at all mapped columns and nowhere else; the player at >= 1 mapped column and nowhere else. C: four isolated plants refusing by name with no card artifact;
+must move at all mapped columns and nowhere else; the player at >= 1 mapped column and nowhere else. C: four isolated injected faults refusing by name with no card artifact;
 a wrong week after a valid load in the same process; a source typo."""
 import os, sys, json, shutil, hashlib, io, contextlib, numpy as np, pandas as pd
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); KIT = os.path.join(ROOT, "slate-kit"); sys.path.insert(0, KIT); os.chdir(KIT)
@@ -21,7 +21,7 @@ sha256 = lambda p: hashlib.sha256(open(p, "rb").read()).hexdigest()
 PINNED = {f: sha256(os.path.join(BASE_PROJ, f)) for f in ("atlas.csv", "ladder.csv")}; CANDIDATE = {f: sha256(os.path.join(KIT, f)) for f in ("draws.py", "cards.py")}
 BASE_CARD = os.path.join(BASE_PROJ, "card_2025_w16.csv")
 import draws, cards
-from chain import LINKS
+from link_chain import LINKS
 LINES = []; ok = True
 def say(line): LINES.append(line); print(line, flush=True); LOG.write(line + "\n"); LOG.flush()
 def verdict(name, cond, detail=""):
@@ -51,9 +51,9 @@ def draw_link_logging(cell, fit, rate, other, concentration, parent_draws, gener
     return out
 def capturing_week_draws(season, week): held["week"] = orig_week_draws(season, week); return held["week"]
 draws.substream, draws.draw_link = substream_logging, draw_link_logging; cards.week_draws = capturing_week_draws
-plants = os.path.join(OUT, "plants"); os.makedirs(plants); src = np.load(FIX); man = json.load(open(FIX[:-4] + ".manifest.json"))
+injected_faults = os.path.join(OUT, "injected_faults"); os.makedirs(injected_faults); src = np.load(FIX); man = json.load(open(FIX[:-4] + ".manifest.json"))
 def fixture(name, manifest_edit=None, arrays_edit=None, absent=False):
-    p = os.path.join(plants, f"{name}.npz"); m = dict(man)
+    p = os.path.join(injected_faults, f"{name}.npz"); m = dict(man)
     if arrays_edit is not None: data = arrays_edit({k: src[k].copy() for k in src.files}); np.savez_compressed(p, **data); m["root_draws_sha"] = sha256(p)[:12]
     elif not absent: shutil.copy(FIX, p)
     if manifest_edit is not None: m = manifest_edit(m)
@@ -108,7 +108,7 @@ if pid:
     rec2 = [b for b in boundary if b["who"] == ("Q1 attempts", "QB", pid) and b["cell"] == ("Q1 attempts", "QB") and b["matches"]]
     verdict(f"B2 the changed source ({src0:.0f} -> {src0 + 24:.0f}) is what draw_link received at column 30", len(rec2) == 1 and rec2[0]["parent"][30] == src0 + 24, f"received {rec2[0]['parent'][30] if rec2 else None}; returned column 30 before {rec[0]['out'][30] if rec else None} after {rec2[0]['out'][30] if rec2 else None}")
 # ---------------- C ----------------
-say("\n=== C: four isolated plants, each refusing for its own reason, no card artifact ===")
+say("\n=== C: four isolated injected faults, each refusing for its own reason, no card artifact ===")
 def drop_team(data):
     keep = data["team"].astype(str) != HOME; return {k: (v[keep] if k in ("game_id", "team", "opponent", "season", "week", "attempts", "carries") else v) for k, v in data.items()}
 cases = [("missing file", fixture("missing", absent=True), "draw file missing"), ("SHA mismatch", fixture("sha", manifest_edit=lambda m: {**m, "root_draws_sha": "000000000000"}), "SHA mismatch"),

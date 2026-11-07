@@ -93,7 +93,7 @@ one name; different values -> two names. Standing: **in use**; **new** (code mov
 | Column | Judging | `outcome_percent` | result_pct, outcome_pit_pct | outcome_rank x 100 rounded to one decimal, display only, never tested (register.py) | new |
 | Column | Judging | `composed_rank` | pit_comp | Where the result fell in the composed distribution | new |
 | Column | Judging | `chain_class`, `tail_coverage_band` | stratum, status (calibration) | Chain study class; tail coverage against the +-2 slate standard error band | in use |
-| Column | Judging | `snap_effect` | role, snap_share_to_date (chain.py key) | Event minus control change in snap share | new |
+| Column | Judging | `snap_effect` | role, snap_share_to_date (link_chain.py key) | Event minus control change in snap share | new |
 | Column | Judging | `finite_loss_baseline`, `finite_loss_candidate` | f0, f1 (loss masks) | Rows whose baseline / candidate loss is finite | new |
 | Column | Judging | `probability_collapse`, `probability_role_collapse`, `probability_role_collapse_twin`, `collapse_rate` | pi (regime_test.py), p_col, p_col_twin, base_col | Collapse-state probability; role-collapse probability; its twin; observed collapse rate | new |
 | Column | Judging | `cell_keys_train`, `cell_keys_test` | ka, kb (owner-map files) | Cell keys of the training / test rows | new |
@@ -111,7 +111,7 @@ one name; different values -> two names. Standing: **in use**; **new** (code mov
 | Python | Function | `read_table`, `rank_of` | pd.read_csv (new reads), pit_of | Reader door; where a result falls in a forecast | in use / new |
 | Python | Function | `position_mode_season_pregame` | position_to_date, position_most_frequent_earlier_games_this_season | Most frequent stats label over his played games this season before this game, ties to the most recent | new |
 | Python | Function | `mean_season_pregame`, `mean_recent3` | std, w3 (retarget.py:21) | Window-mean helpers | new |
-| Python | Function | `paired_by_slate`, `passes_gate`, `log_loss` | paired, gate, ll | Paired slate difference; the gate; per-row log loss | in use |
+| Python | Function | `paired_by_slate`, `passes_quality_gate`, `log_loss` | paired, gate, ll | Paired slate difference; the gate; per-row log loss | in use |
 | Python | Name | `log_likelihood`, `log_likelihood_model`, `spearman`, `standard_error`, `train`, `test` | loglik, ll (j.py), sp, se, std_err, tr, te | Joint log-likelihood; model's; rank correlation; standard error; rows | in use / new |
 | Python | Constant | `SKILL_POSITIONS`, `RB_WR_TE`, `AVAILABILITY_INPUTS`, `NULL_DRAWS`, `TEST_BATTERY`, `NEAR_ZERO_DK`, `EXPECTED_POINTS`, `CENTER_TIERS`, `WINDOW_FRACTION` | SK, SCPOS, POS3, AVF, AVAIL_INPUTS, NNULL, BAT, ZERO, EXP, TIERS, WIN, WINDOW_FRAC | Shared constants | in use / new |
 | Python | Name | `null_scores`, `null_95th`, `fails_noise_95th`, `peer_mean`, `shrunk_mean` | nul, p95, n95, peer, shrunk, shrunk_avg | Null results; shrinkage target and result | in use / new |

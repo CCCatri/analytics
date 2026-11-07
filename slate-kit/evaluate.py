@@ -1,7 +1,7 @@
 """evaluate.py - evaluation and governance (Slate Kit module map: evaluate).  Judges only; never produces a forecast.
 Scores per row from draws (F7): crps, rank (randomized PIT), coverage80, bias, energy_score, energy_score_nd, pinball, joint_event, shuffled, rank_self.
-Losses and gates: deviance (no floor), paired_by_slate, passes_gate; the calibration grid's decile_deviation and noise95.
-Verdict provenance: slice_sha.  Procedure harness v2 / exact null B: harness(mode).  Governance: the CHARTER ledger, one definition per name, kit modules only,
+Losses and quality gates: deviance (no floor), paired_by_slate, passes_quality_gate; the calibration grid's decile_deviation and noise95.
+Verdict provenance: slice_sha.  Procedure harness v2 / exact null B: harness(mode).  Governance: the acceptance ledger, one definition per name, kit modules only,
 decompressed content comparison."""
 import os, ast, glob, gzip, hashlib, itertools, json, numpy as np, pandas as pd
 from scipy.stats import norm as normal_law, beta as beta_law
@@ -72,14 +72,14 @@ def f7_check():
     pinball_prediction, pinball_outcome = np.array([0.0, 1.0, 2.0]), np.array([1.0, 1.0, 0.0]); pinball_passed = (np.array_equal(pinball(0.5, pinball_prediction, pinball_outcome), np.abs(pinball_prediction - pinball_outcome) / 2) and np.isclose(pinball(0.9, 0.0, 1.0), 0.9) and np.isclose(pinball(0.9, 1.0, 0.0), 0.1))
     check("pinball: q .5 is half the absolute error; q .9 under / over", pinball_passed, "exact values")
     print(f"F7 SELF-CHECK: {'ALL PASS' if passed else 'FAILED'}"); return 0 if passed else 1
-# ---------------- losses, gates, calibration grid ----------------
+# ---------------- losses, quality gates, calibration grid ----------------
 def deviance(outcome, mean_value):
     """Poisson deviance with no floor (DEVIANCE FLOOR UNDER D): mean 0 with y > 0 is +inf (a point mass that cannot produce y)."""
     with np.errstate(divide="ignore", invalid="ignore"): return 2 * (np.where(outcome > 0, outcome * np.log(np.where(outcome > 0, outcome, 1) / mean_value), 0.0) - (outcome - mean_value))
 def paired_by_slate(baseline_by_slate, candidate_by_slate):
     """Per-slate gain of the candidate over the baseline: mean, standard error, seasons with a positive mean gain, seasons."""
     slate_gains = (baseline_by_slate - candidate_by_slate).dropna(); return slate_gains.mean(), slate_gains.std() / np.sqrt(len(slate_gains)), int((slate_gains.groupby(level=0).mean() > 0).sum()), slate_gains.index.get_level_values(0).nunique()
-def passes_gate(mean_gain, standard_error, positive_seasons, season_count): return mean_gain > resolution_z(1) * standard_error and positive_seasons >= season_count - 1   # the observed statistic resolved above 0 at ALPHA_FAMILY
+def passes_quality_gate(mean_gain, standard_error, positive_seasons, season_count): return mean_gain > resolution_z(1) * standard_error and positive_seasons >= season_count - 1   # the observed statistic resolved above 0 at ALPHA_FAMILY
 def decile_deviation(p): return np.abs(np.bincount(np.minimum((np.asarray(p) * 10).astype(int), 9), minlength=10) / len(p) - .1).mean()
 noise95_memo = {}
 def noise95(pool_count):
@@ -94,30 +94,30 @@ def slice_sha(season, week, l_base, l_cand):
     slate_rows = pd.DataFrame({"season": np.asarray(season), "week": np.asarray(week), "l_base": np.asarray(l_base, float), "l_cand": np.asarray(l_cand, float)})
     return hashlib.sha256(slate_rows.to_csv(index=False, float_format="%.17g").encode()).hexdigest()
 # ---------------- procedure harness v2 (HARNESS PROCEDURE v2; exact null B for rows declaring null_b = exact) ----------------
-# Per slice: observed gate; tau / sigma; null A (row sign swaps) and null B (season-block sign flips of the centred gain) false-pass rates; power at 25 / 50 / 100% of the
+# Per slice: observed quality gate; tau / sigma; null A (row sign swaps) and null B (season-block sign flips of the centred gain) false-pass rates; power at 25 / 50 / 100% of the
 # observed gain; ladder L.  Every random draw for a slice comes from its own generator seeded by sha256("term|position").
-# PASS = observed gate AND FP null B <= t (t = min(.05, 1 - .9^(1/L))) AND not resolution-boundary.
+# PASS = observed quality gate AND FP null B <= t (t = min(.05, 1 - .9^(1/L))) AND not resolution-boundary.
 NDRAW = 10000
 LADDER = {("Q1 attempts", "QB"): 3, ("Q2 completions", "QB"): 2, ("Q3 passing yards", "QB"): 2,
           ("Q2 completions (Q1 season-to-date parent)", "QB"): 2, ("Q3 passing yards (Q1 season-to-date parent)", "QB"): 2}
 YARDS_STAGES = ("[rung 3 variance = phi x max(mean, 1)]", "[rung 3z zero-hurdle]")
 ROW_FILES = {"f6": "f6_rows_*.csv.gz", "dependence": "f6_dependence*_rows.csv.gz"}
-def wall_rows(pattern):
-    spine_rows = pd.concat([pd.read_csv(file_name) for file_name in sorted(glob.glob(os.path.join(PROJ_DIR, pattern)))], ignore_index=True)
-    spine_rows["term"] = spine_rows.term + " [" + spine_rows.stage + "]"; spine_rows = spine_rows.rename(columns={"l_cand": "l_v1"}); spine_rows["base"], spine_rows["v1"] = 0.0, 1.0; return spine_rows
+def revision_rows(pattern):
+    law_table_rows = pd.concat([pd.read_csv(file_name) for file_name in sorted(glob.glob(os.path.join(PROJ_DIR, pattern)))], ignore_index=True)
+    law_table_rows["term"] = law_table_rows.term + " [" + law_table_rows.stage + "]"; law_table_rows = law_table_rows.rename(columns={"l_cand": "l_v1"}); law_table_rows["base"], law_table_rows["v1"] = 0.0, 1.0; return law_table_rows
 def load_rows(mode):
-    if mode == "spine":
-        spine_rows = pd.read_csv(os.path.join(PROJ_DIR, "spine_rows.csv.gz"))
-        spine_rows["l_base"] = np.where(spine_rows.loss == "mae", np.abs(spine_rows.y - spine_rows.base), deviance(spine_rows.y.values, spine_rows.base.values)); spine_rows["l_v1"] = np.where(spine_rows.loss == "mae", np.abs(spine_rows.y - spine_rows.v1), deviance(spine_rows.y.values, spine_rows.v1.values))
-        return spine_rows
-    return wall_rows(ROW_FILES[mode])
+    if mode == "law_table":
+        law_table_rows = pd.read_csv(os.path.join(PROJ_DIR, "law_table_rows.csv.gz"))
+        law_table_rows["l_base"] = np.where(law_table_rows.loss == "mae", np.abs(law_table_rows.y - law_table_rows.base), deviance(law_table_rows.y.values, law_table_rows.base.values)); law_table_rows["l_v1"] = np.where(law_table_rows.loss == "mae", np.abs(law_table_rows.y - law_table_rows.v1), deviance(law_table_rows.y.values, law_table_rows.v1.values))
+        return law_table_rows
+    return revision_rows(ROW_FILES[mode])
 def ladder(mode, term, position): return (2 if term.endswith(YARDS_STAGES) else 1) if mode == "f6" else 1 if mode == "dependence" else LADDER.get((term, position), 1)
 def seed(term, position): return int.from_bytes(hashlib.sha256(f"{term}|{position}".encode()).digest()[:8], "little")
 def stats(input_frame, slate_seasons, seasons):
     draw_mean = input_frame.mean(1); standard_error = input_frame.std(1, ddof=1) / np.sqrt(input_frame.shape[1]); season_means = np.stack([input_frame[:, slate_seasons == s].mean(1) for s in seasons], 1); return draw_mean, standard_error, (season_means > 0).sum(1), len(seasons)
-def gate_v(draw_mean, standard_error, positive_seasons, needed_seasons): return (draw_mean > resolution_z(1) * standard_error) & (positive_seasons >= needed_seasons - 1)   # passes_gate, vectorized over null draws
+def gate_v(draw_mean, standard_error, positive_seasons, needed_seasons): return (draw_mean > resolution_z(1) * standard_error) & (positive_seasons >= needed_seasons - 1)   # passes_quality_gate, vectorized over null draws
 def run_slice(mode, term, position, slice_rows):
-    if mode == "spine" and np.allclose(slice_rows.base.values, slice_rows.v1.values): return None
+    if mode == "law_table" and np.allclose(slice_rows.base.values, slice_rows.v1.values): return None
     finite_loss_baseline, finite_loss_candidate = np.isfinite(slice_rows.l_base.values), np.isfinite(slice_rows.l_v1.values); strata = (int((~finite_loss_baseline & ~finite_loss_candidate).sum()), int((~finite_loss_baseline & finite_loss_candidate).sum()), int((finite_loss_baseline & ~finite_loss_candidate).sum()))   # DEVIANCE FLOOR UNDER D
     if strata[2] > 0: return dict(blocked=True, strata=strata)
     slice_rows = slice_rows[finite_loss_baseline & finite_loss_candidate]
@@ -128,7 +128,7 @@ def run_slice(mode, term, position, slice_rows):
     slate_sizes = np.bincount(codes, minlength=slate_count); row_differences = (slice_rows.l_base - slice_rows.l_v1).values; slate_differences = np.bincount(codes, weights=row_differences, minlength=slate_count) / slate_sizes
     draw_mean, standard_error, positive_seasons, needed_seasons = stats(slate_differences[None, :], slate_seasons, seasons)
     if not (np.isclose(draw_mean[0], reference_result[0]) and np.isclose(standard_error[0], reference_result[1]) and positive_seasons[0] == reference_result[2] and needed_seasons == reference_result[3]): raise SystemExit("harness: fast stats differ from paired_by_slate - refused")
-    observed_pass = bool(passes_gate(*reference_result))
+    observed_pass = bool(passes_quality_gate(*reference_result))
     season_differences = np.array([slate_differences[slate_seasons == s].mean() for s in seasons]); within_variance = np.array([slate_differences[slate_seasons == s].var(ddof=1) for s in seasons]); season_sizes = np.array([(slate_seasons == s).sum() for s in seasons])
     sig2 = within_variance.mean(); tau2 = max(0.0, season_differences.var(ddof=1) - (within_variance / season_sizes).mean()); tau_ratio = np.sqrt(tau2 / sig2) if sig2 > 0 else np.nan
     sign_draws = np.empty((NDRAW, slate_count))
@@ -147,39 +147,39 @@ def run_slice(mode, term, position, slice_rows):
 def show(report, term, position, slice_result):
     if slice_result is None: report.say(f"\n   {term} {position}: v1 = baseline - nothing to test"); return
     if slice_result.get("blocked"): report.say(f"\n   {term} {position}: BLOCKED under D - v1 assigns zero probability to {slice_result['strata'][2]} realized rows the baseline does not (both impossible {slice_result['strata'][0]}, baseline-only {slice_result['strata'][1]}) -> enters at its baseline"); return
-    if sum(slice_result["strata"]): report.say(f"\n   [D strata] {term} {position}: both impossible {slice_result['strata'][0]}, baseline-only impossible {slice_result['strata'][1]} excluded from the gate")
-    report.say(f"\n   {term} {position}: slates {slice_result['nsl']}, observed {slice_result['ref'][0]:+.5f}+-{slice_result['ref'][1]:.5f} ({slice_result['ref'][2]}/{slice_result['ref'][3]}) gate {'pass' if slice_result['obs'] else 'fail'};  tau/sigma {slice_result['ts']:.2f}")
+    if sum(slice_result["strata"]): report.say(f"\n   [D strata] {term} {position}: both impossible {slice_result['strata'][0]}, baseline-only impossible {slice_result['strata'][1]} excluded from the quality gate")
+    report.say(f"\n   {term} {position}: slates {slice_result['nsl']}, observed {slice_result['ref'][0]:+.5f}+-{slice_result['ref'][1]:.5f} ({slice_result['ref'][2]}/{slice_result['ref'][3]}) quality gate {'pass' if slice_result['obs'] else 'fail'};  tau/sigma {slice_result['ts']:.2f}")
     exact_note = (f"FP null B exact {int(round(slice_result['fpBx'] * 2 ** slice_result['nS']))}/{2 ** slice_result['nS']} = {slice_result['fpBx']:.5f} (t {slice_result['t']:.4f}; registered exact null B, no band)" if slice_result["exact"]
           else f"FP null B {slice_result['fpB']:.4f} (t {slice_result['t']:.4f}, boundary +-{slice_result['band']:.4f})")
     report.say(f"      FP null A {slice_result['fpA']:.4f};  {exact_note};  power at 25 / 50 / 100% of gain {slice_result['pw'][0.25]:.2f} / {slice_result['pw'][0.5]:.2f} / "
         f"{slice_result['pw'][1.0]:.2f};  ladder L {slice_result['L']} -> {slice_result['lad']:.4f}  -> {slice_result['verdict']}")
 def harness(mode):
-    """python3 kit.py harness spine | f6 | dependence | invariance | exact"""
+    """python3 kit.py harness law_table | f6 | dependence | invariance | exact"""
     report = Report()
     if mode == "invariance":
-        spine_rows = load_rows("dependence"); keys = list(spine_rows.groupby(["term", "position"], sort=False).groups.keys())
-        forward_results = {slice_key: run_slice("dependence", slice_key[0], slice_key[1], spine_rows[(spine_rows.term == slice_key[0]) & (spine_rows.position == slice_key[1])]) for slice_key in keys}
-        reverse_results = {slice_key: run_slice("dependence", slice_key[0], slice_key[1], spine_rows[(spine_rows.term == slice_key[0]) & (spine_rows.position == slice_key[1])]) for slice_key in reversed(keys)}
-        efficiency_rows = wall_rows("f6_dependence_efficiency_rows.csv.gz"); efficiency_keys = list(efficiency_rows.groupby(["term", "position"], sort=False).groups.keys())
+        law_table_rows = load_rows("dependence"); keys = list(law_table_rows.groupby(["term", "position"], sort=False).groups.keys())
+        forward_results = {slice_key: run_slice("dependence", slice_key[0], slice_key[1], law_table_rows[(law_table_rows.term == slice_key[0]) & (law_table_rows.position == slice_key[1])]) for slice_key in keys}
+        reverse_results = {slice_key: run_slice("dependence", slice_key[0], slice_key[1], law_table_rows[(law_table_rows.term == slice_key[0]) & (law_table_rows.position == slice_key[1])]) for slice_key in reversed(keys)}
+        efficiency_rows = revision_rows("f6_dependence_efficiency_rows.csv.gz"); efficiency_keys = list(efficiency_rows.groupby(["term", "position"], sort=False).groups.keys())
         efficiency_results = {slice_key: run_slice("dependence", slice_key[0], slice_key[1], efficiency_rows[(efficiency_rows.term == slice_key[0]) & (efficiency_rows.position == slice_key[1])]) for slice_key in efficiency_keys}
         file_name = lambda slice_result: (slice_result["fpA"], slice_result["fpB"], tuple(slice_result["pw"].values()), slice_result["verdict"])
         order_passed = all(file_name(forward_results[slice_key]) == file_name(reverse_results[slice_key]) for slice_key in keys); subset_passed = all(file_name(efficiency_results[slice_key]) == file_name(forward_results[slice_key]) for slice_key in efficiency_keys)
-        report.say(f"kit.py harness invariance (draws {NDRAW}): order invariance {'PASS' if order_passed else 'FAIL'} over {len(keys)} dependence slices;  subset invariance {'PASS' if subset_passed else 'FAIL'} over {len(efficiency_keys)} wall 7 slices")
+        report.say(f"kit.py harness invariance (draws {NDRAW}): order invariance {'PASS' if order_passed else 'FAIL'} over {len(keys)} dependence slices;  subset invariance {'PASS' if subset_passed else 'FAIL'} over {len(efficiency_keys)} revision 7 slices")
         return 0 if order_passed and subset_passed else 1
     if mode == "exact":
         report.say("kit.py harness exact null B - enumeration of all 2^S season sign patterns (instrument only; recorded verdicts unchanged)")
-        for mode_name in ("spine", "f6", "dependence"):
-            spine_rows = load_rows(mode_name); report.say(f"\n===== mode {mode_name}")
-            for (term, position), slice_rows in spine_rows.groupby(["term", "position"], sort=False):
+        for mode_name in ("law_table", "f6", "dependence"):
+            law_table_rows = load_rows(mode_name); report.say(f"\n===== mode {mode_name}")
+            for (term, position), slice_rows in law_table_rows.groupby(["term", "position"], sort=False):
                 slice_result = run_slice(mode_name, term, position, slice_rows)
                 if slice_result is None or slice_result.get("blocked"): continue
                 slice_key = int(round(slice_result["fpBx"] * 2 ** slice_result["nS"])); recorded_verdict = slice_result["verdict"].split(" - ")[0]
-                expected_verdict = ("PASS" if slice_result["fpBx"] <= slice_result["t"] else "FAIL") if slice_result["obs"] else "gate fail"
+                expected_verdict = ("PASS" if slice_result["fpBx"] <= slice_result["t"] else "FAIL") if slice_result["obs"] else "quality gate fail"
                 verdict_differs = slice_result["obs"] and ((expected_verdict == "PASS") != (recorded_verdict == "HARNESS PASS"))
                 report.say(f"   {term} {position}: seasons {slice_result['nS']}; FP null B Monte Carlo {slice_result['fpB']:.4f}, exact {slice_key}/{2 ** slice_result['nS']} = {slice_result['fpBx']:.5f}; t {slice_result['t']:.4f}; recorded {recorded_verdict}; exact-null-B reading {expected_verdict}" + ("   <- DIFFERS" if verdict_differs else ""))
         report.write(os.path.join(PROJ_DIR, "harness_exact_report.txt")); print("\nwrote proj/harness_exact_report.txt"); return 0
-    spine_rows = load_rows(mode)
-    report.say(f"kit.py harness {mode} (v2)  rows {len(spine_rows)}; draws {NDRAW}; per-slice seeds; PASS = observed gate AND FP null B <= t AND not resolution-boundary")
+    law_table_rows = load_rows(mode)
+    report.say(f"kit.py harness {mode} (v2)  rows {len(law_table_rows)}; draws {NDRAW}; per-slice seeds; PASS = observed quality gate AND FP null B <= t AND not resolution-boundary")
     verdict_rows = []
     VFILE = os.path.join(PROJ_DIR, "harness_dependence_verdicts.csv")   # WORK ORDER 47 - DEPENDENCE VERDICT PROVENANCE: a recorded verdict is frozen for the rows it judged
     has_recorded = mode == "dependence" and os.path.exists(VFILE); FROZEN = set()
@@ -199,38 +199,38 @@ def harness(mode):
         for slice_result in new_verdicts.values.tolist():
             if (slice_result[0], slice_result[1]) not in OLDK: merged_rows.append(slice_result); print(f"   {slice_result[0]} {slice_result[1]}: newly judged - {slice_result[2]} (work order 47)")
         return pd.DataFrame(merged_rows, columns=new_verdicts.columns)
-    for (term, position), slice_rows in spine_rows.groupby(["term", "position"], sort=False):
+    for (term, position), slice_rows in law_table_rows.groupby(["term", "position"], sort=False):
         slice_hash = slice_sha(slice_rows.season, slice_rows.week, slice_rows.l_base, slice_rows.l_v1)
         if (term, position) in OLDK and OLDK[(term, position)][1] != slice_hash:
             FROZEN.add((term, position)); report.say(f"\n{term} {position}: FROZEN - recorded verdict '{OLDK[(term, position)][0]}' judged rows {OLDK[(term, position)][1][:12]}; rows on disk {slice_hash[:12]} - not re-judged, recorded verdict kept (verdict policy; work order 47)"); continue
         slice_result = run_slice(mode, term, position, slice_rows); show(report, term, position, slice_result); verdict_rows.append((term, position, "nothing to test" if slice_result is None else ("BLOCKED under D" if slice_result.get("blocked") else slice_result["verdict"]), slice_hash))
         if (term, position) in OLDK and verdict_rows[-1][2] != OLDK[(term, position)][0]: raise SystemExit(f"harness: {term} {position} re-judged on its recorded rows gives '{verdict_rows[-1][2]}', recorded '{OLDK[(term, position)][0]}' - refused (work order 47)")
-    report_name = {"spine": "harness_report.txt", "f6": "harness_f6_report.txt", "dependence": "harness_dependence_report.txt"}[mode]
+    report_name = {"law_table": "harness_report.txt", "f6": "harness_f6_report.txt", "dependence": "harness_dependence_report.txt"}[mode]
     os.makedirs(PROJ_DIR, exist_ok=True); report.write(os.path.join(PROJ_DIR, report_name)); report.say(f"\nwrote proj/{report_name}")
     verdict_file = report_name.replace("_report.txt", "_verdicts.csv"); merged_verdicts(verdict_rows).to_csv(os.path.join(PROJ_DIR, verdict_file), index=False); print(f"wrote proj/{verdict_file}")
     return 0
 # ---------------- governance ----------------
-CHARTER = ROOT / "CHARTER.md"; CHARTER_LEDGER = PROJ_DIR / "charter_ledger.json"
+CHARTER = ROOT / "CHARTER.md"; ACCEPTANCE_LEDGER = PROJ_DIR / "acceptance_ledger.json"
 def charter_lines(path):
     content_lines = open(path, "rb").read().split(b"\n"); return content_lines[:-1] if content_lines and content_lines[-1] == b"" else content_lines
 def lines_digest(content_lines): return hashlib.sha256(b"\n".join(content_lines)).hexdigest()
-def ledger_check():
-    """(passed, message): CHARTER.md is append-only - it still begins with exactly the lines the ledger accepted."""
-    if not CHARTER_LEDGER.exists(): return False, "CHARTER ledger missing - run: python3 kit.py ledger-advance"
-    accepted = json.load(open(CHARTER_LEDGER)); content_lines = charter_lines(CHARTER)
-    if len(content_lines) < accepted["lines"]: return False, f"CHARTER has {len(content_lines)} lines, ledger accepted {accepted['lines']} - accepted lines lost (revert?)"
+def acceptance_ledger_check():
+    """(passed, message): CHARTER.md is append-only - it still begins with exactly the lines the acceptance ledger accepted."""
+    if not ACCEPTANCE_LEDGER.exists(): return False, "acceptance ledger missing - run: python3 kit.py acceptance-ledger-advance"
+    accepted = json.load(open(ACCEPTANCE_LEDGER)); content_lines = charter_lines(CHARTER)
+    if len(content_lines) < accepted["lines"]: return False, f"CHARTER has {len(content_lines)} lines, acceptance ledger accepted {accepted['lines']} - accepted lines lost (revert?)"
     if lines_digest(content_lines[:accepted["lines"]]) != accepted["sha"]: return False, f"CHARTER's first {accepted['lines']} accepted lines changed"
     return True, f"CHARTER append-only: {accepted['lines']} accepted lines intact, {len(content_lines) - accepted['lines']} new"
-def ledger_command():
-    """python3 kit.py ledger-check: the CHARTER ledger check alone."""
-    passed, message = ledger_check(); print(("ok    " if passed else "FAIL  ") + message); return 0 if passed else 1
-def ledger_advance():
-    """After an append: the ledger accepts every CHARTER line now on disk (refused when accepted lines changed)."""
-    if CHARTER_LEDGER.exists():
-        passed, message = ledger_check()
+def acceptance_ledger_command():
+    """python3 kit.py acceptance-ledger-check: the acceptance ledger check alone."""
+    passed, message = acceptance_ledger_check(); print(("ok    " if passed else "FAIL  ") + message); return 0 if passed else 1
+def acceptance_ledger_advance():
+    """After an append: the acceptance ledger accepts every CHARTER line now on disk (refused when accepted lines changed)."""
+    if ACCEPTANCE_LEDGER.exists():
+        passed, message = acceptance_ledger_check()
         if not passed: print("FAIL  " + message + " - not advanced"); return 1
-    content_lines = charter_lines(CHARTER); os.makedirs(PROJ_DIR, exist_ok=True); json.dump(dict(lines=len(content_lines), sha=lines_digest(content_lines)), open(CHARTER_LEDGER, "w"))
-    print(f"advanced: ledger accepts {len(content_lines)} CHARTER lines"); return 0
+    content_lines = charter_lines(CHARTER); os.makedirs(PROJ_DIR, exist_ok=True); json.dump(dict(lines=len(content_lines), sha=lines_digest(content_lines)), open(ACCEPTANCE_LEDGER, "w"))
+    print(f"advanced: acceptance ledger accepts {len(content_lines)} CHARTER lines"); return 0
 def kit_modules():
     """The kit's module files, read from the roster kit.py declares (MODULES) plus kit.py itself."""
     roster = next(node.value for node in ast.parse(open(ROOT / "kit.py").read()).body if isinstance(node, ast.Assign) and any(isinstance(target, ast.Name) and target.id == "MODULES" for target in node.targets))
@@ -283,28 +283,28 @@ def one_definition_check():
     repeated = {defined: modules for defined, modules in definitions.items() if len(modules) > 1}
     return (False, "defined more than once: " + "; ".join(f"{defined} in {modules}" for defined, modules in sorted(repeated.items()))) if repeated else (True, f"one definition per name: {len(definitions)} names across {len(kit_modules())} modules")
 def kit_size():
-    """(True, message): the kit's total AST node count over its modules and kit.py - the operational gate's reading at integration (CHARTER, Oct 6 2026)."""
+    """(True, message): the kit's total AST node count over its modules and kit.py - the operational quality gate's reading at integration (CHARTER, Oct 6 2026)."""
     return True, f"kit size: {sum(sum(1 for _ in ast.walk(ast.parse(open(ROOT / name).read()))) for name in kit_modules())} AST nodes"
-ALPHA_FAMILY = 0.05   # OWNER RULING (Oct 6 2026): the one human-set statistical number - the probability of at least one false scientific promotion in a family
+ALPHA_FAMILY = 0.05   # PROJECT OWNER RULING (Oct 6 2026): the one human-set statistical number - the probability of at least one false scientific promotion in a family
 def resolution_z(checks):
-    """The z that resolves a family of checks (estimation-precision gates, CHARTER FOUR KINDS OF GATE): the two-sided normal quantile at ALPHA_FAMILY split over the
-    measured number of checks - a deviation inside it is unresolved from zero.  The count is the caller's, measured; nothing here is chosen per gate."""
+    """The z that resolves a family of checks (estimation-precision quality gates, CHARTER FOUR KINDS OF QUALITY GATE): the two-sided normal quantile at ALPHA_FAMILY split over the
+    measured number of checks - a deviation inside it is unresolved from zero.  The count is the caller's, measured; nothing here is chosen per quality gate."""
     return float(normal_law.ppf(1 - ALPHA_FAMILY / (2 * checks)))
 def resolved_share(successes, trials):
     """The exact (Clopper-Pearson) interval of a binomial share at ALPHA_FAMILY: (share, lower, upper)."""
     return successes / trials, (float(beta_law.ppf(ALPHA_FAMILY / 2, successes, trials - successes + 1)) if successes > 0 else 0.0), (float(beta_law.ppf(1 - ALPHA_FAMILY / 2, successes + 1, trials - successes)) if successes < trials else 1.0)
-def instrument_state(premises, gate_passed):
+def instrument_state(premises, quality_gate_passed):
     """The one producer of an instrument's state (CHARTER INSTRUMENT STATES, Oct 6 2026).  premises: (name, held, measurement) - each premise the instrument rests on,
     measured by the instrument itself.  INVALID (naming every premise that failed, with its measurement) when any premise fails; otherwise VALID PASS or VALID FAIL by
-    the gate.  An instrument states what it measured; the consequence of a state lives in the CHARTER, never in the instrument's output."""
+    the quality gate.  An instrument states what it measured; the consequence of a state lives in the CHARTER, never in the instrument's output."""
     failed = [f"{name} ({measurement})" for name, held, measurement in premises if not held]
-    return ("INVALID - " + "; ".join(failed)) if failed else ("VALID PASS" if gate_passed else "VALID FAIL")
-def r_gate_earned(season_gains):
-    """CHARTER R-GATE, scientific gate (owner ruling Oct 6 2026): a genuinely new wall's cell is EARNED iff its mean held-out season gain is positive (the posterior
-    mean of mu under the reference prior 1 / sigma).  Code size is the operational gate's reading at integration, never evidence for promotion."""
+    return ("INVALID - " + "; ".join(failed)) if failed else ("VALID PASS" if quality_gate_passed else "VALID FAIL")
+def r_quality_gate_earned(season_gains):
+    """CHARTER R-QUALITY-QUALITY GATE, scientific quality gate (project owner ruling Oct 6 2026): a genuinely new revision's cell is EARNED iff its mean held-out season gain is positive (the posterior
+    mean of mu under the reference prior 1 / sigma).  Code size is the operational quality gate's reading at integration, never evidence for promotion."""
     return float(np.mean(season_gains)) > 0
 def file_content(path):
-    """A file's content as its writer meant it: gzip decompressed (gzip stamps wall-clock time); an .npz as its arrays' names, dtypes, shapes and bytes in name order
+    """A file's content as its writer meant it: gzip decompressed (gzip stamps real-time clock time); an .npz as its arrays' names, dtypes, shapes and bytes in name order
     (the zip container stamps time); any other file its bytes."""
     if str(path).endswith(".gz"): return gzip.decompress(open(path, "rb").read())
     if str(path).endswith(".npz"):
@@ -329,7 +329,7 @@ def kit_sha(): return hashlib.sha256(b"".join(module_name.encode() + b"|" + open
 def freeze(name, season, week):
     """python3 kit.py freeze NAME SEASON WEEK: copies week N's product_files to proj/frozen/NAME/ with manifest.csv (file, content_sha256) and meta.json (season, week,
     kit_sha256 over the kit modules, the CHARTER's accepted lines and digest, the CHARTER's lines on disk, frozen_at in UTC).  Refused if NAME exists (a freeze is
-    never rewritten), if a product file is missing, if the CHARTER carries lines the ledger has not accepted, or if any file is not, as it is now,
+    never rewritten), if a product file is missing, if the CHARTER carries lines the acceptance ledger has not accepted, or if any file is not, as it is now,
     the output of an accepted event (exit 0) of the current code and the current raw manifest (proj/events.jsonl, written by kit.py's main)."""
     from datetime import datetime, timezone
     import shutil
@@ -342,8 +342,8 @@ def freeze(name, season, week):
         if event["exit"] == 0 and event["kit_sha"] == code_now and event["raw_manifest"] == manifest_now: accepted_outputs.update(event["outputs"].items())
     unproduced = [file_name for file_name in files if (os.path.relpath(PROJ_DIR / file_name, KIT_ROOT), content_sha(PROJ_DIR / file_name)) not in accepted_outputs]
     if unproduced: raise SystemExit(f"freeze {name}: no accepted event of the current code ({code_now[:16]}) and raw manifest ({manifest_now[:16]}) wrote these files as they are now: {unproduced} - nothing frozen")
-    accepted = json.load(open(CHARTER_LEDGER)); on_disk = len(charter_lines(CHARTER))
-    if on_disk != accepted["lines"]: raise SystemExit(f"freeze {name}: the CHARTER has {on_disk - accepted['lines']} lines the ledger has not accepted - advance first; nothing frozen")
+    accepted = json.load(open(ACCEPTANCE_LEDGER)); on_disk = len(charter_lines(CHARTER))
+    if on_disk != accepted["lines"]: raise SystemExit(f"freeze {name}: the CHARTER has {on_disk - accepted['lines']} lines the acceptance ledger has not accepted - advance first; nothing frozen")
     target.mkdir(parents=True); manifest = []
     for file_name in files: shutil.copyfile(PROJ_DIR / file_name, target / file_name); manifest.append((file_name, content_sha(target / file_name)))
     pd.DataFrame(manifest, columns=["file", "content_sha256"]).to_csv(target / "manifest.csv", index=False)
@@ -391,7 +391,7 @@ def coverage_band(outcome_ranks, slates, level):
     """Mean over slates of the slate share with PIT <= level, its slate standard error, and the band status (share_band)."""
     return share_band(outcome_ranks <= level, slates, level)
 def qualification(bands, decile_value, noise_value):
-    """The M3 rule (row floor replaced by resolution, CHARTER FOUR KINDS OF GATE): UNRESOLVED when a tail's interval (share +- resolution_z(1) slate SE) reaches its bound -
+    """The M3 rule (row floor replaced by resolution, CHARTER FOUR KINDS OF QUALITY GATE): UNRESOLVED when a tail's interval (share +- resolution_z(1) slate SE) reaches its bound -
     the cell cannot tell an empty tail from the nominal one (q .10 reaching 0, q .90 reaching 1, or one slate); every coverage band within and the PIT decile deviation
     at or below its noise quantile -> DECISION-QUALIFIED; else the miss is named from the q .10 / .90 bands (TOO NARROW, TOO WIDE, CENTER TOO HIGH, CENTER TOO LOW) or
     MISCALIBRATED (shape).  bands: level -> (share, slate SE, status)."""
