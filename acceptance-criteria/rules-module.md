@@ -21,7 +21,7 @@ R7 v2 (2026-10-26, after the first run: predictions held 23 of 30):
       Prediction, written now from memory and to be measured (the first M5 rested on a wrong picture): through 2023 a surprise onside kick could come at any time, from any team, so kicks appear before the 4th quarter and from teams not behind; in 2024 every onside kick is in the 4th quarter or overtime by a team behind; in 2025 every onside kick is by a team behind, in any quarter.
       the season rules' onside row for each season is written from these counts, with the kicks that break the prediction read on their plays first.
 
-For each season except 2022, read from the record, each with its prediction printed before the number:
+For each season except 2022, read from the play-by-play record, each with its prediction printed before the number:
    the most common drive-start spot after a kickoff touchback (predicted: the 25 through 2023, the 30 in 2024, the 35 in 2025);
    the longest regular-season overtime in game seconds (predicted: 600, a 10-minute period, every season);
    regular-season overtime games ended by a touchdown on the first possession (predicted: some each season through 2024, 0 in 2025);
@@ -39,4 +39,4 @@ P3 the possessions check: after a field goal, the scoring team set to receive: b
 P4 A list or function defined both in rules.py and in a read script: the run lists every named constant and function in check_possessions.py, check_clock.py and check_downs.py that rules.py also defines; it must be 0. Article strings inside reason texts stay where they are and are not counted.
 
 ## 5. What stays in each read (the next-reader rule: no engine step reads it)
-Run-log constants (RUN_LOG_322, EXPECTED_FASTER, FROZEN_2023); reason texts; record loading (TYPES, EXTRA, FROM_EVENTS); WORDS, ORD; the v12 comparison; the 'fits one of the rules the record cannot tell apart' buckets; the v19 column flag; the tie's re-measure.
+Run-log constants (RUN_LOG_322, EXPECTED_FASTER, FROZEN_2023); reason texts; record loading (TYPES, EXTRA, FROM_EVENTS); WORDS, ORD; the v12 comparison; the 'fits one of the rules the play-by-play record cannot tell apart' buckets; the v19 column flag; the tie's re-measure.

@@ -13,7 +13,7 @@ TERMS = {"plant / planted / planting -> fault injection, injected fault": r"\bpl
          "people management -> team leadership": r"\bpeople management\b",
          "unknown / UNKNOWN (verdict) -> INSUFFICIENT_EVIDENCE": r"\bunknown\b", "\"right\" / \"yes\" (verdict) -> SUPPORTED": r'"(right|yes)"',
          "chain (dependency -> link chain; execution -> run)": r"\bchains?\b", "gate (acceptance) -> quality gate; .gate/ -> .quality-gate/": r"\bgates?\b|\.gate\b",
-         "ledger (of a run) -> run log": r"\bledgers?\b", "owner (reviewing) -> reviewer": r"\bowner\b",
+         "ledger (of a run) -> run log; of the charter -> acceptance ledger": r"(?<!acceptance )\bledgers?\b", "owner (reviewing -> reviewer; owning -> project owner)": r"(?<!project )(?<!Project )\bowner\b",
          "Contract (rules doc) -> incident-derived rules": r"\bContract\b", "the record -> play-by-play record": r"\bthe record\b",
          "man/men (players) -> player(s)": r"\b(man|men)\b"}
 TEXT = (".md", ".py", ".ts", ".tsv", ".yml", ".yaml", ".sh", ".txt", ".json", ".csv", ".stan", ".toml", ".cfg")

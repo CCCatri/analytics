@@ -28,7 +28,7 @@ Each row: the invariant; what it refuses (the former family letter); how an enfo
 | 13 | CAUSALITY | **One cause per acceptance; one producer per fact.** A diff touching more than one declared layer is refused unless registered as an identity with a bit-identical, graded prediction; a fact has one producer and its consumers never repair it. | hidden multi-cause; the same fact built in several places | layer-touch count at the freeze; doubles refused at write and at the quality gate by one definition | the declared layers in the bindings; a revision stage that touches threshold, seed or depth together with the source is refused (NFL v3 R17, the touch level) | `doubles.ts` used by the edit check and the quality gate alike (Healix the team level, the play-call level quality gate) |
 | 14 | REVIEW | **The reviewer rules only, and only with a measured benefit attached.** Rulings inherit across rebuilds until struck; a question to the reviewer carries a computed prediction per option or is refused at the freeze; the reviewer reads derived lines, never the author's narrative about itself. | I courier friction; decisions asked before a benefit was measured | the `OWES` header; refusal of an unmeasured question | D1–D5 ruled only from printed columns (NFL v3 stage 6, D1–D5) | the decision event; the four derived lines (Healix Decision 1, the handoff line) |
 
-Order of resolution when invariants pull apart: grounding, then accuracy, then efficiency. A product that says less and is right is BETTER than one that says more and says something the record did not count.
+Order of resolution when invariants pull apart: grounding, then accuracy, then efficiency. A product that says less and is right is BETTER than one that says more and says something the play-by-play record did not count.
 
 ## 2. Roles
 
@@ -37,7 +37,7 @@ Shared by both products; the enforcer applies them.
 | Role | May read | May write | Never |
 |---|---|---|---|
 | **Author** (agent) | product, revision stages, the run log, quality gate output, decisions, these rules | product within a revision stage's PLACE; `expect` before the freeze; revision stage text | the quality gate, the run log, the objects store, the Reality store, decisions, these rules, its own decision |
-| **Gate** (script) | everything including the Reality store | run log, objects, runs, the accepted view, lock checks | the product; the bar; these rules |
+| **Quality gate** (script) | everything including the Reality store | run log, objects, runs, the accepted view, lock checks | the product; the bar; these rules |
 | **Auditor** (model, tool-less) | the revision stage, the diff against the pinned parent, the quality gate log, the run log | one typed REJECTED | the author's narrative; the challenger before the check is set |
 | **Ruler** (model, tool-less) | the check, its controls, nulls and positives | check changes, accepted separately and re-timed | any challenger |
 | **Reviewer** | four derived lines; questions as orthogonal axes with a default | decisions, promotions, bindings, the data manifest, these rules, finish slices (drop only) | code; decisions |

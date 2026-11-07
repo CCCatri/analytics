@@ -16,7 +16,7 @@ The same words in the README a hiring manager reads, the case pages, the accepta
 | Definition | acceptance criteria | targets, DONE WHEN | What must be true for a change to be accepted, written before the run | in use |
 | Verdict | accepted / not accepted | landed, LANDED, NOT LANDED, landing (as acceptance) | A change whose checks passed and whose files the product reads | new |
 | Record | run log | ledger (recording a run) | The record of one run | new |
-| Record | acceptance ledger | CHARTER ledger | The digest record of accepted charter lines | in use |
+| Record | acceptance ledger | CHARTER ledger, ledger (bare, for this record) | The digest record of accepted charter lines | in use |
 | Version | revision | wall | One revision of a model or kit; code `revision`, files `*_revision*` | new |
 | Structure | link chain | chain (the kit's dependency chain); file `chain.py` → `link_chain.py` | The ordered links from team volume to a player's result | new |
 | Execution | run | chain (as an execution) | One execution | new |
@@ -27,7 +27,8 @@ The same words in the README a hiring manager reads, the case pages, the accepta
 | Data | play-by-play record | the record | nflverse play-by-play | new |
 | Rule | incident-derived rules | Contract (the rules document) | Rules written from incidents | in use |
 | Event | incident | escape | A fault that reached a product file | in use |
-| Role | reviewer | owner (when the responsibility is review) | The person who reviews; "project owner" when it means ownership | new |
+| Role | reviewer | owner (when the responsibility is review) | The person who reviews | new |
+| Role | project owner | owner (bare, when it means ownership) | The person whose ruling binds; always written with "project" | new |
 | People | player / players | man / men (as players); man-weeks → player-weeks, man-seasons → player-seasons | Players | new |
 | People | team leadership | people management | Directing a crew | new |
 | People | hiring and training | recruiting and training | Those activities | new |
