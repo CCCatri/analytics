@@ -42,7 +42,7 @@ verdict("candidate code is the code the baseline step recorded", CANDIDATE == br
 verdict("pinned inputs are the baseline step's outputs", PINNED == {f: brec["outputs"][f] for f in PINNED} and sha256(BASE_CARD) == brec["outputs"]["card_2025_w16.csv"])
 boundary = []; pending = []; orig_substream, orig_draw_link, orig_week_draws = draws.substream, draws.draw_link, draws.week_draws; held = {}
 def substream_logging(term, position, season, week, key, label):
-    if label == draws.CHAIN_STATE: pending.append((term, position, key))
+    if label == draws.LINK_CHAIN_STATE: pending.append((term, position, key))
     return orig_substream(term, position, season, week, key, label)
 def draw_link_logging(cell, fit, rate, other, concentration, parent_draws, generator, sibling=None):
     out = orig_draw_link(cell, fit, rate, other, concentration, parent_draws, generator, sibling); who = pending.pop() if pending else None
