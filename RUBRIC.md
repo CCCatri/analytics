@@ -66,11 +66,11 @@ Definition of done for one engine: one entry point runs one real case from each 
 | Vocabulary B6: `.gate` → `.quality-gate`, record rewritten, fresh point | not started | — | after B5 |
 | Vocabulary B7: hand pass (CHARTER spine/chain/gate/ledger/owner; incidents; man/men) | not started; live remainder about 1,000 | — | low priority |
 | Analytics WO1 plays gap; WO3 hold-out | open, unchanged | — | — |
-| Analytics WO2 forward pilot | deferred; owner rules whether "2026 w10+" is history or plan | — | one line from the owner |
+| Analytics WO2 forward pilot | deferred; the 2026 w10+ pin recorded as the earlier design per the owner's ruling to remove 2026 from active scope | analytics 045deb0 | a jointly issuable season and a pinned protocol |
 | Analytics WO4 slices vs team budget | measured FAIL (receivers 52%, passers 42% of team-draws); units pinned; check in repo | 3eba502 | the fix (joint draws) not started |
 | Handoff harness | PASS run 20261107_153255 at 60ada8f; docs cite it | 81d74be | — |
 | Healix WO1 judge limitation | measured and bounded; owner rules on a population-independent floor (cost 51 of 267 c2 copies) | 92dc904 | one line from the owner |
-| Healix WO2a evaluator regression: remove one valid proposal from a scratch export; exactly one pair moves category, denominator holds | ran locally (6 / 106); not yet a tracked CI check | — | land as a CI step with the existing fault |
+| Healix WO2a evaluator regression: remove one valid proposal from a scratch export; exactly one pair moves category, denominator holds | done; CI green | healix 74ee154 | — |
 | Healix WO2b matcher miss: which edits drop a true copy | refused prediction (3-field edits were proposed) | — | measure an edit table; separate from WO2a |
 | Healix harness ledger landings (landing 0, gateClean, demo/check/evaluate) | declared pending | — | after B6 |
 | Concept matrix, RUBRIC A–F | landed and mirrored | both repos | claims↔cells join: CLAIMS.md cells column + check |
