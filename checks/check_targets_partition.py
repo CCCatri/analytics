@@ -1,52 +1,68 @@
-"""Do the kit's receiver slices add up to the quarterback total they were drawn from, game by game?
+"""Do the kit's slices fit inside the team budget they were drawn from, game by game?
 
-Football: every forward pass is one target, a throwaway or a spike (Rule 8, Forward Pass). So in any one game a team's
-receivers cannot be targeted more times than its quarterbacks throw. The check sums each team's `F5 targets` draws and
-compares them, draw by draw, with the team's summed `Q1 attempts` draws. FAIL while any game breaks the rule.
-
-Reads the local preflight artifacts (out/preflight_2025_w16/frozen_draws_2025_w16.npz and card_2025_w16.csv), or two
-paths given on the command line. `--self-test` runs the check on a conserved synthetic slate (must PASS) and on a planted
-independent slate (must FAIL) before any PASS on real data counts."""
+Football: every forward pass is one target, a throwaway or a spike (Rule 8, Forward Pass), so in one game a team's receivers
+cannot be targeted more times than the team throws, and its quarterbacks cannot throw more than the team throws.
+Three verdicts, declared in advance for each (team, draw) cell:
+  SUPPORTED  the slice total fits its parent draw;  REFUTED  the slice total exceeds it;  UNKNOWN  no parent draw for that team.
+Usage:
+  python3 checks/check_targets_partition.py FROZEN.npz CARD.csv [TEAM.npz]
+With TEAM.npz the parent is the team's own `F2 team attempts` draw (the budget). Without it the parent is the summed
+quarterback draws, which are themselves slices; the printout says which scope it used. `--self-test` must print PASS
+(conserved slate 0 refuted; planted independent slate refuted > 0) before any real PASS counts. Exit 1 while any cell is refuted."""
 import sys, numpy as np, pandas as pd
 
-def impossible_cells(qb, tg):
-    """qb, tg: teams x draws. Returns (count of cells with targets > attempts, cells, teams over on average)."""
-    gap = tg - qb
-    return int((gap > 0).sum()), int(gap.size), int(((tg.mean(1) - qb.mean(1)) > 0).sum())
+def verdicts(parent, child):
+    """parent, child: teams x draws; rows with no parent (all nan) are UNKNOWN. Returns counts (supported, refuted, unknown)."""
+    unknown = np.isnan(parent).all(1)
+    gap = (child - parent)[~unknown]
+    return int((gap <= 0).sum()), int((gap > 0).sum()), int(unknown.sum() * parent.shape[1])
 
-def load(npz_path, card_path):
-    z = np.load(npz_path, allow_pickle=False)
+def load(frozen_path, card_path, team_path=None):
+    z = np.load(frozen_path, allow_pickle=False)
     keys, terms, draws = z["keys"].astype(str), z["terms"].astype(str), z["draws"]
     card = pd.read_csv(card_path)
     team_of = dict(zip(card.player_id.astype(str), card.team.astype(str)))
     teams = sorted(set(team_of.values())); index = {t: i for i, t in enumerate(teams)}
-    qb = np.zeros((len(teams), draws.shape[1])); tg = np.zeros_like(qb)
+    n = draws.shape[1]
+    qb, tg = np.zeros((len(teams), n)), np.zeros((len(teams), n))
     for key, term, row in zip(keys, terms, draws):
         team = team_of.get(key)
         if team is None: continue
         if term == "Q1 attempts": qb[index[team]] += row
         if term == "F5 targets": tg[index[team]] += row
-    has = (qb.sum(1) > 0) & (tg.sum(1) > 0)
-    return qb[has], tg[has], [t for t, h in zip(teams, has) if h]
+    parent = np.full((len(teams), n), np.nan); scope = "summed quarterback draws (slices, not the budget)"
+    if team_path:
+        t = np.load(team_path, allow_pickle=False)
+        for key, term, row in zip(t["keys"].astype(str), t["terms"].astype(str), t["draws"]):
+            if term == "F2 team attempts" and key in index: parent[index[key]] = row
+        scope = "team's own F2 team attempts draw (the budget)"
+    else: parent = np.where(qb > 0, qb, np.nan)
+    has = (tg.sum(1) > 0)
+    return parent[has], qb[has], tg[has], [t for t, h in zip(teams, has) if h], scope
 
 def self_test():
     rng = np.random.default_rng(20261107)
-    attempts = rng.integers(20, 45, size=(31, 2000)).astype(float)
-    conserved = attempts - rng.integers(0, 4, size=attempts.shape)          # every target is one of the attempts; the rest thrown away
-    over, cells, teams_over = impossible_cells(attempts, conserved)
-    assert over == 0 and teams_over == 0, f"self-test: conserved slate must PASS, got {over} of {cells}"
-    planted = np.stack([rng.binomial(attempts.astype(int), 0.95) + rng.binomial(attempts.astype(int), 0.10) for _ in range(1)])[0]  # drawn apart from the whole
-    over, cells, _ = impossible_cells(attempts, planted)
-    assert over > 0, "self-test: planted independent slate must FAIL"
-    print(f"SELF-TEST PASS: conserved slate 0 impossible games; planted independent slate {over} of {cells}")
+    budget = rng.integers(20, 45, size=(31, 2000)).astype(float)
+    conserved = budget - rng.integers(0, 4, size=budget.shape)
+    s, r, u = verdicts(budget, conserved); assert r == 0 and u == 0, f"self-test: conserved slate must have 0 refuted, got {r}"
+    planted = rng.binomial(budget.astype(int), 0.95) + rng.binomial(budget.astype(int), 0.10)
+    s, r, u = verdicts(budget, planted.astype(float)); assert r > 0, "self-test: planted independent slate must be refuted"
+    missing = budget.copy(); missing[0] = np.nan
+    s, r, u = verdicts(missing, conserved); assert u == 2000, f"self-test: a team without a parent must be UNKNOWN for all its draws, got {u}"
+    print(f"SELF-TEST PASS: conserved 0 refuted; planted {r} refuted; missing parent -> {u} unknown")
 
 if __name__ == "__main__":
     if "--self-test" in sys.argv: self_test(); sys.exit(0)
-    npz, card = (sys.argv[1], sys.argv[2]) if len(sys.argv) == 3 else ("out/preflight_2025_w16/frozen_draws_2025_w16.npz", "out/preflight_2025_w16/card_2025_w16.csv")
-    qb, tg, teams = load(npz, card)
-    over, cells, teams_over = impossible_cells(qb, tg)
-    share = (tg - qb > 0).mean(1)
-    worst = ", ".join(f"{teams[i]} {share[i]:.0%}" for i in np.argsort(-share)[:3])
-    status = "PASS" if over == 0 else "FAIL"
-    print(f"TARGETS PARTITION {status}: {over} of {cells} simulated games have receivers targeted more than the quarterbacks threw ({over/cells:.1%}); {teams_over} of {len(teams)} teams over on average; worst {worst}")
-    sys.exit(0 if over == 0 else 1)
+    if len(sys.argv) < 3: print(__doc__); sys.exit(2)
+    frozen, card, team = sys.argv[1], sys.argv[2], (sys.argv[3] if len(sys.argv) > 3 else None)
+    parent, qb, tg, teams, scope = load(frozen, card, team)
+    s, r, u = verdicts(parent, tg)
+    cells = s + r
+    print(f"PARENT SCOPE: {scope}")
+    print(f"RECEIVER TARGETS vs PARENT: supported {s}, refuted {r} ({r/max(cells,1):.1%} of {cells} games), unknown {u}")
+    if team:
+        s2, r2, u2 = verdicts(parent, qb); print(f"QUARTERBACK ATTEMPTS vs PARENT: supported {s2}, refuted {r2} ({r2/max(s2+r2,1):.1%}), unknown {u2}")
+        over = ((tg.mean(1) - np.nanmean(parent, 1)) > 0).sum(); print(f"teams whose average receiver targets exceed the average team budget: {int(over)} of {len(teams)}")
+    share = np.nan_to_num((tg - parent > 0).mean(1)); worst = ", ".join(f"{teams[i]} {share[i]:.0%}" for i in np.argsort(-share)[:3])
+    print(f"TARGETS PARTITION {'PASS' if r == 0 else 'FAIL'}: worst {worst}")
+    sys.exit(0 if r == 0 else 1)

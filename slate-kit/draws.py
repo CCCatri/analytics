@@ -314,9 +314,15 @@ def player_draw_matrix(week):
     """Every issued player and DST row of week N (TEAM rows excluded), in summary order: key, term and position arrays and the draw matrix (DRAW_COUNT draws per row)."""
     player_rows = week["summaries"][week["summaries"].position != TEAM_KEY]
     return dict(keys=player_rows.key.to_numpy(dtype=str), terms=player_rows.term.to_numpy(dtype=str), positions=player_rows.position.to_numpy(dtype=str), draws=np.vstack([week["draws"][(row.key, row.term)] for row in player_rows.itertuples(index=False)]))
+def team_draws_path(issue_season, issue_week): return os.path.join(PROJ_DIR, f"team_draws_{issue_season}_w{issue_week}.npz")
+def team_draw_matrix(week):
+    """Every TEAM row of week N (the parents the player slices are drawn from), in summary order: key, term and position arrays and the draw matrix.
+    Written beside the frozen player draws so a check can hold each slice against its own budget; the market does not read it."""
+    team_rows = week["summaries"][week["summaries"].position == TEAM_KEY]
+    return dict(keys=team_rows.key.to_numpy(dtype=str), terms=team_rows.term.to_numpy(dtype=str), positions=team_rows.position.to_numpy(dtype=str), draws=np.vstack([week["draws"][(row.key, row.term)] for row in team_rows.itertuples(index=False)]))
 def freeze_draws(week, issue_season, issue_week):
     """Write week N's player draw matrix to proj/frozen_draws_{SEASON}_w{WEEK}.npz, the only draws the market reads; returns (path, SHA-256)."""
-    path = frozen_draws_path(issue_season, issue_week); np.savez_compressed(path, **player_draw_matrix(week)); return path, sha(path)
+    path = frozen_draws_path(issue_season, issue_week); np.savez_compressed(path, **player_draw_matrix(week)); np.savez_compressed(team_draws_path(issue_season, issue_week), **team_draw_matrix(week)); return path, sha(path)
 def draw_issue(issue_season, issue_week):
     """python3 kit.py draws SEASON WEEK: week N drawn -> proj/native_draw_week_{SEASON}_w{WEEK}.csv.gz and the frozen draws (DRY RUN)."""
     report = Report(); week = week_draws(issue_season, issue_week); path = os.path.join(PROJ_DIR, f"native_draw_week_{issue_season}_w{issue_week}.csv.gz"); week["summaries"].to_csv(path, index=False)
