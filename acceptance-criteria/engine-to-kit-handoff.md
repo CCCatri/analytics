@@ -30,9 +30,9 @@ attempts and carries arrays as the root draws. Players, shares, conversions and 
 (participation, DNP = 0) and are not changed by the handoff.
 
 ## 4. The two quality gates on a joined run (in this order; the second does not run until the first passes)
-Quality quality gate 1 - legality of what the engine hands over: the generated games behind the root draws pass the unchanged record checks (engine-legality.md section 4)
+Quality gate 1 - legality of what the engine hands over: the generated games behind the root draws pass the unchanged record checks (engine-legality.md section 4)
 with coverage printed; the four injected violations P1-P4 are each rejected through that path. A failing control or an undetected violation stops here. PASSED 2026-11-05 on 2024 w15 (30 draws; P1-P4 each detected on its own line; engine-legality.md Status).
-Quality quality gate 2 - what the engine contributed: the kit's replay (kit.py replay) run twice on the same slate window, same salaries, eligibility and scoring rule, with
+Quality gate 2 - what the engine contributed: the kit's replay (kit.py replay) run twice on the same slate window, same salaries, eligibility and scoring rule, with
 ROOT_SOURCE 'kit' and 'engine'; paired by (season, week, key, term); the season chance test as the kit already defines it (BETTER / WORSE / UNKNOWN /
 UNCHANGED). Exposure stated before the number: the window is unseen only if the engine's fits for season s read seasons < s; with the current look-back
 fits the result is reported as IN-SAMPLE AT THE ROOT and is not the integration claim. An UNKNOWN is reported as UNKNOWN.

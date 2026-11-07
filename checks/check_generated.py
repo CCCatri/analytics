@@ -1,4 +1,4 @@
-"""Quality quality gate 1 of the handoff (acceptance-criteria/engine-to-kit-handoff.md section 4; engine-legality.md section 4): the record checks' rule functions run unchanged
+"""Quality gate 1 of the handoff (acceptance-criteria/engine-to-kit-handoff.md section 4; engine-legality.md section 4): the record checks' rule functions run unchanged
 on one generated draw. python3 checks/check_generated.py SEASON WEEK DRAW. Stages out/handoff/stage/: the 44 untouched raw files linked from data/raw and
 pbp_{season}.csv.gz replaced by the draw's rows, pinned by sha in its own pins file with its own data version; policy pointed at it for this process only.
 Record-only sections (pinned record cases, run-log line 322, EXPECTED_FASTER, FROZEN_2023) do not run here: NOT APPLICABLE on generated input, printed, never a pass."""
