@@ -19,6 +19,38 @@ DST_PARTICIPATION = "NOT APPLICABLE - the defense plays every game"
 DEPENDENCE_STATUS = "cross-player dependence NOT MODELLED (M9); within-player order as earned"
 ISSUE_MODE = "DRY RUN - not prospective"
 GRADING_BASIS = "kit baseline evidence: atlas and ladder judgments graded on the kit law's replay, not on engine-rooted draws"
+FLAG_K = 4.0   # games of the position's mean blended into a skill player's own season-to-date average (fixed before the run, 2026-11-08)
+FLAG_CELLS = {("F5 targets", "WR"): ("targets", 0.5, 29, 27), ("F5 targets", "TE"): ("targets", 0.5, 33, 28), ("F5 carries", "RB"): ("carries", 0.5, 33, 37),
+              ("F5 receiving yards", "TE"): ("receiving_yards", 0.5, 30, 28), ("F5 rushing yards", "RB"): ("rushing_yards", 0.5, 28, 35)}
+# selected 2026-11-08 through excel_struggle itself: largest 2020-24 lift with >= 10% of lines flagged and shuffled projections earning <= +5; judged on 2025.
+# RB targets, WR and RB receiving yards: clean lift but under 10% flagged at every threshold tried; QB attempts: shuffled projections kept +9 to +11 (regression to the mean, not the projection)
+FLAG_COLUMNS = ["baseline", "baseline_own_mean", "baseline_games", "baseline_sd", "delta", "z", "flag", "flag_threshold_sd", "flag_evidence"]   # appended to the stat lines only; DST rows carry no flag
+# (term, position) -> (stat column, threshold in SDs chosen on 2020-24, lift in points on 2020-24, lift on 2025 held out); a cell not listed has no measured threshold
+def excel_struggle(rows, history, season, week):
+    """EXCEL / STRUGGLE against the player's own baseline (definition fixed 2026-11-08; threshold per cell chosen on 2020-24, judged on 2025 held out).
+    Baseline: his mean in his earlier games this season (3 or more), blended with his position's mean so far by FLAG_K games for RB / WR / TE; his own mean for a QB.
+    z = (projection - baseline) / his game-to-game SD so far, blended with his position's SD by the same FLAG_K games (a QB: his own SD). EXCEL when z is above the cell's threshold, STRUGGLE when below minus the threshold, WITHIN NOISE between.
+    A line whose cell has no measured threshold, or a player with fewer than 3 earlier games or no spread, is NOT RATED with its reason.
+    Returns a frame aligned to rows: baseline, baseline_games, baseline_sd, delta, z, flag, flag_threshold_sd, flag_evidence."""
+    earlier = history[(history.season == season) & (history.week < week)]
+    n = len(rows); base = np.full(n, np.nan); own = np.full(n, np.nan); games = np.zeros(n); sd = np.full(n, np.nan); thr = np.full(n, np.nan)
+    flag = np.array(["NOT RATED - no measured threshold for this line"] * n, dtype=object); ev = np.array([""] * n, dtype=object)
+    keys = rows.key.astype(str).to_numpy(); terms = rows.term.to_numpy(); positions = rows.position.to_numpy(); proj = rows.draw_mean.to_numpy(float)
+    for col in sorted({cell[0] for cell in FLAG_CELLS.values()}):
+        e = earlier[["player_id", "position", col]].dropna(); agg = e.groupby("player_id")[col].agg(["count", "mean", "std"]); pos_mean = e.groupby("position")[col].mean(); pos_var = e.groupby("position")[col].var()
+        for (term, position), (c, t, dev_lift, hold_lift) in FLAG_CELLS.items():
+            if c != col: continue
+            idx = np.where((terms == term) & (positions == position))[0]
+            if not len(idx): continue
+            a = agg.reindex(keys[idx]); cnt = a["count"].fillna(0).to_numpy(); m = a["mean"].to_numpy(float); s = a["std"].to_numpy(float); pm = float(pos_mean.get(position, np.nan)); pv = float(pos_var.get(position, np.nan))
+            b = m if position == "QB" else (cnt * m + FLAG_K * pm) / (cnt + FLAG_K)
+            s = s if position == "QB" else np.sqrt((cnt * np.square(s) + FLAG_K * pv) / (cnt + FLAG_K))   # his spread blended with the position's by the same FLAG_K games as his average
+            base[idx] = b; own[idx] = m; games[idx] = cnt; sd[idx] = s; thr[idx] = t
+            ev[idx] = f"lift {dev_lift:+d} points on 2020-24, {hold_lift:+d} on 2025 held out (flagged lines landing on the flagged side of the baseline, minus lines near it)"
+            ok = (cnt >= 3) & np.isfinite(s) & (s > 0); z = np.where(ok, (proj[idx] - b) / np.where(ok, s, 1.0), np.nan)
+            flag[idx] = np.where(~ok, "NOT RATED - fewer than 3 earlier games this season or no spread", np.where(z > t, "EXCEL", np.where(z < -t, "STRUGGLE", "WITHIN NOISE")))
+    good = np.isfinite(sd) & (sd > 0); delta = proj - base; z_all = np.where(good, delta / np.where(good, sd, 1.0), np.nan)
+    return pd.DataFrame(dict(baseline=base, baseline_own_mean=own, baseline_games=games, baseline_sd=sd, delta=delta, z=z_all, flag=flag, flag_threshold_sd=thr, flag_evidence=ev), index=rows.index)
 ROOT_FIELDS = ["root_source", "root_file", "root_file_sha", "root_source_draws", "root_columns"]
 LADDER_FIELDS = {"rung": "ladder_rung", "center_share": "ladder_center_share", "center_band": "ladder_center_band", "tail_share": "ladder_tail_share", "width_band": "ladder_width_band",
                  "lower_share": "ladder_lower_share", "upper_share": "ladder_upper_share", "tail_balance": "ladder_tail_balance", "crpss": "ladder_crpss", "skill": "ladder_skill",
@@ -72,12 +104,19 @@ def card(issue_season, issue_week):
     stat_rows["reference_status"] = reference_status(stat_rows.ladder_crpss.to_numpy(float)); stat_rows["prospective_evidence"] = stat_rows.prospective_evidence.fillna("NO LADDER CELL")
     stat_rows["provenance"] = stat_rows.provenance.where(stat_rows.term != F8_TERM, "F8 transform of the " + stat_rows.state + " order (dk)").where(stat_rows.term != DK_TERM, "F8 draws x the participation draw, DNP = 0 (dk.dnp_zero)")
     stat_rows["atlas_qualification"] = stat_rows.atlas_qualification.fillna("NO ATLAS CELL - not graded")
+    missing = {"player_id", "position", "targets", "carries", "receiving_yards", "rushing_yards", "attempts"} - set(player_rows.columns)
+    if missing: raise SystemExit(f"card {issue_season} w{issue_week}: player rows lack {sorted(missing)} - the EXCEL / STRUGGLE baseline cannot be read; refused, nothing issued")
+    if "ladder_skill" not in stat_rows.columns: raise SystemExit(f"card {issue_season} w{issue_week}: no ladder_skill column - the judge's skill verdict cannot be read; refused, nothing issued")
+    flags = excel_struggle(stat_rows, player_rows, issue_season, issue_week)
+    judged = stat_rows.atlas_qualification.eq("DECISION-QUALIFIED") & stat_rows.ladder_skill.eq("PASS")
+    flags["flag"] = flags.flag.where(judged | flags.flag.str.startswith("NOT RATED"), "NOT RATED - the judge has not qualified this line (atlas or ladder)")
+    stat_rows = pd.concat([stat_rows, flags], axis=1)
     stat_rows = stat_rows.rename(columns={"key": "player_id", "family": "law_family", "state": "law_state"}).merge(candidates[["player_id", "name", "team", "probability_plays", "participation_status"]], on="player_id", how="left")
     stat_rows = stat_rows.assign(issuable="ISSUABLE", conditioning=np.where(stat_rows.term == DK_TERM, DNP_CONDITIONING, CONDITIONING), dependence_status=DEPENDENCE_STATUS, issue_mode=ISSUE_MODE, **engine_fields)
     columns = ["season", "week", "player_id", "name", "team", "position", "term", "law_family", "law_state", "layer", "provenance", "conditioned_on_draw", "center", "center_source", "draw_mean",
                "quantile_10", "quantile_25", "quantile_50", "quantile_75", "quantile_90", "issuable", "atlas_qualification", "atlas_rows", "atlas_coverage_10", "atlas_coverage_90", "atlas_bias_mean",
                *[field for field in LADDER_FIELDS.values() if field != "prospective_evidence"], "reference_status", "prospective_evidence", "conditioning", "probability_plays", "participation_status", "dependence_status", "issue_mode", *engine_fields.keys()]
-    stat_rows = stat_rows[columns].sort_values(["team", "position", "player_id", "term"], kind="stable").reset_index(drop=True)
+    stat_rows = stat_rows[columns + FLAG_COLUMNS].sort_values(["team", "position", "player_id", "term"], kind="stable").reset_index(drop=True)
     candidate_columns = ["player_id", "name", "team", "position", "previous_label", "label_sequence", "coverage_status", "stats_issued", "probability_plays", "participation_status", "participation_cell", "games_missed", "snap_share_mean_season_pregame"]
     dst_rows = summaries[summaries.position == "DST"].merge(week["dst"]["rows"][["team", "opponent"]], left_on="key", right_on="team", how="left").rename(columns={"key": "player_id", "family": "law_family", "state": "law_state"})
     dst_rows = dst_rows.assign(name=dst_rows.team + " DST", layer=np.nan, provenance="laws.dst_week (the earned yardstick, verdict in proj/dstick_report.txt)", conditioned_on_draw=np.nan, issuable="ISSUABLE",
@@ -99,6 +138,7 @@ def card(issue_season, issue_week):
     report.say(f"   ISSUED stat candidates with P(plays) {int(issued_participation.probability_plays.notna().sum())} of {len(issued_participation)}; mean P(plays) {issued_participation.probability_plays.mean():.3f}")
     report.say("   stat rows by atlas qualification: " + "; ".join(f"{label} {count}" for label, count in stat_rows.atlas_qualification.value_counts().items()))
     report.say(f"   ATLAS (proj/atlas.csv): stat rows graded {int(graded_cells.sum())} of {len(stat_rows)} (state '{LINK_CHAIN_STATE}')")
+    report.say("   EXCEL / STRUGGLE (against his own baseline): " + ", ".join(f"{k} {v}" for k, v in stat_rows.flag.str.split(" - ").str[0].value_counts().items()))
     report.say(f"   LADDER (proj/ladder.csv): graded stat rows without a ladder cell {ladder_unmatched}; ladder cells on ungraded rows {ladder_orphans}; rows whose ladder qualification or rows differ from the atlas {ladder_disagree}")
     report.say("   stat rows by trust rung: " + "; ".join(f"rung {int(rung)} {count}" for rung, count in stat_rows.ladder_rung.value_counts().sort_index().items()) + f"; no ladder cell {int(stat_rows.ladder_rung.isna().sum())}")
     report.say("   stat rows by reference status: " + "; ".join(f"{label.split(' - ')[0]} {count}" for label, count in stat_rows.reference_status.value_counts().items()))
