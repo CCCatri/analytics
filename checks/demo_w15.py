@@ -53,6 +53,14 @@ set_mode("engine", FIX); rc = quiet(cards.card, 2024, 15); week = held["week"]; 
 verdict("card issued (exit 0, artifacts written)", rc == 0 and len(artifacts(PROJ)) >= 4, f"{len(card)} stat rows; {artifacts(PROJ)}")
 src = np.load(FIX); K = int(src["draw_id"].shape[0]); fsha = sha256(FIX)
 verdict("card carries the engine provenance", (card.root_source == "engine").all() and (card.root_file_sha.astype(str) == fsha).all() and (card.root_source_draws == K).all() and (card.root_columns == 2000).all(), f"{K} source draws -> 2000 columns, file {fsha[:12]}")
+atlas_d = pd.read_csv(os.path.join(PROJ, "atlas.csv")); ladder_d = pd.read_csv(os.path.join(PROJ, "ladder.csv")); graded_keys = set(zip(atlas_d.term, atlas_d.position, atlas_d.state))
+def grading_gaps(card_frame):
+    """Stat lines whose (term, position, state) has a cell in the pinned atlas but which the card left ungraded: a detached judge, partly or wholly."""
+    has_cell = pd.Series([k in graded_keys for k in zip(card_frame.term, card_frame.position, card_frame.law_state)], index=card_frame.index)
+    gaps = card_frame[has_cell & card_frame.atlas_qualification.eq("NO ATLAS CELL - not graded")]
+    return int(has_cell.sum()), sorted(set(zip(gaps.term, gaps.position))), sorted(card_frame[~has_cell].term.unique())
+eligible, gaps, no_cell_terms = grading_gaps(card)
+verdict("every line with an atlas cell is graded (DK lines have no cell, by design)", eligible > 0 and not gaps, f"{eligible} of {len(card)} lines have a cell; ungraded among them: {gaps or 'none'}; terms without a cell: {no_cell_terms}")
 say("  report: " + next((l.strip() for l in report if l.strip().startswith("root: engine")), "(no root line)")[:150])
 # --- (2) the trace
 say("\n=== 2. the trace: engine draws into the kit, into one player ===")
@@ -87,5 +95,15 @@ try: quiet(cards.card, 2024, 15)
 except SystemExit as stop: msg = str(stop.code)
 verdict("refused by name, no card artifact", "SHA mismatch" in msg and not artifacts(P2), msg[:140])
 # --- result
+say("\n=== 5. a deliberately detached judge: one cell re-spelled in the atlas and the ladder, card re-issued ===")
+import shutil
+apath, lpath = os.path.join(PROJ, "atlas.csv"), os.path.join(PROJ, "ladder.csv"); keep = {f: open(os.path.join(PROJ, f), "rb").read() for f in os.listdir(PROJ) if f.startswith("card_2024_w15")}
+a_good, l_good = open(apath).read(), open(lpath).read(); on_card = set(zip(card.term, card.position)); victim = next((t, q) for t, q in zip(atlas_d.term, atlas_d.position) if (t, q) in on_card)   # a cell the player card actually carries
+a_bad, l_bad = atlas_d.copy(), ladder_d.copy(); a_bad.loc[(a_bad.term == victim[0]) & (a_bad.position == victim[1]), "state"] = "detached"; l_bad.loc[(l_bad.term == victim[0]) & (l_bad.position == victim[1]), "state"] = "detached"
+a_bad.to_csv(apath, index=False); l_bad.to_csv(lpath, index=False); draws.PROJ_DIR = PROJ; cards.PROJ_DIR = PROJ; set_mode("engine", FIX); rc5 = quiet(cards.card, 2024, 15)
+card5 = pd.read_csv(os.path.join(PROJ, "card_2024_w15.csv")); _, gaps5, _ = grading_gaps(card5)
+open(apath, "w").write(a_good); open(lpath, "w").write(l_good)
+for f, b in keep.items(): open(os.path.join(PROJ, f), "wb").write(b)
+verdict("the partial detachment is caught and named (the card issued; the demo refuses it)", rc5 == 0 and victim in gaps5, f"re-spelled {victim}; ungraded cells found: {gaps5}; card exit {rc5}; real card files restored")
 say(f"\nDEMO W15 (from a simulated game to a player projection): {'PASS' if ok else 'FAIL'} | {time.time() - T0:.0f} s | {OUT}/RESULT.txt")
 open(os.path.join(OUT, "RESULT.txt"), "w").write("\n".join(LINES) + "\n"); LOG.close(); sys.exit(0 if ok else 1)
