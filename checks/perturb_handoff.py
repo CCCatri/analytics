@@ -1,6 +1,6 @@
 """Controlled perturbation at the engine -> kit handoff, as one callable concept (the matrix's controlled_perturbation for NFL).
 perturb_handoff(fixture, team, source_draw, delta, scratch, pinned_from, state=None, quiet=None) -> dict
-  fixture: the engine root draws .npz (its manifest beside it); team: the team whose root draw is changed; source_draw: which of its K draws (this landing
+  fixture: the engine root draws .npz (its manifest beside it); team: the team whose root draw is changed; source_draw: which of its K draws (this revision
   is scoped to draw 0, whose kit column is 30 — any other draw is refused by name); delta: added to that draw; scratch: a folder for isolated kit outputs;
   pinned_from: a proj folder holding the atlas.csv and ladder.csv the card grades against.
   state (optional): the first run already done by a caller — dict(week, boundary, pid, mine); without it the function runs the card itself and captures
@@ -13,7 +13,7 @@ import os, sys, json, shutil, hashlib, io, contextlib, numpy as np, pandas as pd
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); KIT = os.path.join(ROOT, "slate-kit")
 if KIT not in sys.path: sys.path.insert(0, KIT)
 sha256 = lambda p: hashlib.sha256(open(p, "rb").read()).hexdigest()
-PINNED_COLUMN = {0: 30}   # source draw -> the kit column the trace reads; only draw 0 is pinned for this landing
+PINNED_COLUMN = {0: 30}   # source draw -> the kit column the trace reads; only draw 0 is pinned in this revision
 
 def perturb_handoff(fixture, team, source_draw, delta, scratch, pinned_from, state=None, quiet=None):
     if source_draw not in PINNED_COLUMN: raise ValueError(f"perturb_handoff is scoped to source draw {sorted(PINNED_COLUMN)} (kit column {PINNED_COLUMN}); draw {source_draw} refused")
