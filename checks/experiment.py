@@ -1,7 +1,7 @@
 """The two-domain executor, first milestone. Runs one case per domain through one entry point and writes one experiment record each:
 baseline, intervention, dependency, expected, actual, evidence, and three statuses kept apart — domain_verdict (what the product said),
 check_result (what the check said against the expectation), release_status (always 'not a release decision' here; the ledger owns it).
-Cases: healix tracked fixture (control), healix 65-row known-wrong variant, NFL slices vs team budget (executed), NFL handoff B2 (executed through checks/perturb_handoff.py, the same callable the adapter test uses). Usage: python3 checks/experiment.py <healix repo path> [pinned proj dir with atlas.csv and ladder.csv]"""
+Cases: healix tracked fixture (control), healix 65-row known-wrong variant, NFL slices vs team budget (executed), NFL handoff B2 (executed through checks/perturb_handoff.py, the same callable the adapter test uses), and the shared check 'only these IDs changed' (checks/changed_ids.py) on NFL kit columns and Healix labeled pairs, each with injected faults named by ID. Usage: python3 checks/experiment.py <healix repo path> [pinned proj dir with atlas.csv and ladder.csv]"""
 import json, os, re, subprocess, sys, datetime, hashlib
 HEALIX = sys.argv[1] if len(sys.argv) > 1 else os.path.expanduser("~/LocalWork/healix7")
 stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S"); OUT = os.path.join("out", "experiments", stamp); os.makedirs(OUT, exist_ok=True)
@@ -42,6 +42,39 @@ records.append(record(case="NFL handoff B2 (executed via perturb_handoff)", exec
     dependency="engine team draw -> draw_link -> QB Q1 attempts", expected="team root moves at all mapped columns and none unmapped; the QB's attempts move only at mapped columns; the changed value is what draw_link received",
     actual="; ".join(f"{n}: {'PASS' if c else 'FAIL'}" for n, c, d in b2["checks"]), domain_verdict=f"received {b2.get('received_before')} -> {b2.get('received_after')}; team moved {b2.get('team_moved_mapped')}/{b2.get('mapped_columns')} mapped, {b2.get('team_moved_unmapped')} unmapped; QB moved {b2.get('player_moved_mapped')} mapped, {b2.get('player_moved_unmapped')} unmapped",
     check_result="PASS" if b2["checks"] and all(c for n, c, d in b2["checks"]) else "FAIL", evidence=f"{OUT}/nfl_b2.json; {OUT}/nfl_b2/perturb_handoff.json; pinned inputs {pinned} {pinned_sha}"))
+# shared check: only these IDs changed — the same function names an unexpected change in both domains (checks/changed_ids.py)
+from changed_ids import changed_ids, status_changes
+def ids_record(case, domain, expected, changed, injected=None):
+    r = changed_ids(expected, changed); named = r["extras"] + r["misses"]
+    ok = (not named) if injected is None else (sorted(named) == sorted(injected))
+    return record(case=case, executed=True, baseline=f"{len(expected)} IDs expected to change", intervention="none" if injected is None else f"injected fault: {injected}", dependency=domain,
+        expected="extras [] misses []" if injected is None else f"the injected fault named by ID: {sorted(injected)}", actual=f"changed {len(r['changed'])}; extras {r['extras']}; misses {r['misses']}",
+        domain_verdict=f"{len(r['extras'])} unexpected, {len(r['misses'])} missing", check_result="PASS" if ok else "FAIL", evidence="checks/changed_ids.py")
+# NFL: the callable's team root columns (expected = the mapped columns)
+exp_cols, chg_cols = list(b2["expected_columns"]), list(b2["team_changed_columns"])
+unmapped = next(c for c in range(len(exp_cols) * 30) if c not in set(exp_cols))
+records.append(ids_record("NFL only these IDs changed (team root columns)", "engine team draw -> kit columns", exp_cols, chg_cols))
+records.append(ids_record("NFL injected fault: an unmapped column also changed", "engine team draw -> kit columns", exp_cols, chg_cols + [unmapped], injected=[unmapped]))
+records.append(ids_record("NFL injected fault: a mapped column did not change", "engine team draw -> kit columns", exp_cols, [c for c in chg_cols if c != exp_cols[0]], injected=[exp_cols[0]]))
+# Healix: per-label evaluator outcome before and after removing one pinned pair from the pairs export (the WORK_ORDER 2a case)
+rc_demo, out_demo = sh(["npm", "run", "-s", "demo", "--", "tests"], HEALIX)
+export = os.path.join(HEALIX, "out", "demo_pairs.tsv")
+label_ids = [tuple(f"{side}#{v}" for side, v in zip("AB", l.strip().split(","))) for l in open(os.path.join(HEALIX, "tests/positive/own_copy/labels.csv")).read().splitlines()[1:] if l.strip()]
+def outcomes(path):
+    proposed = {}
+    for line in open(path).read().splitlines()[1:]:
+        if line: t, a, b, ruling = line.split("\t"); proposed.update({(a, b): ruling} if t == "own_copy" else {})
+    return {k: proposed.get(k, "never proposed") for k in label_ids}
+def export_without(removed):
+    q = f"{OUT}/healix_export_without_{len(removed)}.tsv"
+    open(q, "w").write("\n".join(l for l in open(export).read().splitlines() if not any(l.split("\t")[:3] == ["own_copy", a, b] for a, b in removed)) + "\n"); return q
+one = [("A#1000", "B#11000")]; second = ("A#1001", "B#11001")
+if rc_demo == 0:
+    base = outcomes(export)
+    records.append(ids_record("Healix only these IDs changed (per-label outcome)", "pairs export -> evaluator outcome per label", one, status_changes(base, outcomes(export_without(one)))))
+    records.append(ids_record("Healix injected fault: a second pair also removed", "pairs export -> evaluator outcome per label", one, status_changes(base, outcomes(export_without(one + [second]))), injected=[second]))
+else:
+    records.append(record(case="Healix only these IDs changed (per-label outcome)", executed=False, baseline="demo on the tracked fixture", intervention="none", dependency="pairs export", expected="demo exit 0", actual=f"demo exit {rc_demo}", domain_verdict="not run", check_result="FAIL", evidence=f"{OUT}/healix_demo.txt")); open(f"{OUT}/healix_demo.txt", "w").write(out_demo)
 json.dump(records, open(f"{OUT}/records.json", "w"), indent=1)
 print(f"{'case':46s} {'executed':8s} {'domain verdict':52s} check")
 for r in records: print(f"{r['case'][:46]:46s} {str(r['executed']):8s} {r['domain_verdict'][:52]:52s} {r['check_result']}")
