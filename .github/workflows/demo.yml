@@ -27,6 +27,12 @@ jobs:
         run: |
           P=$(ls -d out/demo_w15/*/proj | sort | tail -1)
           python3 checks/experiment.py healix checks/fixtures/demo_w15 "$P/frozen_draws_2024_w15.npz" "$P/card_2024_w15.csv" "$P/team_draws_2024_w15.npz" "2024 w15 fixture"
+      - name: expected budget check (Rule 8; Rule 3 Section 2): self-test, fixture readout, injected fault named
+        run: |
+          P=$(ls -d out/demo_w15/*/proj | sort | tail -1)
+          python3 checks/check_expected_budget.py --self-test
+          python3 checks/check_expected_budget.py "$P/frozen_draws_2024_w15.npz" "$P/card_2024_w15.csv" "$P/team_draws_2024_w15.npz"
+          python3 checks/check_expected_budget.py "$P/frozen_draws_2024_w15.npz" "$P/card_2024_w15.csv" "$P/team_draws_2024_w15.npz" --inject WORST 1.2
       - uses: actions/upload-artifact@v4
         if: always()
         with:
