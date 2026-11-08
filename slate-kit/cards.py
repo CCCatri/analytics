@@ -11,7 +11,7 @@ from ingest import PROJ_DIR, Report
 from facts import load_as_of, team_game, read_table, SKILL_POSITIONS
 from state import ISSUE_WEEKS, HISTORY_MINIMUM
 from dk import F8_TERM, DK_TERM, DST_TERM
-from draws import week_draws, freeze_draws
+from draws import week_draws, freeze_draws, LINK_CHAIN_STATE
 CONDITIONING = "given he plays"
 DNP_CONDITIONING = "DNP = 0: P(plays) mixed into the draws"
 DST_CONDITIONING = "the defense plays every game"
@@ -64,6 +64,8 @@ def card(issue_season, issue_week):
     law_fields = week_laws[["key", "term", "position", "layer", "provenance", "conditioned_on_draw"]]
     atlas = read_table(os.path.join(PROJ_DIR, "atlas.csv"))[["term", "position", "state", "rows", "qualification", "coverage_10", "coverage_90", "bias_mean"]].rename(columns={"rows": "atlas_rows", "qualification": "atlas_qualification", "coverage_10": "atlas_coverage_10", "coverage_90": "atlas_coverage_90", "bias_mean": "atlas_bias_mean"})
     ladder = read_table(os.path.join(PROJ_DIR, "ladder.csv"))[["term", "position", "state", "rows", "qualification"] + list(LADDER_FIELDS)].rename(columns={"rows": "ladder_rows", "qualification": "ladder_qualification", **LADDER_FIELDS})
+    for name, table in (("atlas", atlas), ("ladder", ladder)):   # the judge is joined on (term, position, state): a state spelled differently in proj/{name}.csv than in the kit grades nothing, silently - refused by name instead
+        if len(table) and not (table.state == LINK_CHAIN_STATE).any(): raise SystemExit(f"card {issue_season} w{issue_week}: proj/{name}.csv spells the state {sorted(table.state.unique())} and the kit spells it '{LINK_CHAIN_STATE}' - no line could be graded; refused, nothing issued (re-spell the {name} or the kit, then re-pin)")
     stat_rows = player_summaries.merge(law_fields, on=["key", "term", "position"], how="left").merge(atlas, on=["term", "position", "state"], how="left").merge(ladder, on=["term", "position", "state"], how="left")
     graded_cells = stat_rows.atlas_qualification.notna(); ladder_unmatched = int((graded_cells & stat_rows.ladder_rung.isna()).sum()); ladder_orphans = int((~graded_cells & stat_rows.ladder_rung.notna()).sum())
     ladder_disagree = int((graded_cells & stat_rows.ladder_rung.notna() & ((stat_rows.ladder_qualification != stat_rows.atlas_qualification) | (stat_rows.ladder_rows != stat_rows.atlas_rows))).sum())
@@ -96,6 +98,7 @@ def card(issue_season, issue_week):
     issued_participation = candidates[candidates.coverage_status == "ISSUED"]
     report.say(f"   ISSUED stat candidates with P(plays) {int(issued_participation.probability_plays.notna().sum())} of {len(issued_participation)}; mean P(plays) {issued_participation.probability_plays.mean():.3f}")
     report.say("   stat rows by atlas qualification: " + "; ".join(f"{label} {count}" for label, count in stat_rows.atlas_qualification.value_counts().items()))
+    report.say(f"   ATLAS (proj/atlas.csv): stat rows graded {int(graded_cells.sum())} of {len(stat_rows)} (state '{LINK_CHAIN_STATE}')")
     report.say(f"   LADDER (proj/ladder.csv): graded stat rows without a ladder cell {ladder_unmatched}; ladder cells on ungraded rows {ladder_orphans}; rows whose ladder qualification or rows differ from the atlas {ladder_disagree}")
     report.say("   stat rows by trust rung: " + "; ".join(f"rung {int(rung)} {count}" for rung, count in stat_rows.ladder_rung.value_counts().sort_index().items()) + f"; no ladder cell {int(stat_rows.ladder_rung.isna().sum())}")
     report.say("   stat rows by reference status: " + "; ".join(f"{label.split(' - ')[0]} {count}" for label, count in stat_rows.reference_status.value_counts().items()))
