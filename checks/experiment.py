@@ -1,8 +1,8 @@
 """The two-domain executor, first milestone. Runs one case per domain through one entry point and writes one experiment record each:
 baseline, intervention, dependency, expected, actual, evidence, and three statuses kept apart — domain_verdict (what the product said),
 check_result (what the check said against the expectation), release_status (always 'not a release decision' here; the ledger owns it).
-Cases: healix tracked fixture (control), healix 65-row known-wrong variant, NFL slices vs team budget (executed), NFL handoff B2 (executed through checks/perturb_handoff.py, the same callable the adapter test uses). Usage: python3 checks/experiment.py <healix repo path>"""
-import json, os, re, subprocess, sys, datetime
+Cases: healix tracked fixture (control), healix 65-row known-wrong variant, NFL slices vs team budget (executed), NFL handoff B2 (executed through checks/perturb_handoff.py, the same callable the adapter test uses). Usage: python3 checks/experiment.py <healix repo path> [pinned proj dir with atlas.csv and ladder.csv]"""
+import json, os, re, subprocess, sys, datetime, hashlib
 HEALIX = sys.argv[1] if len(sys.argv) > 1 else os.path.expanduser("~/LocalWork/healix7")
 stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S"); OUT = os.path.join("out", "experiments", stamp); os.makedirs(OUT, exist_ok=True)
 def sh(cmd, cwd): p = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True); return p.returncode, p.stdout + p.stderr
@@ -34,14 +34,14 @@ records.append(record(case="NFL slices vs team budget (2025 w16)", executed=True
     evidence=f"{OUT}/nfl_partition.txt; WORK_ORDER.md 4"))
 # NFL: handoff B2, executed through the callable concept
 sys.path.insert(0, "checks"); from perturb_handoff import perturb_handoff
-runs = sorted(d for d in os.listdir("out/handoff/runs")) if os.path.isdir("out/handoff/runs") else []
-pinned = next((f"out/handoff/runs/{r}/baseline/kit_pre/proj" for r in reversed(runs) if os.path.exists(f"out/handoff/runs/{r}/baseline/kit_pre/proj/ladder.csv")), "slate-kit/proj")
+pinned = sys.argv[2] if len(sys.argv) > 2 else "slate-kit/proj"   # the pinned atlas.csv/ladder.csv the card grades against, named by the caller, never looked up
+pinned_sha = {f: hashlib.sha256(open(os.path.join(pinned, f), "rb").read()).hexdigest()[:12] for f in ("atlas.csv", "ladder.csv")}
 b2 = perturb_handoff(os.path.abspath("out/handoff/root_draws_2024_w15.npz"), "LV", 0, 24, os.path.abspath(f"{OUT}/nfl_b2"), os.path.abspath(pinned))
 json.dump({k: v for k, v in b2.items() if k != "checks"} | {"checks": [[n, bool(c), d] for n, c, d in b2["checks"]]}, open(f"{OUT}/nfl_b2.json", "w"), indent=1)
 records.append(record(case="NFL handoff B2 (executed via perturb_handoff)", executed=True, baseline="kit in engine mode on the 2024 w15 fixture", intervention=f"source draw 0 for LV changed {b2.get('source_before')} -> {b2.get('source_after')}",
     dependency="engine team draw -> draw_link -> QB Q1 attempts", expected="team root moves at all mapped columns and none unmapped; the QB's attempts move only at mapped columns; the changed value is what draw_link received",
     actual="; ".join(f"{n}: {'PASS' if c else 'FAIL'}" for n, c, d in b2["checks"]), domain_verdict=f"received {b2.get('received_before')} -> {b2.get('received_after')}; team moved {b2.get('team_moved_mapped')}/{b2.get('mapped_columns')} mapped, {b2.get('team_moved_unmapped')} unmapped; QB moved {b2.get('player_moved_mapped')} mapped, {b2.get('player_moved_unmapped')} unmapped",
-    check_result="PASS" if b2["checks"] and all(c for n, c, d in b2["checks"]) else "FAIL", evidence=f"{OUT}/nfl_b2.json; pinned inputs {pinned}"))
+    check_result="PASS" if b2["checks"] and all(c for n, c, d in b2["checks"]) else "FAIL", evidence=f"{OUT}/nfl_b2.json; {OUT}/nfl_b2/perturb_handoff.json; pinned inputs {pinned} {pinned_sha}"))
 json.dump(records, open(f"{OUT}/records.json", "w"), indent=1)
 print(f"{'case':46s} {'executed':8s} {'domain verdict':52s} check")
 for r in records: print(f"{r['case'][:46]:46s} {str(r['executed']):8s} {r['domain_verdict'][:52]:52s} {r['check_result']}")
