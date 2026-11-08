@@ -3,13 +3,34 @@ on: [push, pull_request]
 jobs:
   demo_w15:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: CCCatri/healix
+          path: healix
       - uses: actions/setup-python@v5
-        with: { python-version: "3.12" }
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - run: pip install -r requirements.txt
-      - run: python3 checks/demo_w15.py
+      - run: npm ci
+        working-directory: healix
+      - name: demo_w15 (from a simulated game to a player projection, pinned fixture)
+        run: python3 checks/demo_w15.py
+      - name: shared check self-test (only these IDs changed)
+        run: python3 checks/changed_ids.py
+      - name: two-domain executor on the clean checkout (NFL fixture scope, Healix tracked fixtures)
+        run: |
+          P=$(ls -d out/demo_w15/*/proj | sort | tail -1)
+          python3 checks/experiment.py healix checks/fixtures/demo_w15 "$P/frozen_draws_2024_w15.npz" "$P/card_2024_w15.csv" "$P/team_draws_2024_w15.npz" "2024 w15 fixture"
       - uses: actions/upload-artifact@v4
         if: always()
-        with: { name: demo_w15_result, path: out/demo_w15/*/RESULT.txt }
+        with:
+          name: demo_w15_result
+          path: |
+            out/demo_w15/*/RESULT.txt
+            out/experiments/*/records.json

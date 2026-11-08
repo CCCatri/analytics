@@ -1,7 +1,7 @@
 """The two-domain executor, first milestone. Runs one case per domain through one entry point and writes one experiment record each:
 baseline, intervention, dependency, expected, actual, evidence, and three statuses kept apart — domain_verdict (what the product said),
 check_result (what the check said against the expectation), release_status (always 'not a release decision' here; the ledger owns it).
-Cases: healix tracked fixture (control), healix 65-row known-wrong variant, NFL slices vs team budget (executed), NFL handoff B2 (executed through checks/perturb_handoff.py, the same callable the adapter test uses), and the shared check 'only these IDs changed' (checks/changed_ids.py) on NFL kit columns and Healix labeled pairs, each with injected faults named by ID. Usage: python3 checks/experiment.py <healix repo path> [pinned proj dir with atlas.csv and ladder.csv]"""
+Cases: healix tracked fixture (control), healix 65-row known-wrong variant, NFL slices vs team budget (executed), NFL handoff B2 (executed through checks/perturb_handoff.py, the same callable the adapter test uses), and the shared check 'only these IDs changed' (checks/changed_ids.py) on NFL kit columns and Healix labeled pairs, each with injected faults named by ID. Usage: python3 checks/experiment.py <healix repo path> [pinned proj dir with atlas.csv and ladder.csv] [frozen draws .npz] [card .csv] [team draws .npz] [partition scope label]"""
 import json, os, re, subprocess, sys, datetime, hashlib
 HEALIX = sys.argv[1] if len(sys.argv) > 1 else os.path.expanduser("~/LocalWork/healix7")
 stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S"); OUT = os.path.join("out", "experiments", stamp); os.makedirs(OUT, exist_ok=True)
@@ -24,10 +24,12 @@ for name, d, expect_false in (("healix tracked fixture (control)", "tests", 0), 
         domain_verdict=("SUPPORTED on " + ", ".join(pairs)) if pairs else "no wrong-by-construction pair SUPPORTED",
         check_result="PASS" if (fc == expect_false and lc == 0 and len(pairs) == expect_false) else "FAIL", evidence=f"{OUT}/{name.split()[1]}_separation.txt; {HEALIX}/{d}"))
 # NFL: slices vs team budget, executed (self-test is the plant)
-rc_t, out_t = sh([sys.executable, "checks/check_targets_partition.py", "--self-test"], "."); rc_p, out_p = sh([sys.executable, "checks/check_targets_partition.py", "slate-kit/proj/frozen_draws_2025_w16.npz", "slate-kit/proj/card_2025_w16.csv", "slate-kit/proj/team_draws_2025_w16.npz"], ".")
+rc_t, out_t = sh([sys.executable, "checks/check_targets_partition.py", "--self-test"], "."); PARTITION_INPUTS = sys.argv[3:6] if len(sys.argv) > 5 else ["slate-kit/proj/frozen_draws_2025_w16.npz", "slate-kit/proj/card_2025_w16.csv", "slate-kit/proj/team_draws_2025_w16.npz"]   # frozen draws, card, team draws — named by the caller
+PARTITION_SCOPE = sys.argv[6] if len(sys.argv) > 6 else "2025 w16"
+rc_p, out_p = sh([sys.executable, "checks/check_targets_partition.py", *PARTITION_INPUTS], ".")
 open(f"{OUT}/nfl_partition.txt", "w").write(out_t + out_p)
 m = re.search(r"RECEIVER TARGETS vs PARENT: supported (\d+), refuted (\d+)", out_p)
-records.append(record(case="NFL slices vs team budget (2025 w16)", executed=True, baseline="team F2 attempts draw per team-draw", intervention="plant: a conserved synthetic slate and an independent one (self-test)",
+records.append(record(case=f"NFL slices vs team budget ({PARTITION_SCOPE})", executed=True, baseline="team F2 attempts draw per team-draw", intervention="plant: a conserved synthetic slate and an independent one (self-test)",
     dependency="team draw -> player share draws -> summed receiver targets", expected="self-test PASS (conserved 0 refuted, planted > 0); product: refuted > 0 while slices are drawn apart",
     actual=f"self-test exit {rc_t}: {out_t.strip().splitlines()[-1] if out_t.strip() else ''}; product refuted {m.group(2) if m else None} of {int(m.group(1)) + int(m.group(2)) if m else None}",
     domain_verdict=f"FAIL: receivers over the team budget in {m.group(2)} team-draws" if m else "unreadable", check_result="PASS" if rc_t == 0 and m and int(m.group(2)) > 0 else "FAIL",
