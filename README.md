@@ -23,7 +23,6 @@ The lead case is [From a simulated game to a player projection](cases/from-a-sim
 - the handoff and its quality gates: `acceptance-criteria/engine-to-kit-handoff.md` (section 6 is the integration check the lead case reports)
 - the three earlier cases, each one part of the lead case: `cases/clock-check-passed-a-corrupted-game.md`, `cases/regression-test-needed-data-that-could-trigger-the-bug.md`, `cases/two-components-had-to-agree-on-what-counts-as-an-attempt.md`
 - the sentences the résumé and this repository both copy from, one row per responsibility: `CLAIMS.md` (checked by `checks/check_claims.py`)
-- the operating-problem sample beside the cases: `samples/`
 - the two ways to verify it, below
 - the fields that carry the claim, and every column on disk: `DATA.md`
 - what remains open, as a work order with done-criteria: `WORK_ORDER.md`
