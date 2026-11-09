@@ -1,4 +1,4 @@
-"""Attribution of the unequal team-weeks from reconcile_root_counts.py: engine-side snaps by the ball-handler's stats-file position. Reads only; writes nothing."""
+"""Attribution of the unequal team-games from reconcile_root_counts.py: engine-side snaps by the ball-handler's stats-file position. Reads only; writes nothing."""
 import sys, os, pandas as pd
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "product")); sys.path.insert(0, os.path.join(ROOT, "slate-kit"))
@@ -23,9 +23,9 @@ tot = e.groupby(["season", "week", "team", "what"]).size().unstack(fill_value=0)
 uni = e[e.in_universe].groupby(["season", "week", "team", "what"]).size().unstack(fill_value=0).reset_index()
 m = kit.merge(tot, on=["season", "week", "team"], suffixes=("", "_eng_all")).merge(uni, on=["season", "week", "team"], suffixes=("", "_eng_universe"))
 bad_all = (m.attempts != m.attempts_eng_all) | (m.carries != m.carries_eng_all); bad_uni = (m.attempts != m.attempts_eng_universe) | (m.carries != m.carries_eng_universe)
-print(f"team-weeks {len(m)} | unequal with every ball-handler {int(bad_all.sum())} | unequal with QB/RB/WR/TE only {int(bad_uni.sum())}")
+print(f"team-games {len(m)} | unequal with every ball-handler {int(bad_all.sum())} | unequal with QB/RB/WR/TE only {int(bad_uni.sum())}")
 print("snaps outside the universe, by position:", e[~e.in_universe].groupby(["what", "who"]).size().to_dict())
 print(m[bad_uni][["season", "week", "team", "attempts", "attempts_eng_universe", "carries", "carries_eng_universe"]].head(20).to_string(index=False))
-missing = kit.merge(tot[["season", "week", "team"]], on=["season", "week", "team"], how="left", indicator=True); print("kit-only team-weeks:"); print(missing[missing._merge == "left_only"][["season", "week", "team", "attempts", "carries"]].to_string(index=False))
+missing = kit.merge(tot[["season", "week", "team"]], on=["season", "week", "team"], how="left", indicator=True); print("kit-only team-games:"); print(missing[missing._merge == "left_only"][["season", "week", "team", "attempts", "carries"]].to_string(index=False))
 print("RECONCILED under the universe definition" if bad_uni.sum() == 0 else "NOT RECONCILED under the universe definition either")
 sys.exit(0 if bad_uni.sum() == 0 else 1)

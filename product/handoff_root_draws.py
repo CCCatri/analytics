@@ -46,7 +46,7 @@ def main(argv):
                         attempts=att.reshape(-1, K), carries=car.reshape(-1, K))
     manifest = dict(season=season, week=week, draw_count=K, games=ids, teams=list(team), teams_without_game=[t for t in teams if t not in set(team)],
                     engine_py_sha=sha(os.path.join(HERE, "engine.py")), model_files=man, fit_mode="look-back: each season's race fit on the five other seasons, later ones included - legality judging only, not a forecast",
-                    information_set="the engine's model files as staged; no week-N information enters", counting_rule="section 1 without the accepted-foul clause: engine foul rows carry no pass_attempt/rush_attempt, so attempts and carries on nullified plays are not counted (2 of 3,200 team-weeks on the play-by-play record)",
+                    information_set="the engine's model files as staged; no week-N information enters", counting_rule="section 1 without the accepted-foul clause: engine foul rows carry no pass_attempt/rush_attempt, so attempts and carries on nullified plays are not counted (2 of 3,200 team-games on the play-by-play record)",
                     accepted_foul_rows_with_a_ball_handler=pen, root_draws_sha=sha(path), written=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
     gp = os.path.join(od, f"games_{season}_w{week}.csv.gz"); pd.concat(kept, ignore_index=True).to_csv(gp, index=False); manifest["games_file"] = os.path.basename(gp); manifest["games_file_sha"] = sha(gp)
     json.dump(manifest, open(path.replace(".npz", ".manifest.json"), "w"), indent=1)
