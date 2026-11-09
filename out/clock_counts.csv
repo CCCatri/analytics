@@ -1,4 +1,4 @@
-# check_clock.py c2ec51009075 | clock-check.md dfff5f9d7de8 | record read (rules-level clause 1), not product
+# check_clock.py 00f0d29aa9b6 | clock-check.md 26cd42781320 | record read (rules-level clause 1), not product
 season,check,word,count
 2019,CLASS,RUN,17082
 2019,CLASS,STOP,14500

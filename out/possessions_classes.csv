@@ -1,4 +1,4 @@
-# check_possessions.py edb4b6111b3b | acceptance-criteria/rules-level.md 3756eff7170d | record read (rules-level clause 2), not product
+# check_possessions.py 6d9acf7f5718 | acceptance-criteria/rules-level.md 3756eff7170d | record read (rules-level clause 2), not product
 season,season_type,check,rule_class,articles,book,count
 2019,POST,possessions,possessions,,,232
 2019,POST,back_to_back,overtime start,4-2-2; 16-1-2; 4-2-3,"Book: every article cited here is the 2026 rule book's (rules/nfl_rulebook_2026.pdf, sha 144cec5bffd2, from https://static.www.nfl.com/image/upload/fl_attachment/league/tqivdkzt9mu6wdgsh1ku.pdf); each season's own book is read by measure_season_rules.py, so a 2019-2025 count cites the 2026 numbering; measure_season_rules.py has measured each season's values beside the quoted rules.",2

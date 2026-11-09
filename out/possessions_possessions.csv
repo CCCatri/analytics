@@ -1,4 +1,4 @@
-# check_possessions.py edb4b6111b3b | acceptance-criteria/rules-level.md 3756eff7170d | record read (rules-level clause 2), not product
+# check_possessions.py 6d9acf7f5718 | acceptance-criteria/rules-level.md 3756eff7170d | record read (rules-level clause 2), not product
 game_id,season_type,pid,team,q,s0,s1,back_to_back,rule_class
 2019_01_ATL_MIN,REG,1,ATL,1.0,51.0,121.0,,
 2019_01_ATL_MIN,REG,2,MIN,1.0,185.0,214.0,,
