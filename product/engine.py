@@ -760,7 +760,8 @@ class Rates:
         P["gsnap1"] = Pool("R1a gap between snaps", c["gsnap1"], ["sec"], [("cls", "tb", "ls"), ("cls", "tb"), ("cls",), ()])
         P["gpair"] = Pool("R1a PARTIAL stretch, gap and stopped part", c["gpair"], ["x", "stopped"], [("tb", "ls"), ("tb",), ()])
         P["gfoul"] = Pool("y1 restart after a foul outside the windows, stopped part and running part", c["gfoul"], ["stopped", "run"], [("kind", "tb"), ("kind",)], last_any=True)
-        P["kc"] = Pool("R1b play kind and its clock flags", c["kc"], ["kind", "inc_k", "ob_k"], [("tb2", "ls", "down", "dist"), ("tb2", "down", "dist"), ("tb2", "down"), ("tb2",), ()])
+        assert len(c["kc"]) == len(c["play"]) and (c["kc"]["down"].to_numpy() == c["play"]["down"].to_numpy()).all() and (c["kc"]["dist"].to_numpy() == c["play"]["dist"].to_numpy()).all(), "kc rows do not align with play rows"   # the score key rides on the play row it was cut from
+        P["kc"] = Pool("R1b play kind and its clock flags", c["kc"].assign(score=c["play"]["score"].to_numpy()), ["kind", "inc_k", "ob_k"], [("tb2", "score", "down", "dist"), ("tb2", "down", "dist"), ("tb2", "down"), ("tb2",), ()])
         P["play2"] = Pool("R1b snap outcome given its kind and clock flags", c["play"], ["kind", "yards_gained", "complete_pass", "incomplete_pass", "interception", "fumble_lost", "out_of_bounds", "rv", "rv_rev", "rv_chal", "inj", "inj_side", "pen_side", "of_inc", "of_ob", "of_score", "of_poss", "src"],
                           PLAY2_LV, last_any=True)   # v33: PLAY2_LV, the 5-yard cell inside the 20 kept to (kind, 5-yard cell), then today's cells
         P["to1"] = Pool("R1b timeout after a snap", c["to1"], ["caller"], [("tb2", "ls", "own", "avail"), ("tb2", "own", "avail"), ("tb2", "avail"), ("avail",), ()])
@@ -1064,7 +1065,7 @@ class Game:
     def scrimmage(self, k):
         off, dfn = self.off, self.other(self.off); yl0, down0, ltg0, qs0 = self.yl, self.down, self.ltg, self.clock; togo0 = yl0 - ltg0
         if R1B:   # R1b: the kind and its clock flags (4-4f, 4-3-2a) by time bin and late score first, then the outcome of that kind and those flags
-            s1 = self.P["kc"].draw(self.rng, dict(tb2=tb2(self.q, self.clock), ls=late_score(self.q, self.clock, self.score[off] - self.score[dfn]), down=k["down"], dist=k["dist"]))
+            s1 = self.P["kc"].draw(self.rng, dict(tb2=tb2(self.q, self.clock), score=k["score"], down=k["down"], dist=k["dist"]))   # the play kind keyed by the score all game (check_dropback_by_score)
             nope = [sd for sd, tm in (("offense", off), ("defense", dfn)) if self.to_left[tm] <= 0] if (R1D and self.q <= 4) else []
             ok_ = (lambda V, nope=nope, j=self.P["play2"].cols.index("rv_chal"): ~np.isin(V[:, j], nope)) if nope else None   # 15-6-1: a coach's challenge needs a timeout
             o = self.P["play2"].draw(self.rng, dict(k, kind=s1["kind"], inc_k=s1["inc_k"], ob_k=s1["ob_k"]), ok=ok_)

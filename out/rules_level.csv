@@ -1,4 +1,4 @@
-# rules_level.py a07fe0ce6d8a | template 'the rules level' line 508b934b9a43 | out/clock_reasons.csv 663615f72095 | out/possessions_classes.csv 3c7c57c5b7e5 | out/downs_reasons.csv 666d581a6c31 | product: the rules level, the rules sentence, built from measurement
+# rules_level.py 5f8fca92b541 | template 'the rules level' line 508b934b9a43 | out/clock_reasons.csv 1c93ca8d6c97 | out/possessions_classes.csv 38baae794332 | out/downs_reasons.csv 62848db14b9b | product: the rules level, the rules sentence, built from measurement
 clause,part,source,season,season_type,check,word,label,articles,book,count,of,share,share_exact
 1,template,acceptance-criteria/PROGRESS.md,,,,,Every game is 60 minutes,,,,,,
 2,template,acceptance-criteria/PROGRESS.md,,,,,the ball changes hands after every score or stop,,,,,,
@@ -91,16 +91,16 @@ clause,part,source,season,season_type,check,word,label,articles,book,count,of,sh
 1,exception,out/clock_reasons.csv,2019,ALL,CLASS,STOP,score/touchback/try 4-4d+foul in window 4-3-2e,,,2,36079,0.000055,2/36079
 1,exception,out/clock_reasons.csv,2019,ALL,CLASS,STOP,two-minute warning 3-41,,,448,36079,0.012417,448/36079
 1,exception,out/clock_reasons.csv,2019,ALL,D3,N/A (ADMIN),"an administrative stoppage (a change of possession, a timeout, the two-minute warning, a foul or a review) resets the play clock (4-6-2)",,,10204,36079,0.282824,10204/36079
-1,unsettled,out/clock_reasons.csv,2019,ALL,D3,OVER 40,the next snap came more than 40 seconds of real time after the play ended; the play clock stops for interruptions the record does not log (4-6-3),,,11,36079,0.000305,11/36079
-1,unsettled,out/clock_reasons.csv,2019,ALL,D3,UNCHECKED,an end-of-play stamp is missing or the two-minute warning cannot be placed (the record carries end stamps from 2023),,,25778,36079,0.714488,25778/36079
+1,unsettled,out/clock_reasons.csv,2019,ALL,D3,OVER 40,the next snap came more than 40 seconds of real time after the play ended; the play clock stops for interruptions the play-by-play record does not log (4-6-3),,,11,36079,0.000305,11/36079
+1,unsettled,out/clock_reasons.csv,2019,ALL,D3,UNCHECKED,an end-of-play stamp is missing or the two-minute warning cannot be placed (the play-by-play record carries end stamps from 2023),,,25778,36079,0.714488,25778/36079
 1,as rule,out/clock_reasons.csv,2019,ALL,D3,WITHIN 40,the next snap came within 40 seconds of real time after the play ended (4-6-1),,,86,36079,0.002384,86/36079
-1,unsettled,out/clock_reasons.csv,2019,ALL,GAME_LEVEL,FASTER not licensed,"the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the record logging it (4-1-4), so a correction and a record error cannot be told apart",,,267,36079,0.007400,267/36079
-1,unsettled,out/clock_reasons.csv,2019,ALL,GAME_LEVEL,UNCHECKED,a wall-clock stamp or the game clock is missing on one of the two snaps,,,206,36079,0.005710,206/36079
+1,unsettled,out/clock_reasons.csv,2019,ALL,GAME_LEVEL,FASTER not licensed,"the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the play-by-play record logging it (4-1-4), so a correction and a record error cannot be told apart",,,267,36079,0.007400,267/36079
+1,unsettled,out/clock_reasons.csv,2019,ALL,GAME_LEVEL,UNCHECKED,a real-time clock stamp or the game clock is missing on one of the two snaps,,,206,36079,0.005710,206/36079
 1,as rule,out/clock_reasons.csv,2019,ALL,GAME_LEVEL,WITHIN REAL TIME,the game clock fell no faster than real time,,,32907,36079,0.912082,32907/36079
-1,as rule,out/clock_reasons.csv,2019,ALL,GAME_LEVEL,WITHIN RESOLUTION,the game clock fell faster by no more than the stamps can tell apart (the wall stamp's resolution plus the game clock's whole second),,,2699,36079,0.074808,2699/36079
-1,diagnostic,out/clock_reasons.csv,2019,ALL,GAME_LEVEL_PRIOR,FASTER not licensed,"v12 margin (the wall stamp's resolution only), kept for comparison: faster than real time",,,463,36079,0.012833,463/36079
-1,diagnostic,out/clock_reasons.csv,2019,ALL,GAME_LEVEL_PRIOR,UNCHECKED,"v12 margin (the wall stamp's resolution only), kept for comparison: a stamp missing",,,206,36079,0.005710,206/36079
-1,diagnostic,out/clock_reasons.csv,2019,ALL,GAME_LEVEL_PRIOR,WITHIN REAL TIME,"v12 margin (the wall stamp's resolution only), kept for comparison: within real time",,,35410,36079,0.981457,35410/36079
+1,as rule,out/clock_reasons.csv,2019,ALL,GAME_LEVEL,WITHIN RESOLUTION,the game clock fell faster by no more than the stamps can tell apart (the real-time stamp's resolution plus the game clock's whole second),,,2699,36079,0.074808,2699/36079
+1,diagnostic,out/clock_reasons.csv,2019,ALL,GAME_LEVEL_PRIOR,FASTER not licensed,"v12 margin (the real-time stamp's resolution only), kept for comparison: faster than real time",,,463,36079,0.012833,463/36079
+1,diagnostic,out/clock_reasons.csv,2019,ALL,GAME_LEVEL_PRIOR,UNCHECKED,"v12 margin (the real-time stamp's resolution only), kept for comparison: a stamp missing",,,206,36079,0.005710,206/36079
+1,diagnostic,out/clock_reasons.csv,2019,ALL,GAME_LEVEL_PRIOR,WITHIN REAL TIME,"v12 margin (the real-time stamp's resolution only), kept for comparison: within real time",,,35410,36079,0.981457,35410/36079
 1,exception,out/clock_reasons.csv,2019,ALL,TAG,foul outside windows 4-3-2e,foul outside windows 4-3-2e,,,1551,4878,0.317958,1551/4878
 1,exception,out/clock_reasons.csv,2019,ALL,TAG,"injury, from play text 4-5-3","injury, from play text 4-5-3",,,499,4878,0.102296,499/4878
 1,exception,out/clock_reasons.csv,2019,ALL,TAG,out of bounds early 4-3-2a,out of bounds early 4-3-2a,,,2687,4878,0.550841,2687/4878
@@ -187,14 +187,14 @@ clause,part,source,season,season_type,check,word,label,articles,book,count,of,sh
 1,exception,out/clock_reasons.csv,2020,ALL,CLASS,STOP,score/touchback/try 4-4d+charged timeout 4-5-1,,,3,36550,0.000082,3/36550
 1,exception,out/clock_reasons.csv,2020,ALL,CLASS,STOP,two-minute warning 3-41,,,476,36550,0.013023,476/36550
 1,exception,out/clock_reasons.csv,2020,ALL,D3,N/A (ADMIN),"an administrative stoppage (a change of possession, a timeout, the two-minute warning, a foul or a review) resets the play clock (4-6-2)",,,9865,36550,0.269904,9865/36550
-1,unsettled,out/clock_reasons.csv,2020,ALL,D3,UNCHECKED,an end-of-play stamp is missing or the two-minute warning cannot be placed (the record carries end stamps from 2023),,,26685,36550,0.730096,26685/36550
-1,unsettled,out/clock_reasons.csv,2020,ALL,GAME_LEVEL,FASTER not licensed,"the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the record logging it (4-1-4), so a correction and a record error cannot be told apart",,,238,36550,0.006512,238/36550
-1,unsettled,out/clock_reasons.csv,2020,ALL,GAME_LEVEL,UNCHECKED,a wall-clock stamp or the game clock is missing on one of the two snaps,,,110,36550,0.003010,110/36550
+1,unsettled,out/clock_reasons.csv,2020,ALL,D3,UNCHECKED,an end-of-play stamp is missing or the two-minute warning cannot be placed (the play-by-play record carries end stamps from 2023),,,26685,36550,0.730096,26685/36550
+1,unsettled,out/clock_reasons.csv,2020,ALL,GAME_LEVEL,FASTER not licensed,"the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the play-by-play record logging it (4-1-4), so a correction and a record error cannot be told apart",,,238,36550,0.006512,238/36550
+1,unsettled,out/clock_reasons.csv,2020,ALL,GAME_LEVEL,UNCHECKED,a real-time clock stamp or the game clock is missing on one of the two snaps,,,110,36550,0.003010,110/36550
 1,as rule,out/clock_reasons.csv,2020,ALL,GAME_LEVEL,WITHIN REAL TIME,the game clock fell no faster than real time,,,33317,36550,0.911546,33317/36550
-1,as rule,out/clock_reasons.csv,2020,ALL,GAME_LEVEL,WITHIN RESOLUTION,the game clock fell faster by no more than the stamps can tell apart (the wall stamp's resolution plus the game clock's whole second),,,2885,36550,0.078933,2885/36550
-1,diagnostic,out/clock_reasons.csv,2020,ALL,GAME_LEVEL_PRIOR,FASTER not licensed,"v12 margin (the wall stamp's resolution only), kept for comparison: faster than real time",,,431,36550,0.011792,431/36550
-1,diagnostic,out/clock_reasons.csv,2020,ALL,GAME_LEVEL_PRIOR,UNCHECKED,"v12 margin (the wall stamp's resolution only), kept for comparison: a stamp missing",,,110,36550,0.003010,110/36550
-1,diagnostic,out/clock_reasons.csv,2020,ALL,GAME_LEVEL_PRIOR,WITHIN REAL TIME,"v12 margin (the wall stamp's resolution only), kept for comparison: within real time",,,36009,36550,0.985198,36009/36550
+1,as rule,out/clock_reasons.csv,2020,ALL,GAME_LEVEL,WITHIN RESOLUTION,the game clock fell faster by no more than the stamps can tell apart (the real-time stamp's resolution plus the game clock's whole second),,,2885,36550,0.078933,2885/36550
+1,diagnostic,out/clock_reasons.csv,2020,ALL,GAME_LEVEL_PRIOR,FASTER not licensed,"v12 margin (the real-time stamp's resolution only), kept for comparison: faster than real time",,,431,36550,0.011792,431/36550
+1,diagnostic,out/clock_reasons.csv,2020,ALL,GAME_LEVEL_PRIOR,UNCHECKED,"v12 margin (the real-time stamp's resolution only), kept for comparison: a stamp missing",,,110,36550,0.003010,110/36550
+1,diagnostic,out/clock_reasons.csv,2020,ALL,GAME_LEVEL_PRIOR,WITHIN REAL TIME,"v12 margin (the real-time stamp's resolution only), kept for comparison: within real time",,,36009,36550,0.985198,36009/36550
 1,exception,out/clock_reasons.csv,2020,ALL,TAG,foul outside windows 4-3-2e,foul outside windows 4-3-2e,,,1343,4890,0.274642,1343/4890
 1,exception,out/clock_reasons.csv,2020,ALL,TAG,"injury, from play text 4-5-3","injury, from play text 4-5-3",,,547,4890,0.111861,547/4890
 1,exception,out/clock_reasons.csv,2020,ALL,TAG,out of bounds early 4-3-2a,out of bounds early 4-3-2a,,,2870,4890,0.586912,2870/4890
@@ -294,12 +294,12 @@ clause,part,source,season,season_type,check,word,label,articles,book,count,of,sh
 1,exception,out/clock_reasons.csv,2021,ALL,CLASS,STOP,score/touchback/try 4-4d+injury after the warning 4-5-4,,,1,38190,0.000026,1/38190
 1,exception,out/clock_reasons.csv,2021,ALL,CLASS,STOP,two-minute warning 3-41,,,516,38190,0.013511,516/38190
 1,exception,out/clock_reasons.csv,2021,ALL,D3,N/A (ADMIN),"an administrative stoppage (a change of possession, a timeout, the two-minute warning, a foul or a review) resets the play clock (4-6-2)",,,10481,38190,0.274444,10481/38190
-1,unsettled,out/clock_reasons.csv,2021,ALL,D3,UNCHECKED,an end-of-play stamp is missing or the two-minute warning cannot be placed (the record carries end stamps from 2023),,,27709,38190,0.725556,27709/38190
-1,unsettled,out/clock_reasons.csv,2021,ALL,GAME_LEVEL,FASTER not licensed,"the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the record logging it (4-1-4), so a correction and a record error cannot be told apart",,,258,38190,0.006756,258/38190
+1,unsettled,out/clock_reasons.csv,2021,ALL,D3,UNCHECKED,an end-of-play stamp is missing or the two-minute warning cannot be placed (the play-by-play record carries end stamps from 2023),,,27709,38190,0.725556,27709/38190
+1,unsettled,out/clock_reasons.csv,2021,ALL,GAME_LEVEL,FASTER not licensed,"the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the play-by-play record logging it (4-1-4), so a correction and a record error cannot be told apart",,,258,38190,0.006756,258/38190
 1,as rule,out/clock_reasons.csv,2021,ALL,GAME_LEVEL,WITHIN REAL TIME,the game clock fell no faster than real time,,,34619,38190,0.906494,34619/38190
-1,as rule,out/clock_reasons.csv,2021,ALL,GAME_LEVEL,WITHIN RESOLUTION,the game clock fell faster by no more than the stamps can tell apart (the wall stamp's resolution plus the game clock's whole second),,,3313,38190,0.086750,3313/38190
-1,diagnostic,out/clock_reasons.csv,2021,ALL,GAME_LEVEL_PRIOR,FASTER not licensed,"v12 margin (the wall stamp's resolution only), kept for comparison: faster than real time",,,579,38190,0.015161,579/38190
-1,diagnostic,out/clock_reasons.csv,2021,ALL,GAME_LEVEL_PRIOR,WITHIN REAL TIME,"v12 margin (the wall stamp's resolution only), kept for comparison: within real time",,,37611,38190,0.984839,37611/38190
+1,as rule,out/clock_reasons.csv,2021,ALL,GAME_LEVEL,WITHIN RESOLUTION,the game clock fell faster by no more than the stamps can tell apart (the real-time stamp's resolution plus the game clock's whole second),,,3313,38190,0.086750,3313/38190
+1,diagnostic,out/clock_reasons.csv,2021,ALL,GAME_LEVEL_PRIOR,FASTER not licensed,"v12 margin (the real-time stamp's resolution only), kept for comparison: faster than real time",,,579,38190,0.015161,579/38190
+1,diagnostic,out/clock_reasons.csv,2021,ALL,GAME_LEVEL_PRIOR,WITHIN REAL TIME,"v12 margin (the real-time stamp's resolution only), kept for comparison: within real time",,,37611,38190,0.984839,37611/38190
 1,exception,out/clock_reasons.csv,2021,ALL,TAG,foul outside windows 4-3-2e,foul outside windows 4-3-2e,,,1462,4994,0.292751,1462/4994
 1,exception,out/clock_reasons.csv,2021,ALL,TAG,"injury, from play text 4-5-3","injury, from play text 4-5-3",,,587,4994,0.117541,587/4994
 1,exception,out/clock_reasons.csv,2021,ALL,TAG,out of bounds early 4-3-2a,out of bounds early 4-3-2a,,,2825,4994,0.565679,2825/4994
@@ -392,14 +392,14 @@ clause,part,source,season,season_type,check,word,label,articles,book,count,of,sh
 1,exception,out/clock_reasons.csv,2023,ALL,CLASS,STOP,score/touchback/try 4-4d+foul in window 4-3-2e+charged timeout 4-5-1,,,1,38302,0.000026,1/38302
 1,exception,out/clock_reasons.csv,2023,ALL,CLASS,STOP,two-minute warning 3-41,,,508,38302,0.013263,508/38302
 1,exception,out/clock_reasons.csv,2023,ALL,D3,N/A (ADMIN),"an administrative stoppage (a change of possession, a timeout, the two-minute warning, a foul or a review) resets the play clock (4-6-2)",,,10516,38302,0.274555,10516/38302
-1,unsettled,out/clock_reasons.csv,2023,ALL,D3,OVER 40,the next snap came more than 40 seconds of real time after the play ended; the play clock stops for interruptions the record does not log (4-6-3),,,3580,38302,0.093468,3580/38302
-1,unsettled,out/clock_reasons.csv,2023,ALL,D3,UNCHECKED,an end-of-play stamp is missing or the two-minute warning cannot be placed (the record carries end stamps from 2023),,,547,38302,0.014281,547/38302
+1,unsettled,out/clock_reasons.csv,2023,ALL,D3,OVER 40,the next snap came more than 40 seconds of real time after the play ended; the play clock stops for interruptions the play-by-play record does not log (4-6-3),,,3580,38302,0.093468,3580/38302
+1,unsettled,out/clock_reasons.csv,2023,ALL,D3,UNCHECKED,an end-of-play stamp is missing or the two-minute warning cannot be placed (the play-by-play record carries end stamps from 2023),,,547,38302,0.014281,547/38302
 1,as rule,out/clock_reasons.csv,2023,ALL,D3,WITHIN 40,the next snap came within 40 seconds of real time after the play ended (4-6-1),,,23659,38302,0.617696,23659/38302
-1,unsettled,out/clock_reasons.csv,2023,ALL,GAME_LEVEL,FASTER not licensed,"the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the record logging it (4-1-4), so a correction and a record error cannot be told apart",,,356,38302,0.009295,356/38302
+1,unsettled,out/clock_reasons.csv,2023,ALL,GAME_LEVEL,FASTER not licensed,"the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the play-by-play record logging it (4-1-4), so a correction and a record error cannot be told apart",,,356,38302,0.009295,356/38302
 1,as rule,out/clock_reasons.csv,2023,ALL,GAME_LEVEL,WITHIN REAL TIME,the game clock fell no faster than real time,,,29505,38302,0.770325,29505/38302
-1,as rule,out/clock_reasons.csv,2023,ALL,GAME_LEVEL,WITHIN RESOLUTION,the game clock fell faster by no more than the stamps can tell apart (the wall stamp's resolution plus the game clock's whole second),,,8441,38302,0.220380,8441/38302
-1,diagnostic,out/clock_reasons.csv,2023,ALL,GAME_LEVEL_PRIOR,FASTER not licensed,"v12 margin (the wall stamp's resolution only), kept for comparison: faster than real time",,,8347,38302,0.217926,8347/38302
-1,diagnostic,out/clock_reasons.csv,2023,ALL,GAME_LEVEL_PRIOR,WITHIN REAL TIME,"v12 margin (the wall stamp's resolution only), kept for comparison: within real time",,,29955,38302,0.782074,29955/38302
+1,as rule,out/clock_reasons.csv,2023,ALL,GAME_LEVEL,WITHIN RESOLUTION,the game clock fell faster by no more than the stamps can tell apart (the real-time stamp's resolution plus the game clock's whole second),,,8441,38302,0.220380,8441/38302
+1,diagnostic,out/clock_reasons.csv,2023,ALL,GAME_LEVEL_PRIOR,FASTER not licensed,"v12 margin (the real-time stamp's resolution only), kept for comparison: faster than real time",,,8347,38302,0.217926,8347/38302
+1,diagnostic,out/clock_reasons.csv,2023,ALL,GAME_LEVEL_PRIOR,WITHIN REAL TIME,"v12 margin (the real-time stamp's resolution only), kept for comparison: within real time",,,29955,38302,0.782074,29955/38302
 1,exception,out/clock_reasons.csv,2023,ALL,TAG,foul outside windows 4-3-2e,foul outside windows 4-3-2e,,,1424,5060,0.281423,1424/5060
 1,exception,out/clock_reasons.csv,2023,ALL,TAG,"injury, from play text 4-5-3","injury, from play text 4-5-3",,,656,5060,0.129644,656/5060
 1,exception,out/clock_reasons.csv,2023,ALL,TAG,out of bounds early 4-3-2a,out of bounds early 4-3-2a,,,2861,5060,0.565415,2861/5060
@@ -495,14 +495,14 @@ clause,part,source,season,season_type,check,word,label,articles,book,count,of,sh
 1,exception,out/clock_reasons.csv,2024,ALL,CLASS,STOP,score/touchback/try 4-4d+foul in window 4-3-2e,,,2,37543,0.000053,2/37543
 1,exception,out/clock_reasons.csv,2024,ALL,CLASS,STOP,two-minute warning 3-41,,,489,37543,0.013025,489/37543
 1,exception,out/clock_reasons.csv,2024,ALL,D3,N/A (ADMIN),"an administrative stoppage (a change of possession, a timeout, the two-minute warning, a foul or a review) resets the play clock (4-6-2)",,,10578,37543,0.281757,10578/37543
-1,unsettled,out/clock_reasons.csv,2024,ALL,D3,OVER 40,the next snap came more than 40 seconds of real time after the play ended; the play clock stops for interruptions the record does not log (4-6-3),,,3670,37543,0.097755,3670/37543
-1,unsettled,out/clock_reasons.csv,2024,ALL,D3,UNCHECKED,an end-of-play stamp is missing or the two-minute warning cannot be placed (the record carries end stamps from 2023),,,458,37543,0.012199,458/37543
+1,unsettled,out/clock_reasons.csv,2024,ALL,D3,OVER 40,the next snap came more than 40 seconds of real time after the play ended; the play clock stops for interruptions the play-by-play record does not log (4-6-3),,,3670,37543,0.097755,3670/37543
+1,unsettled,out/clock_reasons.csv,2024,ALL,D3,UNCHECKED,an end-of-play stamp is missing or the two-minute warning cannot be placed (the play-by-play record carries end stamps from 2023),,,458,37543,0.012199,458/37543
 1,as rule,out/clock_reasons.csv,2024,ALL,D3,WITHIN 40,the next snap came within 40 seconds of real time after the play ended (4-6-1),,,22837,37543,0.608289,22837/37543
-1,unsettled,out/clock_reasons.csv,2024,ALL,GAME_LEVEL,FASTER not licensed,"the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the record logging it (4-1-4), so a correction and a record error cannot be told apart",,,349,37543,0.009296,349/37543
+1,unsettled,out/clock_reasons.csv,2024,ALL,GAME_LEVEL,FASTER not licensed,"the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the play-by-play record logging it (4-1-4), so a correction and a record error cannot be told apart",,,349,37543,0.009296,349/37543
 1,as rule,out/clock_reasons.csv,2024,ALL,GAME_LEVEL,WITHIN REAL TIME,the game clock fell no faster than real time,,,28857,37543,0.768639,28857/37543
-1,as rule,out/clock_reasons.csv,2024,ALL,GAME_LEVEL,WITHIN RESOLUTION,the game clock fell faster by no more than the stamps can tell apart (the wall stamp's resolution plus the game clock's whole second),,,8337,37543,0.222065,8337/37543
-1,diagnostic,out/clock_reasons.csv,2024,ALL,GAME_LEVEL_PRIOR,FASTER not licensed,"v12 margin (the wall stamp's resolution only), kept for comparison: faster than real time",,,8277,37543,0.220467,8277/37543
-1,diagnostic,out/clock_reasons.csv,2024,ALL,GAME_LEVEL_PRIOR,WITHIN REAL TIME,"v12 margin (the wall stamp's resolution only), kept for comparison: within real time",,,29266,37543,0.779533,29266/37543
+1,as rule,out/clock_reasons.csv,2024,ALL,GAME_LEVEL,WITHIN RESOLUTION,the game clock fell faster by no more than the stamps can tell apart (the real-time stamp's resolution plus the game clock's whole second),,,8337,37543,0.222065,8337/37543
+1,diagnostic,out/clock_reasons.csv,2024,ALL,GAME_LEVEL_PRIOR,FASTER not licensed,"v12 margin (the real-time stamp's resolution only), kept for comparison: faster than real time",,,8277,37543,0.220467,8277/37543
+1,diagnostic,out/clock_reasons.csv,2024,ALL,GAME_LEVEL_PRIOR,WITHIN REAL TIME,"v12 margin (the real-time stamp's resolution only), kept for comparison: within real time",,,29266,37543,0.779533,29266/37543
 1,exception,out/clock_reasons.csv,2024,ALL,TAG,foul outside windows 4-3-2e,foul outside windows 4-3-2e,,,1606,5404,0.297187,1606/5404
 1,exception,out/clock_reasons.csv,2024,ALL,TAG,"injury, from play text 4-5-3","injury, from play text 4-5-3",,,893,5404,0.165248,893/5404
 1,exception,out/clock_reasons.csv,2024,ALL,TAG,out of bounds early 4-3-2a,out of bounds early 4-3-2a,,,2775,5404,0.513509,2775/5404
@@ -601,14 +601,14 @@ clause,part,source,season,season_type,check,word,label,articles,book,count,of,sh
 1,exception,out/clock_reasons.csv,2025,ALL,CLASS,STOP,score/touchback/try 4-4d+two-minute warning 3-41,,,1,37060,0.000027,1/37060
 1,exception,out/clock_reasons.csv,2025,ALL,CLASS,STOP,two-minute warning 3-41,,,493,37060,0.013303,493/37060
 1,exception,out/clock_reasons.csv,2025,ALL,D3,N/A (ADMIN),"an administrative stoppage (a change of possession, a timeout, the two-minute warning, a foul or a review) resets the play clock (4-6-2)",,,10363,37060,0.279628,10363/37060
-1,unsettled,out/clock_reasons.csv,2025,ALL,D3,OVER 40,the next snap came more than 40 seconds of real time after the play ended; the play clock stops for interruptions the record does not log (4-6-3),,,4057,37060,0.109471,4057/37060
-1,unsettled,out/clock_reasons.csv,2025,ALL,D3,UNCHECKED,an end-of-play stamp is missing or the two-minute warning cannot be placed (the record carries end stamps from 2023),,,923,37060,0.024906,923/37060
+1,unsettled,out/clock_reasons.csv,2025,ALL,D3,OVER 40,the next snap came more than 40 seconds of real time after the play ended; the play clock stops for interruptions the play-by-play record does not log (4-6-3),,,4057,37060,0.109471,4057/37060
+1,unsettled,out/clock_reasons.csv,2025,ALL,D3,UNCHECKED,an end-of-play stamp is missing or the two-minute warning cannot be placed (the play-by-play record carries end stamps from 2023),,,923,37060,0.024906,923/37060
 1,as rule,out/clock_reasons.csv,2025,ALL,D3,WITHIN 40,the next snap came within 40 seconds of real time after the play ended (4-6-1),,,21717,37060,0.585996,21717/37060
-1,unsettled,out/clock_reasons.csv,2025,ALL,GAME_LEVEL,FASTER not licensed,"the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the record logging it (4-1-4), so a correction and a record error cannot be told apart",,,321,37060,0.008662,321/37060
+1,unsettled,out/clock_reasons.csv,2025,ALL,GAME_LEVEL,FASTER not licensed,"the game clock fell faster than real time beyond what the stamps can tell apart; officials may correct the clock without the play-by-play record logging it (4-1-4), so a correction and a record error cannot be told apart",,,321,37060,0.008662,321/37060
 1,as rule,out/clock_reasons.csv,2025,ALL,GAME_LEVEL,WITHIN REAL TIME,the game clock fell no faster than real time,,,28609,37060,0.771964,28609/37060
-1,as rule,out/clock_reasons.csv,2025,ALL,GAME_LEVEL,WITHIN RESOLUTION,the game clock fell faster by no more than the stamps can tell apart (the wall stamp's resolution plus the game clock's whole second),,,8130,37060,0.219374,8130/37060
-1,diagnostic,out/clock_reasons.csv,2025,ALL,GAME_LEVEL_PRIOR,FASTER not licensed,"v12 margin (the wall stamp's resolution only), kept for comparison: faster than real time",,,7861,37060,0.212115,7861/37060
-1,diagnostic,out/clock_reasons.csv,2025,ALL,GAME_LEVEL_PRIOR,WITHIN REAL TIME,"v12 margin (the wall stamp's resolution only), kept for comparison: within real time",,,29199,37060,0.787885,29199/37060
+1,as rule,out/clock_reasons.csv,2025,ALL,GAME_LEVEL,WITHIN RESOLUTION,the game clock fell faster by no more than the stamps can tell apart (the real-time stamp's resolution plus the game clock's whole second),,,8130,37060,0.219374,8130/37060
+1,diagnostic,out/clock_reasons.csv,2025,ALL,GAME_LEVEL_PRIOR,FASTER not licensed,"v12 margin (the real-time stamp's resolution only), kept for comparison: faster than real time",,,7861,37060,0.212115,7861/37060
+1,diagnostic,out/clock_reasons.csv,2025,ALL,GAME_LEVEL_PRIOR,WITHIN REAL TIME,"v12 margin (the real-time stamp's resolution only), kept for comparison: within real time",,,29199,37060,0.787885,29199/37060
 1,exception,out/clock_reasons.csv,2025,ALL,TAG,foul outside windows 4-3-2e,foul outside windows 4-3-2e,,,1508,5282,0.285498,1508/5282
 1,exception,out/clock_reasons.csv,2025,ALL,TAG,"injury, from play text 4-5-3","injury, from play text 4-5-3",,,938,5282,0.177584,938/5282
 1,exception,out/clock_reasons.csv,2025,ALL,TAG,out of bounds early 4-3-2a,out of bounds early 4-3-2a,,,2708,5282,0.512685,2708/5282
@@ -796,9 +796,9 @@ clause,part,source,season,season_type,check,word,label,articles,book,count,of,sh
 3,exception,out/downs_reasons.csv,2019,REG,C1,EXPLAINED,"a foul by the offense during the play, the down replayed from the spot (14-1-2 Item 1, 3-8-4): Illegal Block Above the Waist",,,41,32489,0.001262,41/32489
 3,exception,out/downs_reasons.csv,2019,REG,C1,EXPLAINED,"a foul by the offense during the play, the down replayed from the spot (14-1-2 Item 1, 3-8-4): Illegal Crackback",,,1,32489,0.000031,1/32489
 3,exception,out/downs_reasons.csv,2019,REG,C1,EXPLAINED,"a foul by the offense during the play, the down replayed from the spot (14-1-2 Item 1, 3-8-4): Offensive Holding",,,89,32489,0.002739,89/32489
-3,unsettled,out/downs_reasons.csv,2019,REG,C1,EXPLAINED,fits one of the rules the record cannot tell apart (after the whistle): Unnecessary Roughness,,,9,32489,0.000277,9/32489
-3,unsettled,out/downs_reasons.csv,2019,REG,C1,EXPLAINED,fits one of the rules the record cannot tell apart (during the play or ball at or past L): Face Mask,,,1,32489,0.000031,1/32489
-3,unsettled,out/downs_reasons.csv,2019,REG,C1,EXPLAINED,fits one of the rules the record cannot tell apart (during the play): Face Mask,,,7,32489,0.000215,7/32489
+3,unsettled,out/downs_reasons.csv,2019,REG,C1,EXPLAINED,fits one of the rules the play-by-play record cannot tell apart (after the whistle): Unnecessary Roughness,,,9,32489,0.000277,9/32489
+3,unsettled,out/downs_reasons.csv,2019,REG,C1,EXPLAINED,fits one of the rules the play-by-play record cannot tell apart (during the play or ball at or past L): Face Mask,,,1,32489,0.000031,1/32489
+3,unsettled,out/downs_reasons.csv,2019,REG,C1,EXPLAINED,fits one of the rules the play-by-play record cannot tell apart (during the play): Face Mask,,,7,32489,0.000215,7/32489
 3,exception,out/downs_reasons.csv,2019,REG,C1,EXPLAINED,loss of down (14-1-2 Item 2): Illegal Forward Pass,,,6,32489,0.000185,6/32489
 3,exception,out/downs_reasons.csv,2019,REG,C1,EXPLAINED,loss of down (14-1-2 Item 2): Intentional Grounding,,,30,32489,0.000923,30/32489
 3,exception,out/downs_reasons.csv,2019,REG,C1,EXPLAINED,the ball placed at or past the line to gain (14-1-2 Item 4): Illegal Block Above the Waist,,,1,32489,0.000031,1/32489
@@ -881,7 +881,7 @@ clause,part,source,season,season_type,check,word,label,articles,book,count,of,sh
 3,exception,out/downs_reasons.csv,2020,POST,C1,EXPLAINED,"a foul by the defense that awards a first down (14-1-2 Item 5, 7-3-1(b)): Roughing the Passer",,,1,1649,0.000606,1/1649
 3,exception,out/downs_reasons.csv,2020,POST,C1,EXPLAINED,"a foul by the offense after the whistle, the down counts (3-8-5): Unsportsmanlike Conduct",,,1,1649,0.000606,1/1649
 3,exception,out/downs_reasons.csv,2020,POST,C1,EXPLAINED,"a foul by the offense during the play, the down replayed from the spot (14-1-2 Item 1, 3-8-4): Offensive Holding",,,1,1649,0.000606,1/1649
-3,unsettled,out/downs_reasons.csv,2020,POST,C1,EXPLAINED,fits one of the rules the record cannot tell apart (after the whistle): Unnecessary Roughness,,,1,1649,0.000606,1/1649
+3,unsettled,out/downs_reasons.csv,2020,POST,C1,EXPLAINED,fits one of the rules the play-by-play record cannot tell apart (after the whistle): Unnecessary Roughness,,,1,1649,0.000606,1/1649
 3,exception,out/downs_reasons.csv,2020,POST,C1,EXPLAINED,loss of down (14-1-2 Item 2): Intentional Grounding,,,2,1649,0.001213,2/1649
 3,exception,out/downs_reasons.csv,2020,POST,C1,EXPLAINED,"the ball placed at or past the line to gain (14-1-2 Item 5, 7-3-1(b)): Defensive Holding",,,1,1649,0.000606,1/1649
 3,exception,out/downs_reasons.csv,2020,POST,C1,EXPLAINED,"the ball placed at or past the line to gain (14-1-2 Item 5, 7-3-1(b)): Defensive Offside",,,4,1649,0.002426,4/1649
@@ -972,8 +972,8 @@ clause,part,source,season,season_type,check,word,label,articles,book,count,of,sh
 3,exception,out/downs_reasons.csv,2020,REG,C1,EXPLAINED,"a foul by the offense during the play, the down replayed from the spot (14-1-2 Item 1, 3-8-4): Tripping",,,1,32412,0.000031,1/32412
 3,exception,out/downs_reasons.csv,2020,REG,C1,EXPLAINED,"an illegal touch pass with no yardage, loss of down (8-1-8(b)): Illegal Touch Pass",,,2,32412,0.000062,2/32412
 3,exception,out/downs_reasons.csv,2020,REG,C1,EXPLAINED,"an illegal touch pass with yardage on a no-play, the same down (8-1-8(a), 14-1-2 Item 1): Illegal Touch Pass",,,2,32412,0.000062,2/32412
-3,unsettled,out/downs_reasons.csv,2020,REG,C1,EXPLAINED,fits one of the rules the record cannot tell apart (after the whistle): Unnecessary Roughness,,,4,32412,0.000123,4/32412
-3,unsettled,out/downs_reasons.csv,2020,REG,C1,EXPLAINED,fits one of the rules the record cannot tell apart (during the play): Face Mask,,,2,32412,0.000062,2/32412
+3,unsettled,out/downs_reasons.csv,2020,REG,C1,EXPLAINED,fits one of the rules the play-by-play record cannot tell apart (after the whistle): Unnecessary Roughness,,,4,32412,0.000123,4/32412
+3,unsettled,out/downs_reasons.csv,2020,REG,C1,EXPLAINED,fits one of the rules the play-by-play record cannot tell apart (during the play): Face Mask,,,2,32412,0.000062,2/32412
 3,exception,out/downs_reasons.csv,2020,REG,C1,EXPLAINED,loss of down (14-1-2 Item 2): Illegal Forward Pass,,,3,32412,0.000093,3/32412
 3,exception,out/downs_reasons.csv,2020,REG,C1,EXPLAINED,loss of down (14-1-2 Item 2): Intentional Grounding,,,39,32412,0.001203,39/32412
 3,exception,out/downs_reasons.csv,2020,REG,C1,EXPLAINED,the ball placed at or past the line to gain (14-1-2 Item 4): Illegal Block Above the Waist,,,2,32412,0.000062,2/32412
@@ -1056,7 +1056,7 @@ clause,part,source,season,season_type,check,word,label,articles,book,count,of,sh
 3,exception,out/downs_reasons.csv,2021,POST,C1,EXPLAINED,"a foul by the offense between downs, the down unchanged (14-1-2 Item 7): Unnecessary Roughness",,,1,1605,0.000623,1/1605
 3,exception,out/downs_reasons.csv,2021,POST,C1,EXPLAINED,"a foul by the offense during the play, the down replayed from the spot (14-1-2 Item 1, 3-8-4): Illegal Block Above the Waist",,,2,1605,0.001246,2/1605
 3,exception,out/downs_reasons.csv,2021,POST,C1,EXPLAINED,"a foul by the offense during the play, the down replayed from the spot (14-1-2 Item 1, 3-8-4): Offensive Holding",,,5,1605,0.003115,5/1605
-3,unsettled,out/downs_reasons.csv,2021,POST,C1,EXPLAINED,fits one of the rules the record cannot tell apart (during the play): Face Mask,,,1,1605,0.000623,1/1605
+3,unsettled,out/downs_reasons.csv,2021,POST,C1,EXPLAINED,fits one of the rules the play-by-play record cannot tell apart (during the play): Face Mask,,,1,1605,0.000623,1/1605
 3,exception,out/downs_reasons.csv,2021,POST,C1,EXPLAINED,loss of down (14-1-2 Item 2): Illegal Forward Pass,,,1,1605,0.000623,1/1605
 3,exception,out/downs_reasons.csv,2021,POST,C1,EXPLAINED,"the ball placed at or past the line to gain (14-1-2 Item 5, 7-3-1(b)): Defensive Holding",,,2,1605,0.001246,2/1605
 3,exception,out/downs_reasons.csv,2021,POST,C1,EXPLAINED,"the ball placed at or past the line to gain (14-1-2 Item 5, 7-3-1(b)): Defensive Offside",,,1,1605,0.000623,1/1605
@@ -1141,10 +1141,10 @@ clause,part,source,season,season_type,check,word,label,articles,book,count,of,sh
 3,exception,out/downs_reasons.csv,2021,REG,C1,EXPLAINED,"a foul by the offense during the play, the down replayed from the spot (14-1-2 Item 1, 3-8-4): Offensive Holding",,,71,34124,0.002081,71/34124
 3,exception,out/downs_reasons.csv,2021,REG,C1,EXPLAINED,"an illegal touch pass with no yardage, loss of down (8-1-8(b)): Illegal Touch Pass",,,5,34124,0.000147,5/34124
 3,exception,out/downs_reasons.csv,2021,REG,C1,EXPLAINED,"an illegal touch pass with yardage on a no-play, the same down (8-1-8(a), 14-1-2 Item 1): Illegal Touch Pass",,,3,34124,0.000088,3/34124
-3,unsettled,out/downs_reasons.csv,2021,REG,C1,EXPLAINED,fits one of the rules the record cannot tell apart (after the whistle): Face Mask,,,1,34124,0.000029,1/34124
-3,unsettled,out/downs_reasons.csv,2021,REG,C1,EXPLAINED,fits one of the rules the record cannot tell apart (after the whistle): Unnecessary Roughness,,,4,34124,0.000117,4/34124
-3,unsettled,out/downs_reasons.csv,2021,REG,C1,EXPLAINED,fits one of the rules the record cannot tell apart (during the play): Face Mask,,,2,34124,0.000059,2/34124
-3,unsettled,out/downs_reasons.csv,2021,REG,C1,EXPLAINED,fits one of the rules the record cannot tell apart (during the play): Unnecessary Roughness,,,1,34124,0.000029,1/34124
+3,unsettled,out/downs_reasons.csv,2021,REG,C1,EXPLAINED,fits one of the rules the play-by-play record cannot tell apart (after the whistle): Face Mask,,,1,34124,0.000029,1/34124
+3,unsettled,out/downs_reasons.csv,2021,REG,C1,EXPLAINED,fits one of the rules the play-by-play record cannot tell apart (after the whistle): Unnecessary Roughness,,,4,34124,0.000117,4/34124
+3,unsettled,out/downs_reasons.csv,2021,REG,C1,EXPLAINED,fits one of the rules the play-by-play record cannot tell apart (during the play): Face Mask,,,2,34124,0.000059,2/34124
+3,unsettled,out/downs_reasons.csv,2021,REG,C1,EXPLAINED,fits one of the rules the play-by-play record cannot tell apart (during the play): Unnecessary Roughness,,,1,34124,0.000029,1/34124
 3,exception,out/downs_reasons.csv,2021,REG,C1,EXPLAINED,loss of down (14-1-2 Item 2): Illegal Forward Pass,,,6,34124,0.000176,6/34124
 3,exception,out/downs_reasons.csv,2021,REG,C1,EXPLAINED,loss of down (14-1-2 Item 2): Intentional Grounding,,,26,34124,0.000762,26/34124
 3,exception,out/downs_reasons.csv,2021,REG,C1,EXPLAINED,the ball placed at or past the line to gain (14-1-2 Item 4): Delay of Game,,,1,34124,0.000029,1/34124
@@ -1176,7 +1176,7 @@ clause,part,source,season,season_type,check,word,label,articles,book,count,of,sh
 3,exception,out/downs_reasons.csv,2021,REG,C1,EXPLAINED,"the ball placed at or past the line to gain (14-1-2 Item 5, 7-3-1(b)): Tripping",,,1,34124,0.000029,1/34124
 3,exception,out/downs_reasons.csv,2021,REG,C1,EXPLAINED,"the ball placed at or past the line to gain (14-1-2 Item 5, 7-3-1(b)): Unnecessary Roughness",,,100,34124,0.002930,100/34124
 3,exception,out/downs_reasons.csv,2021,REG,C1,EXPLAINED,"the ball placed at or past the line to gain (14-1-2 Item 5, 7-3-1(b)): Unsportsmanlike Conduct",,,6,34124,0.000176,6/34124
-3,unsettled,out/downs_reasons.csv,2021,REG,C1,EXPLAINED,"the record's foul columns disagree with its play text, which foul set the next down is not told apart",,,2,34124,0.000059,2/34124
+3,unsettled,out/downs_reasons.csv,2021,REG,C1,EXPLAINED,"the play-by-play record's foul columns disagree with its play text, which foul set the next down is not told apart",,,2,34124,0.000059,2/34124
 3,not judged,out/downs_reasons.csv,2021,REG,C1 not judged,NOT JUDGED,"a change of team, a break, or a possession ending on its first snap",,,5604,5604,1.000000,5604/5604
 3,as rule,out/downs_reasons.csv,2021,REG,C2,AS RULE,"1st and 10, or and goal (3-8-3)",,,15460,16168,0.956210,15460/16168
 3,exception,out/downs_reasons.csv,2021,REG,C2,EXPLAINED,"a foul enforced before the snap (14-4-9, 14-3): Chop Block",,,4,16168,0.000247,4/16168
@@ -1318,7 +1318,7 @@ clause,part,source,season,season_type,check,word,label,articles,book,count,of,sh
 3,exception,out/downs_reasons.csv,2023,REG,C1,EXPLAINED,"a foul by the offense during the play, the down replayed from the spot (14-1-2 Item 1, 3-8-4): Illegal Peelback",,,1,34002,0.000029,1/34002
 3,exception,out/downs_reasons.csv,2023,REG,C1,EXPLAINED,"a foul by the offense during the play, the down replayed from the spot (14-1-2 Item 1, 3-8-4): Offensive Holding",,,93,34002,0.002735,93/34002
 3,exception,out/downs_reasons.csv,2023,REG,C1,EXPLAINED,"an illegal touch pass with no yardage, loss of down (8-1-8(b)): Illegal Touch Pass",,,2,34002,0.000059,2/34002
-3,unsettled,out/downs_reasons.csv,2023,REG,C1,EXPLAINED,fits one of the rules the record cannot tell apart (after the whistle): Unnecessary Roughness,,,8,34002,0.000235,8/34002
+3,unsettled,out/downs_reasons.csv,2023,REG,C1,EXPLAINED,fits one of the rules the play-by-play record cannot tell apart (after the whistle): Unnecessary Roughness,,,8,34002,0.000235,8/34002
 3,exception,out/downs_reasons.csv,2023,REG,C1,EXPLAINED,loss of down (14-1-2 Item 2): Illegal Forward Pass,,,2,34002,0.000059,2/34002
 3,exception,out/downs_reasons.csv,2023,REG,C1,EXPLAINED,loss of down (14-1-2 Item 2): Intentional Grounding,,,51,34002,0.001500,51/34002
 3,exception,out/downs_reasons.csv,2023,REG,C1,EXPLAINED,the ball placed at or past the line to gain (14-1-2 Item 4): Delay of Game,,,1,34002,0.000029,1/34002
@@ -1349,7 +1349,7 @@ clause,part,source,season,season_type,check,word,label,articles,book,count,of,sh
 3,exception,out/downs_reasons.csv,2023,REG,C1,EXPLAINED,"the ball placed at or past the line to gain (14-1-2 Item 5, 7-3-1(b)): Tripping",,,1,34002,0.000029,1/34002
 3,exception,out/downs_reasons.csv,2023,REG,C1,EXPLAINED,"the ball placed at or past the line to gain (14-1-2 Item 5, 7-3-1(b)): Unnecessary Roughness",,,100,34002,0.002941,100/34002
 3,exception,out/downs_reasons.csv,2023,REG,C1,EXPLAINED,"the ball placed at or past the line to gain (14-1-2 Item 5, 7-3-1(b)): Unsportsmanlike Conduct",,,2,34002,0.000059,2/34002
-3,unsettled,out/downs_reasons.csv,2023,REG,C1,EXPLAINED,"the record's foul columns disagree with its play text, which foul set the next down is not told apart",,,1,34002,0.000029,1/34002
+3,unsettled,out/downs_reasons.csv,2023,REG,C1,EXPLAINED,"the play-by-play record's foul columns disagree with its play text, which foul set the next down is not told apart",,,1,34002,0.000029,1/34002
 3,not judged,out/downs_reasons.csv,2023,REG,C1 not judged,NOT JUDGED,"a change of team, a break, or a possession ending on its first snap",,,5750,5750,1.000000,5750/5750
 3,as rule,out/downs_reasons.csv,2023,REG,C2,AS RULE,"1st and 10, or and goal (3-8-3)",,,15168,15843,0.957394,15168/15843
 3,exception,out/downs_reasons.csv,2023,REG,C2,EXPLAINED,"a foul enforced before the snap (14-4-9, 14-3): Chop Block",,,2,15843,0.000126,2/15843
@@ -1408,7 +1408,7 @@ clause,part,source,season,season_type,check,word,label,articles,book,count,of,sh
 3,exception,out/downs_reasons.csv,2024,POST,C1,EXPLAINED,"a foul by the offense after the whistle, the down counts (3-8-5): Unnecessary Roughness",,,1,1564,0.000639,1/1564
 3,exception,out/downs_reasons.csv,2024,POST,C1,EXPLAINED,"a foul by the offense between downs, the down unchanged (14-1-2 Item 7): Taunting",,,1,1564,0.000639,1/1564
 3,exception,out/downs_reasons.csv,2024,POST,C1,EXPLAINED,"a foul by the offense during the play, the down replayed from the spot (14-1-2 Item 1, 3-8-4): Offensive Holding",,,3,1564,0.001918,3/1564
-3,unsettled,out/downs_reasons.csv,2024,POST,C1,EXPLAINED,fits one of the rules the record cannot tell apart (after the whistle): Unnecessary Roughness,,,1,1564,0.000639,1/1564
+3,unsettled,out/downs_reasons.csv,2024,POST,C1,EXPLAINED,fits one of the rules the play-by-play record cannot tell apart (after the whistle): Unnecessary Roughness,,,1,1564,0.000639,1/1564
 3,exception,out/downs_reasons.csv,2024,POST,C1,EXPLAINED,"the ball placed at or past the line to gain (14-1-2 Item 5, 7-3-1(b)): Defensive Holding",,,2,1564,0.001279,2/1564
 3,exception,out/downs_reasons.csv,2024,POST,C1,EXPLAINED,"the ball placed at or past the line to gain (14-1-2 Item 5, 7-3-1(b)): Defensive Offside",,,2,1564,0.001279,2/1564
 3,exception,out/downs_reasons.csv,2024,POST,C1,EXPLAINED,"the ball placed at or past the line to gain (14-1-2 Item 5, 7-3-1(b)): Defensive Pass Interference",,,6,1564,0.003836,6/1564
@@ -1492,9 +1492,9 @@ clause,part,source,season,season_type,check,word,label,articles,book,count,of,sh
 3,unsettled,out/downs_reasons.csv,2024,REG,C1,EXPLAINED,"a receivers' foul on a punt the kickers downed, enforced at the previous spot, the 4th down repeated: 14-1-2 Item 5 does not give it, and no article was found in Rules 9 or 14 that does (14-4-7 replays a down for kickoffs and safety kicks only), a record error or an unread article, not told apart: Illegal Block Above the Waist",,,1,33823,0.000030,1/33823
 3,exception,out/downs_reasons.csv,2024,REG,C1,EXPLAINED,"an illegal touch pass with no yardage, loss of down (8-1-8(b)): Illegal Touch Pass",,,3,33823,0.000089,3/33823
 3,exception,out/downs_reasons.csv,2024,REG,C1,EXPLAINED,"an illegal touch pass with yardage on a no-play, the same down (8-1-8(a), 14-1-2 Item 1): Illegal Touch Pass",,,1,33823,0.000030,1/33823
-3,unsettled,out/downs_reasons.csv,2024,REG,C1,EXPLAINED,fits one of the rules the record cannot tell apart (after the whistle): Face Mask,,,2,33823,0.000059,2/33823
-3,unsettled,out/downs_reasons.csv,2024,REG,C1,EXPLAINED,fits one of the rules the record cannot tell apart (after the whistle): Unnecessary Roughness,,,15,33823,0.000443,15/33823
-3,unsettled,out/downs_reasons.csv,2024,REG,C1,EXPLAINED,fits one of the rules the record cannot tell apart (during the play): Face Mask,,,7,33823,0.000207,7/33823
+3,unsettled,out/downs_reasons.csv,2024,REG,C1,EXPLAINED,fits one of the rules the play-by-play record cannot tell apart (after the whistle): Face Mask,,,2,33823,0.000059,2/33823
+3,unsettled,out/downs_reasons.csv,2024,REG,C1,EXPLAINED,fits one of the rules the play-by-play record cannot tell apart (after the whistle): Unnecessary Roughness,,,15,33823,0.000443,15/33823
+3,unsettled,out/downs_reasons.csv,2024,REG,C1,EXPLAINED,fits one of the rules the play-by-play record cannot tell apart (during the play): Face Mask,,,7,33823,0.000207,7/33823
 3,exception,out/downs_reasons.csv,2024,REG,C1,EXPLAINED,loss of down (14-1-2 Item 2): Illegal Forward Pass,,,3,33823,0.000089,3/33823
 3,exception,out/downs_reasons.csv,2024,REG,C1,EXPLAINED,loss of down (14-1-2 Item 2): Illegal Kick/Kicking Loose Ball,,,1,33823,0.000030,1/33823
 3,exception,out/downs_reasons.csv,2024,REG,C1,EXPLAINED,loss of down (14-1-2 Item 2): Intentional Grounding,,,32,33823,0.000946,32/33823
@@ -1525,7 +1525,7 @@ clause,part,source,season,season_type,check,word,label,articles,book,count,of,sh
 3,exception,out/downs_reasons.csv,2024,REG,C1,EXPLAINED,"the ball placed at or past the line to gain (14-1-2 Item 5, 7-3-1(b)): Tripping",,,1,33823,0.000030,1/33823
 3,exception,out/downs_reasons.csv,2024,REG,C1,EXPLAINED,"the ball placed at or past the line to gain (14-1-2 Item 5, 7-3-1(b)): Unnecessary Roughness",,,88,33823,0.002602,88/33823
 3,exception,out/downs_reasons.csv,2024,REG,C1,EXPLAINED,"the ball placed at or past the line to gain (14-1-2 Item 5, 7-3-1(b)): Unsportsmanlike Conduct",,,2,33823,0.000059,2/33823
-3,unsettled,out/downs_reasons.csv,2024,REG,C1,EXPLAINED,"the record's foul columns disagree with its play text, which foul set the next down is not told apart",,,1,33823,0.000030,1/33823
+3,unsettled,out/downs_reasons.csv,2024,REG,C1,EXPLAINED,"the play-by-play record's foul columns disagree with its play text, which foul set the next down is not told apart",,,1,33823,0.000030,1/33823
 3,not judged,out/downs_reasons.csv,2024,REG,C1 not judged,NOT JUDGED,"a change of team, a break, or a possession ending on its first snap",,,5556,5556,1.000000,5556/5556
 3,as rule,out/downs_reasons.csv,2024,REG,C2,AS RULE,"1st and 10, or and goal (3-8-3)",,,15162,15927,0.951968,15162/15927
 3,exception,out/downs_reasons.csv,2024,REG,C2,EXPLAINED,"a foul enforced before the snap (14-4-9, 14-3): Chop Block",,,3,15927,0.000188,3/15927
@@ -1650,10 +1650,10 @@ clause,part,source,season,season_type,check,word,label,articles,book,count,of,sh
 3,exception,out/downs_reasons.csv,2025,REG,C1,EXPLAINED,"a foul by the offense during the play, the down replayed from the spot (14-1-2 Item 1, 3-8-4): Low Block",,,2,33141,0.000060,2/33141
 3,exception,out/downs_reasons.csv,2025,REG,C1,EXPLAINED,"a foul by the offense during the play, the down replayed from the spot (14-1-2 Item 1, 3-8-4): Offensive Holding",,,71,33141,0.002142,71/33141
 3,exception,out/downs_reasons.csv,2025,REG,C1,EXPLAINED,"an illegal touch pass with no yardage, loss of down (8-1-8(b)): Illegal Touch Pass",,,4,33141,0.000121,4/33141
-3,unsettled,out/downs_reasons.csv,2025,REG,C1,EXPLAINED,fits one of the rules the record cannot tell apart (after the whistle): Unnecessary Roughness,,,13,33141,0.000392,13/33141
-3,unsettled,out/downs_reasons.csv,2025,REG,C1,EXPLAINED,fits one of the rules the record cannot tell apart (during the play or ball at or past L): Face Mask,,,1,33141,0.000030,1/33141
-3,unsettled,out/downs_reasons.csv,2025,REG,C1,EXPLAINED,fits one of the rules the record cannot tell apart (during the play): Face Mask,,,7,33141,0.000211,7/33141
-3,unsettled,out/downs_reasons.csv,2025,REG,C1,EXPLAINED,fits one of the rules the record cannot tell apart (during the play): Unnecessary Roughness,,,1,33141,0.000030,1/33141
+3,unsettled,out/downs_reasons.csv,2025,REG,C1,EXPLAINED,fits one of the rules the play-by-play record cannot tell apart (after the whistle): Unnecessary Roughness,,,13,33141,0.000392,13/33141
+3,unsettled,out/downs_reasons.csv,2025,REG,C1,EXPLAINED,fits one of the rules the play-by-play record cannot tell apart (during the play or ball at or past L): Face Mask,,,1,33141,0.000030,1/33141
+3,unsettled,out/downs_reasons.csv,2025,REG,C1,EXPLAINED,fits one of the rules the play-by-play record cannot tell apart (during the play): Face Mask,,,7,33141,0.000211,7/33141
+3,unsettled,out/downs_reasons.csv,2025,REG,C1,EXPLAINED,fits one of the rules the play-by-play record cannot tell apart (during the play): Unnecessary Roughness,,,1,33141,0.000030,1/33141
 3,exception,out/downs_reasons.csv,2025,REG,C1,EXPLAINED,loss of down (14-1-2 Item 2): Illegal Forward Pass,,,7,33141,0.000211,7/33141
 3,exception,out/downs_reasons.csv,2025,REG,C1,EXPLAINED,loss of down (14-1-2 Item 2): Intentional Grounding,,,50,33141,0.001509,50/33141
 3,exception,out/downs_reasons.csv,2025,REG,C1,EXPLAINED,the ball placed at or past the line to gain (14-1-2 Item 4): Delay of Game,,,1,33141,0.000030,1/33141
