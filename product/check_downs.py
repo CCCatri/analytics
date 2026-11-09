@@ -1,4 +1,4 @@
-"""check_downs.py - rules-level clause 3, downs ("four downs to gain ten"), to downs-check.md v19 (7c579decd785). A record read, not product.
+"""check_downs.py - rules-level clause 3, downs ("four downs to gain ten"), to downs-check.md v19 (8bbcc31c80f5). A record read, not product.
 Reads record.events (down, ydstogo, yardline_100, yards_gained, posteam, penalty, kind, two_point_attempt, qtr, game clock, scores and turnovers) joined one-to-one
 on (game_id, play_id) to record.raw_frame + record.typed for: order_sequence, season_type, first_down, first_down_penalty, penalty_team, penalty_type,
 desc, own_kickoff_recovery, fumble_recovery_1_team.
@@ -45,7 +45,7 @@ import rules
 from rules import PRESNAP_OFFENSE, LOSS_OF_DOWN, OFF_DURING, OFF_AFTER, DEF_AWARD, DEF_NEXT, DEF_SAME, BOOK, TMM, norm, book, is_exc, touch_yards, next_down
 
 SELF = hashlib.sha256(open(os.path.abspath(__file__), "rb").read()).hexdigest()[:12]
-TARGETS, TSHA = "acceptance-criteria/downs-check.md", "7c579decd785"
+TARGETS, TSHA = "acceptance-criteria/downs-check.md", "8bbcc31c80f5"
 OUT_COUNTS = "out/downs_counts.csv"
 OUT_OTHER = "out/downs_other.csv"
 OUT_REASONS = "out/downs_reasons.csv"

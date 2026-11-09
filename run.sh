@@ -19,7 +19,7 @@ stage "3. incident the predecessor-index mismatch: revision 12 (before the oracl
 ( cd incidents/predecessor-index-mismatch/revision-16-with-regression-test && python3 tests/test_product.py > ../../../out_revision16.log 2>&1; echo "  revision 16 exit $?"; grep -E 'oracle|failures|Error' ../../../out_revision16.log | sed 's/^/  revision 16 /' )
 python3 checks/test_incident_baseline.py || exit 1
 stage "4. record checks and the engine (need the nflverse raw files; see README)"
-if [[ -d data/raw ]]; then python3 product/check_possessions.py && python3 product/check_clock.py && python3 product/check_downs.py && python3 product/rules_level.py && PYTHONPATH=product python3 -c "import sys, engine; engine.alone_main(sys.argv[1:])" out/engine out/engine_alone; else echo "SKIPPED: data/raw absent"; fi
+if [[ -d data/raw ]]; then python3 product/check_possessions.py && python3 product/check_clock.py && python3 product/check_downs.py && python3 product/rules_level.py && PYTHONPATH=product python3 -c "import sys, engine; engine.alone_main(sys.argv[1:])" out/engine out/engine_alone || { echo "FAIL: stage 4 stopped (a record check or the engine failed above)"; exit 1; }; else echo "SKIPPED: data/raw absent"; fi
 
 echo
 echo "== 5. generated-game acceptance (gate 1 of the handoff): the record checks on the engine's generated games, then the four injected violations"

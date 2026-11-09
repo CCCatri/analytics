@@ -1,4 +1,4 @@
-"""check_clock.py - rules-level clause 1, the clock, to clock-check.md v16 (dfff5f9d7de8). A record read, not product.
+"""check_clock.py - rules-level clause 1, the clock, to clock-check.md v16 (26cd42781320). A record read, not product.
 Reads through record.raw_frame + record.typed (pinned file, betting refused, every column typed; empties counted, never filled).
 Injected faults and negatives run first, row by row; any FAIL stops the run before a count is read or a file is written.
 Writes out/clock_counts.csv, out/clock_faster.csv, out/clock_over40.csv and out/clock_reasons.csv, each stamped on line 1 with this file's sha and the targets sha.
@@ -23,7 +23,7 @@ import record, policy
 from rules import SNAP_KINDS, PRESNAP_OFFENSE, beyond, oob_window, foul_window, warning, before_warning, clock_class, play_clock, admin as admin_rule
 
 SELF = hashlib.sha256(open(os.path.abspath(__file__), "rb").read()).hexdigest()[:12]
-TARGETS, TSHA = "acceptance-criteria/clock-check.md", "dfff5f9d7de8"
+TARGETS, TSHA = "acceptance-criteria/clock-check.md", "26cd42781320"
 TLINES = open(TARGETS).read().split("\n")
 
 
