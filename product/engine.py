@@ -1,6 +1,6 @@
 """engine.py - engine v0 (v4: the season rules read from each season's rule book), to engine-legality.md. Games played out snap by snap on rules.py (snap kinds to the season rules) and league-wide rates, written in the play-by-play record's columns.
 Not product: the engine is the floor the engine-vs-record stage grades. Decision when it runs: NO_CHANGE.
-Inputs (engine-legality.md section 1): rules.py; for season s, league-wide rates read from the five other unsealed seasons (never s, never 2022); the schedule
+Inputs (engine-legality.md section 1): rules.py; for season s, league-wide rates read from the five other unsealed seasons (never s, never 2022); each offense's dropback tendency from its own earlier games in season s (weeks before the game only; its yardstick and shrinkage from the five other seasons; check_team_tendency); the schedule
 (teams, season, week, home side, game type). Bins: down, distance (1-3, 4-6, 7-10, 11+), field (own 1-20, own 21-50, opp 49-21, opp 20-1), time (normal,
 last 2:00 of the first half, last 5:00 of the game, overtime), score (behind 9+, behind 1-8, tied, ahead 1-8, ahead 9+). A bin with fewer than MIN_BIN plays
 is merged with the next coarser bin (score dropped, then time, then distance, then field, then down); every pool prints its merges.
@@ -728,10 +728,75 @@ def prep(d):
     return T, X, notp
 
 
+TEND_DB = ("pass", "sack", "scramble")   # check_team_tendency: the dropback kinds a tendency moves (8-1-2); kneels and spikes stay as drawn
+TEND_COLS = ["game_id", "order_sequence", "week", "posteam", "home_team", "qtr", "quarter_seconds_remaining", "play_type", "pass",
+             "two_point_attempt", "total_home_score", "total_away_score", "down", "ydstogo"]
+TEND_NUM = ["order_sequence", "week", "qtr", "quarter_seconds_remaining", "pass", "two_point_attempt", "total_home_score", "total_away_score", "down", "ydstogo"]
+_TEND_SNAPS = {}
+
+
+def _tend_dist(x):
+    return "1-3" if x <= 3 else ("4-6" if x <= 6 else ("7-10" if x <= 10 else "11+"))
+
+
+def _tend_snaps(y):
+    """One season of the play-by-play record as offensive snaps (runs and dropbacks, downs 1-4, regulation, no tries): game, week, offense, its side, situation cell, dropback."""
+    if y not in _TEND_SNAPS:
+        df = record.raw_frame(policy.PBP_FILE.format(season=y), TEND_COLS, f"team tendency {y}").copy()
+        for c in TEND_NUM:
+            df[c] = pd.to_numeric(df[c], errors="coerce")
+        df = df.sort_values(["game_id", "order_sequence"]).reset_index(drop=True)
+        th = df.groupby("game_id")["total_home_score"].transform(lambda s: s.ffill().shift().fillna(0))
+        ta = df.groupby("game_id")["total_away_score"].transform(lambda s: s.ffill().shift().fillna(0))
+        diff = np.where(df["posteam"] == df["home_team"], th - ta, ta - th)
+        keep = (df["play_type"].isin(["pass", "run"]) & (df["two_point_attempt"] != 1) & (df["qtr"] <= 4) & df["posteam"].notna() & (df["posteam"] != "") & df["down"].between(1, 4)).to_numpy()
+        s = df[keep].copy(); d_ = diff[keep]
+        late = (s["qtr"].isin([2, 4]) & (s["quarter_seconds_remaining"] <= 120)).to_numpy()
+        s["dropback"] = (s["pass"] == 1).astype(int)
+        s["side"] = np.where(s["posteam"] == s["home_team"], "home", "away")
+        s["cell"] = [f"{score_bin(a)}|{int(b)}|{_tend_dist(c)}|{int(l)}" for a, b, c, l in zip(d_, s["down"], s["ydstogo"], late)]
+        _TEND_SNAPS[y] = s[["game_id", "week", "posteam", "side", "cell", "dropback"]]
+    return _TEND_SNAPS[y]
+
+
+def _tend_games(s, cell_rate, overall):
+    s = s.assign(e=s["cell"].map(cell_rate).fillna(overall))
+    g = s.groupby(["game_id", "posteam"]).agg(week=("week", "first"), side=("side", "first"), n=("dropback", "size"), k=("dropback", "sum"), e=("e", "mean")).reset_index()
+    g["u"] = g["k"] / g["n"] - g["e"]
+    return g
+
+
+def team_tendency(season):
+    """check_team_tendency: {(game_id, side): d} for season s, keyed by game and side (home or away) so no team code is translated between the schedule and the
+    play-by-play record. u = a team-game's dropback share minus its situation-expected share (the five other seasons' rates by score state, down, distance and
+    the late window); d for a team's game in week w = k*tau2 / (k*tau2 + s2) times its mean u over its k games before week w in s (0 when k = 0), with tau2
+    (between teams) and s2 (game to game) from the five other seasons. Measured 2026-11-09: earlier games predict the next game, slope +1.04 +/-0.12 over six
+    held seasons (shuffled teams -0.17 +/-0.16)."""
+    fit = [y for y in SIM_SEASONS if y != season]
+    pool = pd.concat([_tend_snaps(y) for y in fit]); cell_rate = pool.groupby("cell")["dropback"].mean(); overall = float(pool["dropback"].mean())
+    t2, v2 = [], []
+    for y in fit:
+        grp = _tend_games(_tend_snaps(y), cell_rate, overall).groupby("posteam")["u"]
+        v2.append(float(grp.var(ddof=1).mean())); t2.append(float(grp.mean().var(ddof=1) - (grp.var(ddof=1) / grp.size()).mean()))
+    tau2, s2 = max(float(np.mean(t2)), 0.0), float(np.mean(v2))
+    g = _tend_games(_tend_snaps(season), cell_rate, overall)
+    out = {}
+    for team, gt in g.groupby("posteam"):
+        wk, u = gt["week"].to_numpy(float), gt["u"].to_numpy(float)
+        for gid, side, w in zip(gt["game_id"], gt["side"], wk):
+            prior = u[wk < w]; k = len(prior)
+            out[(gid, side)] = float(k * tau2 / (k * tau2 + s2) * prior.mean()) if k else 0.0
+    ds = [v for v in out.values() if v]
+    rng_ = f"d from {min(ds):+.3f} to {max(ds):+.3f}" if ds else "d 0 everywhere (no between-team spread in the fit seasons)"
+    print(f"team tendency {season}: teams {g['posteam'].nunique()} | team-games keyed {len(out)} | tau {np.sqrt(tau2):.3f} | game-to-game sd {np.sqrt(s2):.3f} | {rng_} (yardstick and shrinkage from {fit})")
+    return out
+
+
 class Rates:
     def __init__(self, season, tables):
         """Pools for season s from the tables of the five other unsealed seasons."""
         self.season = season
+        self.TEND = team_tendency(season)   # check_team_tendency
         c = {k: pd.concat([t[k] for t in tables], ignore_index=True) for k in tables[0]}
         self.n = {k: len(v) for k, v in c.items()}
         P = {}
@@ -1062,10 +1127,36 @@ class Game:
                 "interception": itc, "fumble_lost": fum, "two_point_attempt": 0, "touchdown": td,
                 "pass_touchdown": 1 if td and kind == "pass" else 0, "rush_touchdown": 1 if td and kind in ("run", "scramble", "kneel") else 0}
 
+    def tendency_nudge(self, s1, key, off):
+        """check_team_tendency: this snap's dropback chance moved by the offense's tendency d (team_tendency, keyed by this game and the offense's side). Within the
+        bin the kind was drawn from (resolved as Pool.draw resolves it), a run becomes one of the bin's dropback rows with probability d / (1 - p), or a dropback one
+        of its runs with probability -d / p, so the bin's dropback share among runs and dropbacks moves from p to p + d (clipped at 0 and 1). Kneels and spikes are never changed."""
+        gid = self.g["game_id"]; side = "home" if off == self.home else "away"; d = self.R.TEND.get((gid, side))
+        if d is None:
+            raise record.DataGap(f"team tendency: no entry for {gid} {side} ({off}) in {self.season}")
+        if d == 0.0 or s1["kind"] not in TEND_DB + ("run",):
+            return s1
+        pool = self.P["kc"]; idx = None
+        for i, lev in enumerate(pool.levels):
+            idx = pool.tab[i].get(tuple(key[c] for c in lev))
+            if idx is not None and len(idx) and (len(idx) >= MIN_BIN or not lev):
+                break
+        kinds = pool.vals[idx, pool.cols.index("kind")]; db = idx[np.isin(kinds, TEND_DB)]; rn = idx[kinds == "run"]
+        if not len(db) or not len(rn):
+            return s1
+        p = len(db) / (len(db) + len(rn))
+        if d > 0 and s1["kind"] == "run" and self.rng.random() < min(1.0, d / (1 - p)):
+            return dict(zip(pool.cols, pool.vals[db[self.rng.integers(len(db))]]))
+        if d < 0 and s1["kind"] in TEND_DB and self.rng.random() < min(1.0, -d / p):
+            return dict(zip(pool.cols, pool.vals[rn[self.rng.integers(len(rn))]]))
+        return s1
+
     def scrimmage(self, k):
         off, dfn = self.off, self.other(self.off); yl0, down0, ltg0, qs0 = self.yl, self.down, self.ltg, self.clock; togo0 = yl0 - ltg0
         if R1B:   # R1b: the kind and its clock flags (4-4f, 4-3-2a) by time bin and late score first, then the outcome of that kind and those flags
-            s1 = self.P["kc"].draw(self.rng, dict(tb2=tb2(self.q, self.clock), score=k["score"], down=k["down"], dist=k["dist"]))   # the play kind keyed by the score all game (check_dropback_by_score)
+            kk_ = dict(tb2=tb2(self.q, self.clock), score=k["score"], down=k["down"], dist=k["dist"])
+            s1 = self.P["kc"].draw(self.rng, kk_)   # the play kind keyed by the score all game (check_dropback_by_score)
+            s1 = self.tendency_nudge(s1, kk_, off)   # the offense's dropback tendency from its earlier games this season (check_team_tendency)
             nope = [sd for sd, tm in (("offense", off), ("defense", dfn)) if self.to_left[tm] <= 0] if (R1D and self.q <= 4) else []
             ok_ = (lambda V, nope=nope, j=self.P["play2"].cols.index("rv_chal"): ~np.isin(V[:, j], nope)) if nope else None   # 15-6-1: a coach's challenge needs a timeout
             o = self.P["play2"].draw(self.rng, dict(k, kind=s1["kind"], inc_k=s1["inc_k"], ob_k=s1["ob_k"]), ok=ok_)
