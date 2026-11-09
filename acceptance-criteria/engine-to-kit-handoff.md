@@ -8,7 +8,7 @@ carries at index j.
 
 ## 1. Reconciliation (measured 2026-11-05; checks/reconcile_root_counts_by_position.py, exit 1 unless every team-week is equal)
 The kit's root counts are sums over its priced universe (facts.load filters to QB, RB, WR, TE) of the nflverse weekly stats file, regular season, per (season, week,
-team), team codes normalized (OAK->LV, SD->LAC, LA/STL->LAR). The engine-side count that equals them to the row, on 3,200 of 3,200 regular-season team-weeks
+team), team codes normalized (OAK->LV, SD->LAC, LA/STL->LAR). The engine-side count that equals them to the row, on 3,200 of 3,200 regular-season team-games
 2019-2021, 2023-2025: attempts = snaps of kind pass or spike, plus accepted-foul rows (kind penalty) carrying pass_attempt = 1 that are not sacks; carries = snaps
 of kind run, scramble or kneel, plus accepted-foul rows carrying rush_attempt = 1; two-point tries excluded; counted only where the ball-handler's stats-file
 position is QB, RB, WR or TE. The last clause was found by two rows: 2024 w15 HOU, a fake-punt run nullified by a foul that the stats file still credits

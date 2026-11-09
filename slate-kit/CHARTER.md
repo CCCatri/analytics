@@ -3347,7 +3347,7 @@ spine_compose.py 15091830... (helpers + 20 recording lines + A1 output block).  
    negative binomial 1,985 / zero-history Poisson 535 + negative binomial 1,715; receptions RB Poisson 3,595 + hurdle 417, WR negative binomial 6,505 + hurdle 449, TE Poisson 3,744 +
    zero-history negative binomial 491; targets RB Poisson 3,662 + hurdle 350, TE support 4,235, WR beta-binomial share of the team draw 6,954; RB carries Poisson 3,772 + hurdle 240;
    yards Normal (form 2 / 3 per position); Q1 Poisson; Q2 binomial of the attempts draw; Q3 and QB rushing yards yards-given-count; Q4 Poisson 1,450 + zero-history 64; Q5 support;
-   QB carries negative binomial; QB rushing TDs Poisson 844 + zero-history 670; F2 team targets negative binomial 1,536 team-weeks.
+   QB carries negative binomial; QB rushing TDs Poisson 844 + zero-history 670; F2 team targets negative binomial 1,536 team-games.
 A2 ACCEPTANCE REFINEMENTS (reviewer): the A1 files are the oracle; native_laws.py returns fit_state (cutoff-level fits) and row_laws(fit_state, rows) (the applicable law per row and
    stat); exact reproduction, at full precision wherever the computation is deterministic, of the final family, provenance, every numeric parameter, the season fits, chain rates,
    states, hurdle / support / zero-history parameters and work order 20 (a) means; the override precedence (base < zero-history < hurdle < work order 20 (a)) is part of the law and
