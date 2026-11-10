@@ -28,6 +28,7 @@ TERMS = {  # label: pattern.  Canonical phrases that contain a retired word (qua
     "Contract (rules doc) -> incident-derived rules": r"\bContract\b",
     "the record -> play-by-play record": r"\bthe record\b",
     "man/men (players) -> player(s)": r"\b(man|men)\b",
+    "DraftKings / fantasy / daily-fantasy -> DK DFS (its web addresses kept)": r"(?<!www\.)(?<!api\.)\bdraftkings\b|\bdaily-fantasy\b|\bfantasy\b",
 }
 CASE_SENSITIVE = {"Contract (rules doc) -> incident-derived rules", "\"right\" / \"yes\" (verdict) -> SUPPORTED", "DONE WHEN -> acceptance criteria"}
 TEXT = (".md", ".py", ".ts", ".tsv", ".yml", ".yaml", ".sh", ".txt", ".json", ".csv", ".stan", ".toml", ".cfg")
@@ -35,7 +36,7 @@ SKIP_DIRS = {".git", "node_modules", "__pycache__", "dist"}
 LIVE = "--live" in sys.argv
 GENERATED = {os.path.join(".", "out"), os.path.join(".", "slate-kit", "proj")}
 RETIRED_COLUMNS = {"VOCABULARY.md", os.path.join("slate-kit", "TAXONOMY.md"), os.path.join("slate-kit", "TAXONOMY_short_names.tsv"), os.path.join("checks", "check_vocabulary.py")}
-SOURCE_DATA = (os.path.join(".", "data"), os.path.join(".", "slate-kit", "data"), os.path.join(".", "slate-kit", "archive"))   # files other people wrote (nflverse, DraftKings caches): raw files keep source spellings (TAXONOMY rule); player surnames are not our vocabulary
+SOURCE_DATA = (os.path.join(".", "data"), os.path.join(".", "slate-kit", "data"), os.path.join(".", "slate-kit", "archive"), os.path.join(".", "slate-kit", "sources"))   # files other people wrote (nflverse, DK DFS and odds caches; slate-kit/sources is git-ignored raw downloads): raw files keep source spellings (TAXONOMY rule); player surnames are not our vocabulary
 files, skipped = [], []
 for root, dirs, names in os.walk("."):
     dirs[:] = [d for d in dirs if d not in SKIP_DIRS and not (LIVE and os.path.join(root, d) in GENERATED) and os.path.join(root, d) not in SOURCE_DATA]

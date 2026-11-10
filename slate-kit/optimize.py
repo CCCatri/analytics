@@ -1,5 +1,5 @@
 """optimize.py - lineups (Slate Kit module map: optimize; M10).  Reads the price file (facts' door), the card and the frozen draws only; recomputes no forecast;
-price is used here and nowhere upstream.  best9: the exact dynamic program over DraftKings NFL Classic slots (1 QB, 2-3 RB, 3-4 WR, 1-2 TE - 7 skill players including
+price is used here and nowhere upstream.  best9: the exact dynamic program over DK DFS NFL Classic slots (1 QB, 2-3 RB, 3-4 WR, 1-2 TE - 7 skill players including
 FLEX - and 1 DST) under the salary cap; returns the chosen row indices.
 BASE (kit.py base SEASON WEEK): the legal lineup with the largest expected DK total.  Expected DK points have one definition for every row: the mean of its frozen
 draws (a player's DK draws, DNP = 0; a defense's DST draws) - the card's draw_mean, never a law center (M10b).  An expected total is a sum of means, so BASE does not depend on cross-player dependence (it ships before M9); FLOOR and CEILING do.
@@ -48,7 +48,7 @@ MATERIALITY_DK = 1.0
 BASE_STATUS = "ISSUABLE - NOT DECISION-QUALIFIED (DK draws have no atlas cell; participation NOT DECISION-QUALIFIED); DRY RUN - not prospective"
 def slate_pool(issue_season, issue_week):
     """Every row of week N's price file with its expected DK points (the mean of its frozen draws) and eligibility: a skill row joins the card candidate with the same name key and team;
-    a row left unmatched joins a candidate left unmatched with the same surname key, team and position when that pairing is one on each side (DraftKings and the
+    a row left unmatched joins a candidate left unmatched with the same surname key, team and position when that pairing is one on each side (DK DFS and the
     play-by-play spell first names differently - Matt / Matthew); the match column names which.  A matched skill row is
     ELIGIBLE iff that candidate is ISSUED with a DK row; a DST row is ELIGIBLE iff its team has a DST law.  Every other row carries the reason."""
     prices = price_file(issue_season, issue_week); card = card_rows(issue_season, issue_week)
@@ -69,7 +69,7 @@ def slate_pool(issue_season, issue_week):
                                      np.where(pool.term == DST_TERM, "NOT ELIGIBLE - no DST law", "NOT ELIGIBLE - no DK draw (participation NOT ISSUED)")], "ELIGIBLE")
     return pool.drop_duplicates("dk_id").reset_index(drop=True), candidates
 def legal(lineup_rows):
-    """DraftKings NFL Classic: 9 distinct players, 1 QB, 1 DST, 2-3 RB, 3-4 WR, 1-2 TE (7 skill), salary <= cap, players from 2+ games."""
+    """DK DFS NFL Classic: 9 distinct players, 1 QB, 1 DST, 2-3 RB, 3-4 WR, 1-2 TE (7 skill), salary <= cap, players from 2+ games."""
     counts = lineup_rows.dk_position.value_counts()
     return (len(lineup_rows) == 9 and lineup_rows.dk_id.nunique() == 9 and counts.get("QB", 0) == 1 and counts.get("DST", 0) == 1 and 2 <= counts.get("RB", 0) <= 3 and 3 <= counts.get("WR", 0) <= 4
             and 1 <= counts.get("TE", 0) <= 2 and counts.get("RB", 0) + counts.get("WR", 0) + counts.get("TE", 0) == 7 and int(lineup_rows.salary.sum()) <= salary_cap and lineup_rows.game.nunique() >= 2)

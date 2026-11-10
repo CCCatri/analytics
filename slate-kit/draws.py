@@ -200,7 +200,7 @@ def dk_draws_of(composed, probability_of, season, week, worlds=None):
     return {(key, DK_TERM): (np.where(worlds[key], f8_draws, 0.0) if key in worlds else dnp_zero(f8_draws, substream(DK_TERM, position, season, week, key, "participation").random(DRAW_COUNT), probability_of[key]))
             for key, position, form, f8_draws in composed if key in probability_of or key in worlds}
 def grade_dk(dk_draws, players, outcomes, season, week):
-    """The score users consume, graded (batch 73): each DK row against DraftKings' recorded points, 0 for a member who did not play (his team-game was played:
+    """The score users consume, graded (batch 73): each DK row against DK DFS recorded points, 0 for a member who did not play (his team-game was played:
     a replay season); each team's DK total - the sum of its members' DK draws, draw by draw - against the sum of their points.  Randomized PIT from its own
     keyed generator, CRPS, bias and quantiles, in the graded schema."""
     if not dk_draws: return pd.DataFrame(columns=GRADED_COLUMNS)
@@ -214,7 +214,7 @@ def grade_dk(dk_draws, players, outcomes, season, week):
     return rows.assign(season=season, week=week, state=LINK_CHAIN_STATE, outcome=outcome, draw_mean=matrix.mean(1), outcome_rank=rank(matrix, outcome, substream("dk rank", "slate", season, week, "", LINK_CHAIN_STATE)),
                        crps=crps(matrix, outcome), bias=matrix.mean(1) - outcome, quantile_10=quantiles[0], quantile_50=quantiles[1], quantile_90=quantiles[2], p_bonus=np.nan)[GRADED_COLUMNS]
 def outcome_column(term, position):
-    """The facts column a term is graded against: a link its numerator, F5 TDs its sum, F8 dk_points (DraftKings' recorded points)."""
+    """The facts column a term is graded against: a link its numerator, F5 TDs its sum, F8 dk_points (DK DFS recorded points)."""
     return {F8_TERM: "dk_points", "F5 TDs": "F5 TDs"}.get(term) or LINKS[(term, position)][1]
 def grade_slate(slate, outcomes, season, week):
     """Every drawn row of a slate with a played outcome, graded: randomized PIT (one keyed generator per slate), CRPS, bias (draw mean - y) and quantiles."""

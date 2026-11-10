@@ -3,7 +3,7 @@
 > Revised 2026-11-07: vocabulary standardized to VOCABULARY.md throughout; retired spellings replaced and the acceptance ledger digest reset to these revised lines. Dates and findings unchanged.
 
 ## The one goal
-Find where DraftKings' price is wrong, using only information that existed before kickoff, and prove it on seasons the
+Find where DK DFS price is wrong, using only information that existed before kickoff, and prove it on seasons the
 method never saw.  Everything the kit computes serves one generative model of a slate:
 
   causal roots -> each player's role (with uncertainty) -> how role and availability move week to week
@@ -38,14 +38,14 @@ the schedule.  Outcomes (stats, snaps, scores, DK points) are labels, never inpu
 | J joint outcomes | how players move together, game shapes | F | one joint estimator (replaces stacks, piechain, chain55, chainstress, tails, offdef, gamepair, gamescript, gamesim, shapelens, shapeodds, defense, layers, teamchain, reframe, reopen, grenade) |
 | M market timing | prices and lines over time | data/line_history, tidy salaries, F | one line/price table (replaces pricetime, slates; history_clocks and snapshot stay as fetchers) |
 | R props | what prop lines know | raw prop lines + actuals, F | one props table (replaces proptests, propthreads, pick6_devig) |
-| S simulation | what our lineups score on a real pool | P, A, J, a real DraftKings file | one simulator over the real pool; no contest field (rule 5); takes over the builder's internals (dkpts/dstpts copies, models.json) |
+| S simulation | what our lineups score on a real pool | P, A, J, a real DK DFS file | one simulator over the real pool; no contest field (rule 5); takes over the builder's internals (dkpts/dstpts copies, models.json) |
 | L evaluation | which rules hold on weeks never seen | S, P, A, J, accepted forward weeks | one harness, frozen before the weeks arrive; twins: shuffled projections, random valid lineups |
 
 Order: F -> P, A, J, M, R -> S -> L.  A replaced script is deleted when its producer is verified.
 
 ## Findings that bind (Oct 2 2026)
 - MEMBERSHIP: the 2016-21 salary source lists players who took part in the game (Out players: 0-4 priced per season of 157-264 listed;
-  QBs 1.21 per team-week vs 1.20 who played). DraftKings' real pool (sources/raw/dk_weekly/DK_2026_w4.csv) lists 2.4-2.7x as many skill
+  QBs 1.21 per team-week vs 1.20 who played). DK DFS real pool (sources/raw/dk_weekly/DK_2026_w4.csv) lists 2.4-2.7x as many skill
   players per team, 61-74% at the position minimum. Pools and backtests built from the source never contain a player who sat: optimistic
   by an amount this data cannot measure. P (which conditions on playing) stands; its domain is "priced players who played".
 - METRIC: value is judged by partial rank correlation given salary within each slate (predicted and actual DK points each residualized on
@@ -56,14 +56,14 @@ Order: F -> P, A, J, M, R -> S -> L.  A replaced script is deleted when its prod
 - P verdicts: QB season usage axis; RB last-week role; WR season usage axis + last-week role; TE season usage axis.
   Out everywhere: dk lags, prior season (rookie hole), game line.
 - A: availability is estimable only for injury-listed players.
-- OPEN: DraftKings' RB minimum is 4000 in 2026 vs 2500-3000 in 2016-21; whether the rest of the salary scale carries over is unknown.
+- OPEN: DK DFS RB minimum is 4000 in 2026 vs 2500-3000 in 2016-21; whether the rest of the salary scale carries over is unknown.
   A first game of a season in weeks 4-16 has no season-to-date usage; those rows are unprojected where inputs need it.
 - organize_sources.py is retired (guarded): a rerun would fold sources/raw/dk_weekly into the 2016-21 tidy salaries.
-- SCORING (identified against DraftKings' recorded points 2016-21; today's rules page agrees; 2022-25 untestable):
+- SCORING (identified against DK DFS recorded points 2016-21; today's rules page agrees; 2022-25 untestable):
   skill adds return TDs +6, return fumbles lost -1, offensive fumble-recovery TDs +6 (from play-by-play).
   DST: points allowed = final - 6 per opponent defensive TD - 2 per safety (tries and return TDs stay in); any recovered opponent fumble;
   every blocked kick; defensive 2pt/XP returns. Exact: DST 97.8%. The remaining DST games are provider-level play differences
-  (e.g. a muffed punt with no recovering team in play-by-play; a 2021 missed-FG return TD DraftKings did not score). They are recorded, not patched.
+  (e.g. a muffed punt with no recovering team in play-by-play; a 2021 missed-FG return TD DK DFS did not score). They are recorded, not patched.
 - build_slate.py keeps old copies of dkpts()/dstpts(): a second producer, retired when S/L replace the builder's internals.
 - J (Oct 2 2026): slots fixed pregame (previous team-game + injury list, ranked by season-to-date snap share); Gaussian copula, full
   correlation (home/away symmetric) beats 1-2 factors; +0.50 nats/game vs independence, every season; shuffled pairing -0.89; reverse
@@ -84,14 +84,14 @@ Order: F -> P, A, J, M, R -> S -> L.  A replaced script is deleted when its prod
   stacks, promote_laws (raw reads outside producers; inputs invalid).
 
 ## S and L, derived from the invariants (Oct 2 2026)
-- Membership pregame -> S runs only on real DraftKings files; no historical lineup simulation exists that can be honest.
+- Membership pregame -> S runs only on real DK DFS files; no historical lineup simulation exists that can be honest.
 - Unseen data -> L judges only weeks after the code is frozen (2026 w4 onward); every week enters through guard.py --accept, adding 2026 files only.
 - No fill -> players without P inputs are unprojected and counted; lineups use projected players only.
 - Rule 5 -> no contest field; the lineup null is random valid lineups from the same pool under the same cap.
 - Rule 2 -> P is scored on the real pool by within-slate partial correlation, players who sat counted at their real 0.
 - Quality gate -> paired gain > 2 s.e., positive in >= all-but-one 4-week block; rules fixed before outcomes exist.
 - One producer -> the builder becomes a thin reader of proj/; its dkpts/dstpts copies and models.json retire with S.
-- Forward inputs = the DraftKings file already downloaded + the weekly nflverse refresh live building already needs; no historical fetching.
+- Forward inputs = the DK DFS file already downloaded + the weekly nflverse refresh live building already needs; no historical fetching.
 - L v1 (frozen Oct 2 2026, record proj/l_weeks_v1.csv) judged 2026 w3: P RB +0.194 and WR +0.174 above their shuffled 95th, QB +0.144 inside
   noise, TE -0.020; A gain +0.394; lineup 107.0 vs expected 138.8. Its lineup null (random valid lineups) was too weak. L v2 starts 2026 w4:
   the lineup is judged against the price-alone lineup (rule 2); S's expected - actual is tracked under the 2016-21 salary scale.
@@ -140,7 +140,7 @@ Order: F -> P, A, J, M, R -> S -> L.  A replaced script is deleted when its prod
 - Not yet tested: total-conditioned J on held-out log-likelihood; pregame slice shifts as P features.
 
 ## Information set (project owner, 2026-10-02): "only week 3 results plus prices, keep all data apples to apples when comparing"
-- Live and in every backtest: results through week N-1 + week N's DraftKings price file (Game Info: opponent, home, kickoff). Nothing else about week N.
+- Live and in every backtest: results through week N-1 + week N's DK DFS price file (Game Info: opponent, home, kickoff). Nothing else about week N.
 - Outside it: week N's injury report, practice report, roster status, game line (implied, spread, total), props, a price-file injury tag.
 - One definition: p.WEEKN, dropped by p.team_game() / p.load() (the only readers of facts' tables); p.frame() builds week N; guard check 10 + purity "INFO SET PURE".
 - Deleted: vacated share (P), rep/prac/status (A), injury-list slot candidates (J), absence/game/script/opponent-implied families (discover), m.py, r.py, discover3.py, anchors.py.
@@ -150,14 +150,14 @@ Order: F -> P, A, J, M, R -> S -> L.  A replaced script is deleted when its prod
 - L v2 start stays 2026 w4 (no week-4 game judged; Thursday's teams are not in the Sun-Mon price file); freeze reset for the method change.
 
 ## One fetcher (project owner, 2026-10-02): fetch.py replaces refresh.py, studies/dk_watch.py, studies/snapshot.py, studies/history_clocks.py
-- Default: nflverse (results) + week N's DraftKings price file (--dk-group). Opt-in, never a projection input: --odds-lines, --odds-props, --odds-history.
+- Default: nflverse (results) + week N's DK DFS price file (--dk-group). Opt-in, never a projection input: --odds-lines, --odds-props, --odds-history.
 - One fetch per call; nothing enters until guard.py --accept.  Guard: check 2 limits raw reads to fetch.py; check 10 fails if a model script names odds data.
 - Weekly: python3 fetch.py 2026 N --dk-group <id>  ->  guard.py  ->  guard.py --accept  ->  facts.py  ->  s.py 2026 N
 
 ## DNP and statuses (project owner, 2026-10-02)
 - A player who did not play is in no P analysis (P trains on played rows; L's P test excludes DNP and counts them). Whether he plays is A's question.
 - The lineup score keeps a DNP at its real 0 (what the contest pays); that is where A's accuracy shows.
-- Statuses (Q / D / OUT, practice, roster, DraftKings' tag) are descriptors for after-the-fact study through p.descriptors() only; never inputs (guard check 10).
+- Statuses (Q / D / OUT, practice, roster, DK DFS tag) are descriptors for after-the-fact study through p.descriptors() only; never inputs (guard check 10).
 
 ## Certainty + boom + beat/fall-short (2026-10-02; history only, no price; walk-forward tests 2020-25; 10-draw whole-search null)
 - facts: red-zone / goal-line targets, carries, attempts and shares from play-by-play (outcomes); player rz opps vs team rz plays corr 0.971.
@@ -1162,11 +1162,11 @@ WR: undefined on 617 of 5466; where defined (2624; 2021: 1381) +0.1408 -> +0.169
 STATE: no method change.  S03 stands as Y-center skill for RB / WR / TE; lineup-chain skill shown only for WR on its covered rows (one test season).
 
 ## FORECAST HIERARCHY + STAT-SPINE RULES - Oct 3 2026 (project owner decisions this session)
-DELIVERABLE: using only information knowable before game N (N >= 4), forecast the game / team / player stat distribution as accurately as possible.  Fantasy points are
+DELIVERABLE: using only information knowable before game N (N >= 4), forecast the game / team / player stat distribution as accurately as possible.  DK DFS points are
    derived from it (F8); DK price and lineups are compared afterwards (F9).  Salary is not an input to the primary forecast (the price file may still supply opponent /
-   home / kickoff).  Order: football truth -> fantasy consequence -> market consequence.
+   home / kickoff).  Order: football truth -> DK DFS consequence -> market consequence.
 HIERARCHY: F0 information | F1 game state | F2 team volume | F3 participation | F4 role allocation | F5 player stats | F6 uncertainty / dependence | F7 primary evaluation
-   (stat units) | F8 fantasy transform | F9 market / lineup.  Current producers: F3 A / T1; F6 J; F8 Y; F9 P (salary inside every prediction) and S, judged by L.
+   (stat units) | F8 DK DFS transform | F9 market / lineup.  Current producers: F3 A / T1; F6 J; F8 Y; F9 P (salary inside every prediction) and S, judged by L.
    F2, F4, F5 have no canonical producer and F7 no evaluator.  F2 has evidence: season-level plays / pass rate stand as baseline and extremes shrink (N01, N02, S08), so
    its first revision starts from that historical level baseline.
 REVISION RULE (six fields; replaces the four-line rule for new revisions): primary target (the statistic or state) | data available before kickoff (before game N, N >= 4) | current baseline
@@ -1205,7 +1205,7 @@ F5 | targets, carries, receptions, yards, TDs | yes: TD rank (S04 W vs raw TD hi
    boundary); opponent / slot defense context candidates (S, untested vs stats); rules confounded (N08); composition persistence null (R05); deep rules (R19 open);
    absence chain (R17 open) | missing | missing | OPEN - spine revisions 3+ | R05 R17 R19 S03 S04 N08 | counting identities first (attempts x share), then
    receptions / yards / TDs one revision at a time
-F6 | stat uncertainty / dependence | fantasy-level only: J co-movement (R06), tail corners closed (R15), selector W0 inconclusive (R16) | missing in stat units (J and Y
+F6 | stat uncertainty / dependence | DK DFS-level only: J co-movement (R06), tail corners closed (R15), selector W0 inconclusive (R16) | missing in stat units (J and Y
    work in DK points) | missing | OPEN after F5 | R06 R15 R16 | -
 F7 | stat-unit evaluation of the canonical forecast | procedure findings only: exhaustive grid (R20), empty-root stress test (R21), quality gate resolution (R22), log-loss clip
    (R24) | n/a | missing | OPEN - built with each spine revision; procedure harness line 38 | R20 R21 R22 R24 | each layer scoreable before the next consumes it
@@ -1796,7 +1796,7 @@ NOTE (F8 acceptance): the first rows / pairs comparison used zcat, which on macO
 Rules check: box-score reconstruction = dk_points exact .940, within 2 pts .995, mean -.019 (omitted items negligible).  Center absolute error, F8 vs Y: ALL +0.0608+-
    0.0104 (4/4) F8 better; RB +0.0979 (4/4), TE +0.1261 (4/4) better; WR +0.0336+-0.0209 (3/4) not shown; QB -0.0962+-0.0511 (0/4) worse.  Quantile score (.1 / .5 / .9):
    F8 worse at every position (ALL -0.0975+-0.0050, 0/4).  Tails: above p90 F8 .131-.160 (ALL .147) vs Y .096; below p10 F8 .106 vs Y .050; PIT sd F8 .302, Y .285.
-   Reading: the stat spine's center beats Y overall, RB, TE; its fantasy distribution is too narrow, mainly a thin upper tail.  QB center: F8 mean 17.22 vs realized
+   Reading: the stat spine's center beats Y overall, RB, TE; its DK DFS distribution is too narrow, mainly a thin upper tail.  QB center: F8 mean 17.22 vs realized
    16.62 (Q3 / Q1 level nodes).  Walk backward next: measure within-player co-movement of components that v1 draws independently (yards, TDs vs receptions).
 
 ## F8 ACCEPTANCE - re-verified Oct 3 2026: original spine_compose.py (reverse of the anchored edits) and the patched one write identical rows (92130 lines) and pairs
@@ -2045,7 +2045,7 @@ Minimal graph: team targets -> player targets (share given team total; beta-bino
    floors, no leak: mean 0 -> point mass at 0; share and conditional laws dispatch on constructor labels (zero state -> point mass; QB carries zero -> 0 yards by identity);
    share p > 1 refuses the run; dispersion / precision fit on positive-mean rows.  Mechanical acceptance: summed composed means within 1% of frozen means for every composed
    stat.  F7 composed vs independent where forms differ; zero-state (point-mass) counts printed; F8; f8_vs_y.  Reading (reviewer): thin F8 tails after this -> boundary
-   result (simple player-level structural dependence does not explain the fantasy-tail deficit); only then a residual / shared-state challenger.
+   result (simple player-level structural dependence does not explain the DK DFS-tail deficit); only then a residual / shared-state challenger.
 
 ## COMPOSITION UNDER D - OUTCOME - Oct 3 2026 (spine_compose_report.txt, f8_vs_y_report.txt): mechanical check PASS 7 / 7 (max rel -.0003).  Zero-state point masses
    (test rows): WR TDs 2864 / 6954, TE TDs 1275 / 4235, RB TDs 521, receptions RB 417 / WR 449 / TE 491, targets RB 350 / WR 334 / TE 376, QB rushing TDs 187, Q5 103, Q4 64,
@@ -2055,7 +2055,7 @@ Minimal graph: team targets -> player targets (share given team total; beta-bino
    F8 vs Y (16713 rows): center ALL +0.0510+-0.0108 (4/4), RB +0.0980 (4/4), TE +0.1292 (4/4), WR +0.0324 (3/4) not shown, QB -0.2071 (0/4); quantile score worse at every
    position (ALL -0.1045, 0/4); above p90 .150 (RB .140, WR .146, TE .164, QB .161), below p10 .110, PIT sd .304.
 BOUNDARY RESULT (reviewer reading, registered before the run): after D, first-event support and harness v2, surviving player-level structural dependence does not explain
-   the fantasy-tail deficit.  Stat-spine center beats Y overall, RB, TE; Y remains the better fantasy distribution.  A residual / shared-state challenger is now justified
+   the DK DFS-tail deficit.  Stat-spine center beats Y overall, RB, TE; Y remains the better DK DFS distribution.  A residual / shared-state challenger is now justified
    (not v1).  Stat-spine prospective clock: next untouched week = week 5 if frozen before its first game (Thu Oct 8 2026).  Project owner decision pending: freeze now vs finish
    pre-freeze items (marginal first-event support, deviance FLOOR, spine.py unclear substitutions) first.
 
@@ -2120,7 +2120,7 @@ Team: targets, attempts negative binomial; carries Poisson.  Targets: RB Poisson
    targets +4.19%, Q5 +.75% (intended).  F7 vs comparison form: WR targets +0.00838, TE targets (support) +0.01243, Q5 (support) +0.03769, QB rushing yards +0.57066 (4/4
    each); Q2 -0.04139, Q3 -0.71287 (0/4); energy Q2 with Q3 -0.59129 (0/4).  F8 vs Y: center ALL +0.0498+-0.0105 (4/4), RB +0.0972, TE +0.1305 (4/4), WR +0.0331 (3/4), QB
    -0.2249 (0/4); quantile score ALL -0.1048 (0/4); above p90 .150, below p10 .110, PIT sd .304 - unchanged from the last corrected F8 (.150 / .110 / .304).
-BOUNDARY CONFIRMED: the fantasy-tail miss does not come from zero-support handling or the tested structural identities.  COMPOSITION-LEVEL BOUNDARY: conditionals earned on
+BOUNDARY CONFIRMED: the DK DFS-tail miss does not come from zero-support handling or the tested structural identities.  COMPOSITION-LEVEL BOUNDARY: conditionals earned on
    the realized parent (revision 1 Q2 given Q1, revision 7 Q3 given Q2) degrade when chained on a miscalibrated simulated parent (Q1 Poisson PIT sd .369, coverage 58.3% -> Q2 64.2%
    -> Q3 70.3%); the chained combination was never tested as such; root Q1 dispersion (negative binomial .0632, support .0673 - both just over the line).
 NEXT (D, project owner direction to keep refining): deviance FLOOR .01 in spine.py / harness.py dev() - every TD-type spine verdict (F5 TDs RB / WR / TE, Q4, Q5, QB rushing TDs)
@@ -3424,7 +3424,7 @@ ACCEPTANCE (judged once): facts.py exit 0; facts/game.csv.gz and facts/player_ga
    except epa_play (rows changed reported); facts_report.txt reported.  Any change outside epa_play -> restore; no rescue.  Research outputs computed from epa_play are a work
    order line, not this transaction.
 ## READER DOOR - FACTS READS - OUTCOME - Oct 4 2026 (python3 facts.py; acceptance as registered)
-ACCEPTED.  facts.py exit 0 (independent check vs DraftKings' recorded points: DST 1562 games 98.4% exact, skill 18773 player-games 99.6% exact).  facts/game.csv.gz,
+ACCEPTED.  facts.py exit 0 (independent check vs DK DFS recorded points: DST 1562 games 98.4% exact, skill 18773 player-games 99.6% exact).  facts/game.csv.gz,
    facts/player_game.csv.gz, facts_report.txt identical (decompressed); facts/team_game.csv.gz changed only in epa_play, 50 of 3744 rows.  Group 1 closed: facts.py reads
    through tables.read_table (6 calls).  Consumers of epa_play (retarget.py; compose.py, contexts.py, deep.py through it) not rerun - work order line.
    Files now: facts.py 61a896d094661704..., facts/team_game.csv.gz d402611c2fc0a423...
@@ -3632,7 +3632,7 @@ Taxonomy: the calibration column "status" (within band / too low / too high) is 
 Rerun: spine_compose.py exit 0 in 103 s; f8_tail_attribution.py exit 0.  Quality gate over all of proj/ against a snapshot: 211 of 211 files pass (gzip files identical apart from
    header MTIME; f8_tail_attribution_rows.csv header only); the only added file is f8_tail_coverage_band.csv, equal to the old file apart from the header.  GATE PASS.
    The old file was deleted (no archive).  Guard check 10 ok (75 scripts checked).
-Finding: guard check 10's pattern does not see a status= keyword (spine.py:222, C10b) or the capitalised DraftKings Status (dk_classic.py:46, C-M4); the pattern is
+Finding: guard check 10's pattern does not see a status= keyword (spine.py:222, C10b) or the capitalised DK DFS Status (dk_classic.py:46, C-M4); the pattern is
    redefined with C10c (roster_status).  CHARTER prose naming the old file (LINE 27a, lines 2447 / 2450) is bridged by TAXONOMY.md.
 ## C10b - ISSUE MODE RENAME - OUTCOME - Oct 5 2026 (spine.py 038a4c0e6ac0cc5d -> 31644f3b9675f816; canon.py 0a987fd7d9014f93 -> 32b243571a290cd2; TAXONOMY.md ac24ca8cb5a6b099)
 Taxonomy: the issue files' column "status" (DRY RUN before the stat-spine freeze - not prospective) is issue_mode.  spine.py:222 writes issue_mode.  No code read the old
@@ -3652,7 +3652,7 @@ Reruns: facts.py 13 s, p.py 3 s, a.py 1 s, j.py 2 s, classe.py 5 s (exit 0 each)
 First attempt refused on proj/study_classe.txt and restored: the recorded file (Oct 3 12:25) predated the rename and classe.py (Oct 3 16:03) - the original code also differs
    from it (labels q_M / q_R -> p_absent_calibrated / p_absent_logistic; two null 95th values, because classe.py:77 seeds its null with len(Z) + len(col)).  The study file
    is now current (no archive).
-Work order: C-classe-seed (null seed depends on a column name's length); C-classe-labels (q_M / q_R in report text, the roster label); C-M4 (capitalised DraftKings Status).
+Work order: C-classe-seed (null seed depends on a column name's length); C-classe-labels (q_M / q_R in report text, the roster label); C-M4 (capitalised DK DFS Status).
 ## TAXONOMY VERSION 2 - ONE PLAIN WORD PER CONCEPT - OWNER DIRECTIVE - Oct 5 2026 (TAXONOMY.md ac24ca8cb5a6b099 -> 99b1a17fda3b03ac; 127 table lines; version 1 replaced, no archive)
 Project owner: collapse every alternative spelling of each orthogonal concept into its plain-language meaning.  Grammar: <scope prefix><quantity>_<aggregate>_<window>.  One word per
    concept: mean (avg, std as mean), median, standard_deviation (sd, std), standard_error (se, std_err), previous (last, prev, lag), number (no), opponent (opp, oppo),
@@ -4210,14 +4210,14 @@ Correction to the registered acceptance wording: "the stat card minus its DK row
    (assert_frame_equal, check_dtype False, check_exact True); the only dtype difference was atlas_rows int64 vs float64.  The criterion is met on values.
 Queries: Bourne DK 8.5 zero P(over) .3845 (F8 zero-settled .3783 - two realizations of one mixture); BUF DST 7.5 P(over) .5845; both UNRESOLVED - NO ATLAS CELL.
 ## M10 - BASE LINEUP (ONE OPTIMIZER ON THE FROZEN DRAWS) - REGISTRATION - Oct 6 2026 (kit.py facts; base 2026 4; DRY RUN)
-Premises (measured Oct 5): sources/raw/dk_weekly holds DK_2026_w3.csv and DK_2026_w4.csv (DraftKings' layout; 2026 w4: 729 rows, QB 93 RB 168 WR 271 TE 169 DST 28,
+Premises (measured Oct 5): sources/raw/dk_weekly holds DK_2026_w3.csv and DK_2026_w4.csv (DK DFS layout; 2026 w4: 729 rows, QB 93 RB 168 WR 271 TE 169 DST 28,
    14 games).  Name key (facts.norm) + team joins 439 of 701 DK skill rows to a card candidate with 0 duplicate matches; ISSUED among them QB 23, RB 68, TE 77, WR 117.
    Materiality unit: 1 DK (CHARTER AT END-TO-END, "1 DK = the kit's materiality unit").
-Object: facts.price_file - the one reader of the price file (through ingest's DKW; ingest.RAW_READERS names it for facts).  DraftKings' Status (week N's roster status)
+Object: facts.price_file - the one reader of the price file (through ingest's DKW; ingest.RAW_READERS names it for facts).  DK DFS Status (week N's roster status)
    and AvgPointsPerGame are dropped at the door, unread.  optimize.slate_pool - every price row with expected DK points (the card's DK row center = the mean of the
    frozen DK draws, DNP = 0; the DST card row center = the DST law's center) and one eligibility: ELIGIBLE, or NOT ELIGIBLE with its reason (no candidate with this name
    and team; the candidate's coverage status; no DK draw; no DST law; ambiguous match).  optimize.base - best9 (unchanged) on expected DK points under the cap; slots
-   from DraftKings' Position; FLEX = the surplus RB / WR / TE with the smallest expected points.  BASE is ISSUABLE - NOT DECISION-QUALIFIED (DK draws have no atlas
+   from DK DFS Position; FLEX = the surplus RB / WR / TE with the smallest expected points.  BASE is ISSUABLE - NOT DECISION-QUALIFIED (DK draws have no atlas
    cell; participation NOT DECISION-QUALIFIED).  An expected total is a sum of means, so BASE does not depend on cross-player dependence; FLOOR and CEILING do (after M9).
 Acceptance (fixed before running): kit.py facts rebuilds tables identical in content to the current ones (facts.py changed: freshness); the BASE lineup is legal
    (9 distinct players, 1 QB, 2-3 RB, 3-4 WR, 1-2 TE, 7 skill, 1 DST, salary <= 50000, 2+ games); every price row carries one eligibility; the mean of the lineup's
@@ -4497,7 +4497,7 @@ ACCEPTED.  freeze witness_v1 2026 4: 10 files -> proj/frozen/witness_v1, kit f56
    2026-10-06T02:07:12Z.  Reproduced from nothing (atlas, issue, card, base): witness-check witness_v1 - all 10 files IDENTICAL.
 ## PRICE-FILE NAME MATCHING - REGISTRATION - Oct 6 2026 (before the run)
 Why: the M10 run named 4 ISSUED candidates on slate teams without a price row (Matthew Hibner BAL, Josh Palmer BUF, Kenneth Gainwell TB, Christopher Brooks GB):
-   DraftKings and the play-by-play spell first names differently, so the name-and-team join misses them and BASE cannot see them.
+   DK DFS and the play-by-play spell first names differently, so the name-and-team join misses them and BASE cannot see them.
 Change (optimize.slate_pool): a price row the name-and-team join leaves unmatched joins a candidate it left unmatched with the same surname key (the last token of
    facts.norm's spelling), team and position, only when that pairing is one on each side; otherwise it stays unmatched with its reason.  No alias list: the residual
    sets match against each other.  A match column names how each row matched; base prints every surname match.  witness-check takes the files a transaction
@@ -4513,7 +4513,7 @@ ACCEPTED.  base 2026 4: 7 surname matches, each one on each side - Kenny Gainwel
    Then: freeze witness_v2 2026 4 (the current-product witness from here).
 ## PROSPECTIVE PROTOCOL - DATA FOR 2026 WEEK 6 - REGISTRATION - Oct 6 2026 (before the fetch)
 The first prospective issue is 2026 week 6, frozen before its first kickoff (freeze prospective_2026_w6) and scored only after its games.  Its inputs: the 2026
-   play-by-play through week 5 and the week 6 DraftKings Classic price file.  Facts hold 2026 weeks 1-4 now.  The 2026 outcomes enter the facts for issuing; laws
+   play-by-play through week 5 and the week 6 DK DFS Classic price file.  Facts hold 2026 weeks 1-4 now.  The 2026 outcomes enter the facts for issuing; laws
    remain fit on seasons < 2026, and no 2026 week 4+ outcome enters research, a revision or a verdict (project owner ban).  Scoring 2026 weeks 1-4 against the replay path is
    a separate report labelled RETROSPECTIVE TEMPORAL HOLDOUT, never used for promotion.  No prospective result changes a model without a separately registered cycle.
 This step: kit.py fetch 2026 6 without --dk-group - the 2026 nflverse files into data/ (its own checks: one season, same columns, weeks never shrink) and the lobby's
@@ -4683,7 +4683,7 @@ Measured: box scores rebuilt per game from play-by-play (rushes; targets as pass
    excluded; lateral yards credited to the player who gained them) against the stats file, every column: 2019 0 of 5243 player-games differ, 2020 3 of 5430, 2021
    3 of 5679, 2023 1 of 5636, 2024 12 of 5581, 2025 2 of 5628, 2026 2 of 1263 - 23 of 34,460 (0.07%), only yards and TDs.  Of 2025's first 18, 16 were lateral
    yards (rule fixed); the 2 left (D. Moore w15 +4, M. Pittman w18 -9) have play-by-play agreeing with its own play descriptions and the stats file not.
-Project owner's ruling: the stats file stays the source of record (the official, corrected stats DraftKings scores from; no history changes); play-by-play reconciliations it.
+Project owner's ruling: the stats file stays the source of record (the official, corrected stats DK DFS scores from; no history changes); play-by-play reconciliations it.
    facts.pbp_box_crosscheck runs inside kit.py facts: every differing value to facts/pbp_crosscheck.csv, counts per season in the facts report - a reading, not a quality gate.
    Display names are not a forecast input; they remain only the price-file join's key, read through the as-of view, with source revisions measured by witness-check.
 ## DISPERSION REVISION - INTEGRATION - REGISTRATION - Oct 6 2026 (operational quality gate; before the run)
@@ -6501,7 +6501,7 @@ PREDICTION: driver score passes; F8 BETTER or UNKNOWN at every position.  FALSIF
 Judged against proj/atlas_rows_batch63b.csv.gz.
 
 ## BATCH 69 - KEEP THE TAIL A YARDAGE BONUS IS PAID ON (instrument only; Oct 8 2026)
-ASPIRATION: grade the product on every DraftKings line it already draws - the +3 at 100 rushing / 100 receiving / 300 passing yards is decided by the tail of
+ASPIRATION: grade the product on every DK DFS line it already draws - the +3 at 100 rushing / 100 receiving / 300 passing yards is decided by the tail of
 the yards draws, and the graded record kept only the mean and three quantiles, so six bearing cells (RB 100+ receiving, RB 100+ rushing, WR 100+ receiving,
 TE 100+ receiving, QB 100+ rushing, QB 300+ passing) could not be judged (product_reach_read_v1: NO TAIL).
 DRIVER: none - no law, no draw, no center changes.  ONE PRODUCER: the thresholds lived as three literals inside dk.skill_dk / dk.qb_dk; they become
@@ -6511,13 +6511,13 @@ CHANGE: every graded yards row keeps p_bonus = the share of its draws at or abov
 PREDICTION: every draw identical to batch 63b (draw_mean equal on every paired row); THE ONE JUDGMENT UNCHANGED at QB, RB, WR, TE -> ISSUED; the product box
 (product_reach_read_v2) grades the six bonus cells, at least five REACHES.  FALSIFIER: any draw differs, or any F8 cell not UNCHANGED: refused, 63b restored.
 
-## BATCH 70 - THE FACTS DOOR CARRIES EVERY DRAFTKINGS LINE (no law, no draw; Oct 8 2026)
-ASPIRATION: every line DraftKings scores is a fact in facts - the product can only forecast, and the board can only grade, what facts carries.
+## BATCH 70 - THE FACTS DOOR CARRIES EVERY DK DFS LINE (no law, no draw; Oct 8 2026)
+ASPIRATION: every line DK DFS scores is a fact in facts - the product can only forecast, and the board can only grade, what facts carries.
 DRIVER: none.  The facts door only.
 FIVE WHYS: (1) 16 bearing cells read NOT IN PRODUCT (fumbles lost, 2-point conversions, return TDs; every DST line); (2) the product reads facts and nothing
 else; (3) facts already computed every one of them - facts.dkpts scores the rare player lines from stats columns, facts.dstpts scores every DST line from
 play-by-play - (4) but kept only the totals: the player table's keep list drops the rare columns, and dstpts returns one number; (5) SUB-ROOT: facts
-produced the DraftKings totals without the lines they are the sum of.
+produced the DK DFS totals without the lines they are the sum of.
 ROOT (deleted): facts.dstpts (a total without its lines); the keep list without the rare columns; played rows with no stat line left blank (V16: a zero is
 written by facts, with the play-by-play as its proof - door_identity_read_v1: no play behind any of 5,180 such blanks).
 CHANGE: facts.dst_lines returns each DST line (sacks, interceptions, fumble recoveries, safeties, D/ST TDs, blocked kicks, defensive conversions, points
@@ -6525,13 +6525,13 @@ allowed, its tier) from dstpts' own computation; dst_points_of sums them by DST_
 rushing / receiving / sack fumbles lost, passing / rushing / receiving 2-point conversions, special-teams TDs, offensive fumble-recovery TDs, return fumbles
 lost; a played row with no stat line carries 0 in every box column.
 PREDICTION: DST points identical to the previous facts in every team-game (the same computation, summed in the same order); the lines sum to DST points in
-1.000; the independent check against DraftKings unchanged (DST, skill); every product draw identical to batch 69 (192,249 rows), the judgment UNCHANGED.
+1.000; the independent check against DK DFS unchanged (DST, skill); every product draw identical to batch 69 (192,249 rows), the judgment UNCHANGED.
 FALSIFIER: any DST point changes, the guard refuses, or any draw moves: refused, facts.py and facts/ restored.
 
 ## BATCH 71 - WHO PLAYS (R1 of handoff_team_game_worlds; driver: on the field; Oct 8 2026)
 ASPIRATION: say how likely each candidate is to take the field this week from what is known before the freeze - his own last game, his season, his team's
 group at his position, and the injury report as it stood at the freeze.
-DRIVER: on the field.  The output it feeds: DraftKings points = (points given he plays) x (he plays), DK draws = F8 draws x Bernoulli(P(plays)) (dk.dnp_zero);
+DRIVER: on the field.  The output it feeds: DK DFS points = (points given he plays) x (he plays), DK draws = F8 draws x Bernoulli(P(plays)) (dk.dnp_zero);
 P(plays) also feeds the market's settlement (market.settled).  The F8 draws, the laws given he plays, are not touched (V3).
 INFORMATION SET (project owner, Oct 8 2026): results through week N-1, week N's schedule and price file, and the injury report AS OF THE FREEZE - one door,
 facts.game_status_as_of: the latest row stamped at or before the earlier of Saturday 03:00 ET and the team's kickoff; game designations only (Out, Doubtful,
@@ -6583,7 +6583,7 @@ identical to batch 71; every draw identical to batch 71 (192,249 rows), R3 UNCHA
 FALSIFIER: the guard refuses, a table or a door row changes, or any draw moves: refused, ingest.py, facts.py and facts/ restored.
 
 ## BATCH 73 - GRADE THE SCORE USERS CONSUME (instrument; no law, no draw; Oct 8 2026)
-ASPIRATION: judge the product on what a user takes from it - each player's DraftKings points with the chance he plays inside them, and each team's total -
+ASPIRATION: judge the product on what a user takes from it - each player's DK DFS points with the chance he plays inside them, and each team's total -
 so a change to who plays, or to how a team's volume divides, can be seen and can be refused.
 DRIVER: none.  The judgment only.
 FIVE WHYS: (1) batch 71 changed the DK draws users consume and THE ONE JUDGMENT read UNCHANGED at every position; (2) the replay grades F8 - points given
@@ -6593,7 +6593,7 @@ would be refused on noise or pass unseen; (5) SUB-ROOT: the judged unit is the p
 participation inside them, and the team's total.
 ROOT (deleted): the DK draw built inline in week_draws only; product_judgment hard-wired to F8; replay(previous_path) with one previous product.
 CHANGE: draws.dk_draws_of - one producer of DK draws for the live week and the replay (each row's own participation substream, dk.dnp_zero); draws.grade_dk
-- each DK row against DraftKings' recorded points, 0 for a member who did not play, and DK team total (the sum of the team's members' DK draws, draw by draw,
+- each DK row against DK DFS recorded points, 0 for a member who did not play, and DK team total (the sum of the team's members' DK draws, draw by draw,
 against the sum of their points), in the graded schema, written to proj/dk_rows.csv.gz; the replay fits the who-plays law once per season through
 participation's own producers; product_judgment judges the terms it is given, the term in its record; kit.py replay PREVIOUS_ATLAS_ROWS [PREVIOUS_DK_ROWS].
 OWNER (batch 72 entry): the DK cells and the team total are BINDING beside F8 from the next acceptance that changes a draw or a participation probability: the
@@ -6637,7 +6637,7 @@ dirty' for the after-inactives frame (L108, L397), no measurement of its quality
 HISTORY OF THIS REGISTRATION: v1 refused before any change (a script defect); v2 refused as registered - old player_game rows moved (position 384, name
 119: the first-roster-row fill); batch 75 removed that root (its root test: facts built with these seasons present left every old row identical).
 IDENTITY CHECK: every facts row of a season already in facts is identical before and after (the transaction only adds seasons); the independent check against
-DraftKings' recorded points holds its floors over the longer span (DST 97.5%, skill 99.5%).
+DK DFS recorded points holds its floors over the longer span (DST 97.5%, skill 99.5%).
 JUDGMENT (binding, batch 72 / 73): replay against batch 75's graded rows and DK rows - on the rows both products graded (2020 - 2025), every law now fit on
 up to four more earlier seasons; ISSUED iff no F8, DK or team-total cell is WORSE beyond chance.  The new test seasons (2017 - 2019, 2022) are graded and
 unpaired - the next acceptance's baseline.

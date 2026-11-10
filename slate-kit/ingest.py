@@ -3,7 +3,7 @@ and the raw manifest: nothing enters, changes or leaves data/ or sources/ withou
 Fetch sections - the information set (results through week N-1 + week N's price file):
   nflverse  seasons > FROZEN_THRU only: stats, pbp, snaps, injuries, weekly rosters, schedule -> data/_incoming, checked (same columns as the file it replaces, one season,
             weeks only growing), moved into data/ under facts' names only if every file passes
-  dk        week N's DraftKings Classic price file -> sources/raw/dk_weekly/DK_{season}_w{week}.csv in DraftKings' CSV layout (+ the raw draftables JSON beside it).
+  dk        week N's DK DFS Classic price file -> sources/raw/dk_weekly/DK_{season}_w{week}.csv in DK DFS CSV layout (+ the raw draftables JSON beside it).
 Opt-in sections - never an input to any law (the information-set check keeps every other module away from them):
   --odds-lines / --odds-props / --odds-history (The Odds API; ODDS_API_KEY from the environment only), --sources participation,ftn (completed seasons only).
 Every new or changed raw file is listed by the raw manifest check and counts only after  python3 kit.py accept."""
@@ -52,21 +52,21 @@ def nflverse(y):
     for f in os.listdir(INC): shutil.move(str(INC / f), str(DATA_DIR / f))
     INC.rmdir(); print("nflverse: moved into data/"); return True
 
-# ---------------- DraftKings: week N's price file ----------------
+# ---------------- DK DFS: week N's price file ----------------
 LOBBY = "https://www.draftkings.com/lobby/getcontests?sport=NFL"
 DRAFTABLES = "https://api.draftkings.com/draftgroups/v1/draftgroups/{}/draftables"
 COLS = ["Position", "Name + ID", "Name", "ID", "Roster Position", "Salary", "Game Info", "TeamAbbrev", "AvgPointsPerGame", "Status"]
 def http(url):
     with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json"}), timeout=30) as r: return r.read()
 def price_rows(body):
-    """DraftKings' draftables JSON -> its CSV layout, one row per player (lowest draftableId among his roster-slot entries)."""
+    """DK DFS draftables JSON -> its CSV layout, one row per player (lowest draftableId among his roster-slot entries)."""
     by = {}
     for x in json.loads(body).get("draftables", []):
         if x["playerId"] not in by or x["draftableId"] < by[x["playerId"]]["draftableId"]: by[x["playerId"]] = x
     rows = []
     for x in by.values():
         c = x["competition"]; t = datetime.fromisoformat(c["startTime"][:19]).replace(tzinfo=timezone.utc).astimezone(ET)
-        fp = pd.to_numeric(next((a["value"] for a in x.get("draftStatAttributes", []) if a.get("id") == 90), ""), errors="coerce"); fp = 0.0 if pd.isna(fp) else float(fp)   # DraftKings writes 0.0 when it has no average (the JSON holds a non-number or nothing)
+        fp = pd.to_numeric(next((a["value"] for a in x.get("draftStatAttributes", []) if a.get("id") == 90), ""), errors="coerce"); fp = 0.0 if pd.isna(fp) else float(fp)   # DK DFS writes 0.0 when it has no average (the JSON holds a non-number or nothing)
         pos = x["position"]; tag = x.get("status") or ""
         rows.append({"Position": pos, "Name + ID": f'{x["displayName"]} ({x["draftableId"]})', "Name": x["displayName"], "ID": x["draftableId"],
                      "Roster Position": pos if pos in ("QB", "DST") else f"{pos}/FLEX", "Salary": x["salary"],
@@ -76,7 +76,7 @@ def price_rows(body):
 def check_dk(csv_path, json_path):
     K = pd.read_csv(csv_path); R = price_rows(open(json_path, "rb").read())
     m = K.merge(R, on="ID", how="outer", suffixes=("_dk", "_ours"), indicator=True)
-    print(f"check: DraftKings CSV {len(K)} rows, converted {len(R)} rows; only in CSV {int((m._merge == 'left_only').sum())}, only in conversion {int((m._merge == 'right_only').sum())}")
+    print(f"check: DK DFS CSV {len(K)} rows, converted {len(R)} rows; only in CSV {int((m._merge == 'left_only').sum())}, only in conversion {int((m._merge == 'right_only').sum())}")
     m = m[m._merge == "both"]; bad = 0
     norm = lambda s, c: pd.to_numeric(s, errors="coerce").round(2).astype(str) if c in ("Salary", "AvgPointsPerGame") else s.fillna("").astype(str).str.strip()
     for c in [c for c in COLS if c != "ID"]:

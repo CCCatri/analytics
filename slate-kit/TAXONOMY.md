@@ -102,7 +102,7 @@ one name; different values -> two names. Standing: **in use**; **new** (code mov
 | Column | Issue | `issue_mode`, `issued`, `not_issued_reason` | status (issue files), "coverage status" | Prospective or dry run; issued or not; why not | in use / new |
 | Column | Correlation panel | `pair_dependence` | "pair status" | EARNED POSITIVE / EARNED NEGATIVE / TESTED - NO MATERIAL IMPACT / UNRESOLVED / UNTESTED | new |
 | Column | Source facts | `defense_box_count`, `pass_rusher_count`, `charted_qb_location`, `on_field_player_ids`, `on_field_offense_share` | raw source spellings | Registered source-family names | registered |
-| Column | Raw | `Status` | - | DraftKings price file injury tag, raw only | in use (raw) |
+| Column | Raw | `Status` | - | DK DFS price file injury tag, raw only | in use (raw) |
 | Column | Kept plain | attempts, carries, completions, passing_yards, passing_tds, passing_interceptions, receptions, receiving_yards, receiving_tds, receiving_air_yards, rushing_yards, rushing_tds, targets, sacks_suffered, season, week, team, game_id, salary, played, epa_play | - | Already plain | in use |
 | File | Judging | `f8_tail_coverage_band.csv` | f8_tail_calibration_status.csv | Tail coverage band table | in use |
 | Python | Constant | `SHRINKAGE_STRENGTH_GRID`, `TD_RATE_STRENGTH_GRID`, `RATE_STRENGTH_GRID` | KGRID, SHRINK_GRID, KB, RGRID (spine family) | Strengths tried: share / mean shrinkage; TD-rate shrinkage; rate shrinkage | new |

@@ -10,7 +10,7 @@ season  player rows  played  snap matched  priced  salary matched  listed team-g
 
 game-day roster status among skill players who played: 2019 99.8% ACT  2020 100.0% ACT  2021 99.8% ACT  2023 99.9% ACT  2024 100.0% ACT  2025 99.8% ACT
 
-INDEPENDENT CHECK vs DraftKings' recorded points: DST 1562 games, exact 98.4%;  skill 18773 player-games, exact 99.6%
+INDEPENDENT CHECK vs DK DFS recorded points: DST 1562 games, exact 98.4%;  skill 18773 player-games, exact 99.6%
   play-by-play reconciliation 2019: player-games 5243, values differing 0
   play-by-play reconciliation 2020: player-games 5430, values differing 3
   play-by-play reconciliation 2021: player-games 5679, values differing 3

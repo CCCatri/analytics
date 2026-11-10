@@ -3,7 +3,7 @@
                             goal-line opportunities, played or not) and what was published before kickoff (DK salary, final injury designation and practice status)
   facts/team_game.csv.gz    one row per team-game: closing line, rest, points for / against, plays, dropbacks, DST DK points, DST salary
   facts/game.csv.gz         one row per game: schedule, closing line, score, roof, surface, temperature, wind
-  facts/facts_report.txt    coverage per season, join rates, the self-check against the canonical 2019-21 pools and the independent check against DraftKings' recorded points
+  facts/facts_report.txt    coverage per season, join rates, the self-check against the canonical 2019-21 pools and the independent check against DK DFS recorded points
 The door: read_table (round-trip float parse), team_game() and load() - week N's publications outside the information set (WEEKN) are dropped there and nowhere else.
 Identity: team_fixes and norm are the one definition of the keys that join every source.  plain() is the one map from retired spellings to canonical names.
 Outcome columns are facts about the game; they are labels, never inputs to anything about the same week."""
@@ -41,8 +41,8 @@ def plain(o):
     if isinstance(o, list): return [plain(x) for x in o]
     if isinstance(o, str): return plain_name(o) or o
     return o
-# ---------------- DraftKings scoring of a box score (the reconstruction checked against DraftKings' recorded points) ----------------
-def dkpts(weekly_stats):                                   # DraftKings classic scoring; return TDs, return fumbles lost, offensive fumble-recovery TDs identified Oct 2 2026
+# ---------------- DK DFS scoring of a box score (the reconstruction checked against DK DFS recorded points) ----------------
+def dkpts(weekly_stats):                                   # DK DFS classic scoring; return TDs, return fumbles lost, offensive fumble-recovery TDs identified Oct 2 2026
     filled_column = lambda column_name: weekly_stats[column_name].fillna(0) if column_name in weekly_stats else 0
     return (0.04 * filled_column("passing_yards") + 4 * filled_column("passing_tds") - filled_column("passing_interceptions") + 0.1 * filled_column("rushing_yards") + 6 * filled_column("rushing_tds") + filled_column("receptions")
             + 0.1 * filled_column("receiving_yards") + 6 * filled_column("receiving_tds") - filled_column("rushing_fumbles_lost") - filled_column("receiving_fumbles_lost") - filled_column("sack_fumbles_lost")
@@ -51,7 +51,7 @@ def dkpts(weekly_stats):                                   # DraftKings classic 
             + 6 * filled_column("special_teams_tds") + 6 * filled_column("off_fr_td") - filled_column("st_fumbles_lost"))
 SCRIM = ("pass", "run", "qb_kneel", "qb_spike")
 def dst_lines(game_plays, team_name):
-    """Each DraftKings DST line for one team-game (batch 70: the lines, not only their total - dst_points_of sums them; one producer).  DraftKings DST scoring, identified Oct 2 2026 against DraftKings' recorded points 2016-21 (97.8% of 3090 games exact):
+    """Each DK DFS DST line for one team-game (batch 70: the lines, not only their total - dst_points_of sums them; one producer).  DK DFS DST scoring, identified Oct 2 2026 against DK DFS recorded points 2016-21 (97.8% of 3090 games exact):
     sack 1, interception 2, fumble recovery 2 (any recovered opponent fumble, kicks included), safety 2, D/ST touchdown 6, blocked kick 2
     (punt, field goal, extra point), defensive 2pt/XP return 2, points-allowed tier on (final score - 6 per opponent DEFENSIVE touchdown -
     2 per safety); return touchdowns allowed and every try stay in."""
@@ -71,9 +71,9 @@ def dst_lines(game_plays, team_name):
     return dict(dst_sacks=float(zero_filled("sack")[on_defense].sum()), dst_interceptions=float(zero_filled("interception")[on_defense].sum()), dst_fumble_recoveries=float(fumble_recoveries),
                 dst_safeties=float(zero_filled("safety")[on_defense].sum()), dst_tds=float(td_count), dst_blocked_kicks=float(blocked_kicks), dst_defensive_conversions=float(defensive_conversions),
                 dst_points_allowed=float(points_allowed), dst_points_allowed_tier=float(tier))
-DST_SCORING = {"dst_sacks": 1, "dst_interceptions": 2, "dst_fumble_recoveries": 2, "dst_safeties": 2, "dst_tds": 6, "dst_blocked_kicks": 2, "dst_defensive_conversions": 2, "dst_points_allowed_tier": 1}   # DraftKings Classic DST (dst_lines' docstring)
+DST_SCORING = {"dst_sacks": 1, "dst_interceptions": 2, "dst_fumble_recoveries": 2, "dst_safeties": 2, "dst_tds": 6, "dst_blocked_kicks": 2, "dst_defensive_conversions": 2, "dst_points_allowed_tier": 1}   # DK DFS Classic DST (dst_lines' docstring)
 def dst_points_of(lines):
-    """DST points = the sum of the DraftKings DST lines (DST_SCORING) - the one producer of facts' DST total."""
+    """DST points = the sum of the DK DFS DST lines (DST_SCORING) - the one producer of facts' DST total."""
     return sum(weight * lines[name] for name, weight in DST_SCORING.items())
 def read_data(name, **read_options):
     path = os.path.join(DATA_DIR, name); return read_table(path, low_memory=False, **read_options) if os.path.exists(path) else None
@@ -174,7 +174,7 @@ def build():
     keep = ["player_id", "player_display_name", "position", "season", "week", "game_id", "team", "opponent_team", "dk", "attempts", "completions", "passing_yards",
             "passing_tds", "passing_interceptions", "sacks_suffered", "carries", "rushing_yards", "rushing_tds", "targets", "receptions", "receiving_yards", "receiving_tds",
             "rushing_fumbles_lost", "receiving_fumbles_lost", "sack_fumbles_lost", "passing_2pt_conversions", "rushing_2pt_conversions", "receiving_2pt_conversions",
-            "special_teams_tds", "off_fr_td", "st_fumbles_lost",   # batch 70: the rare DraftKings lines dkpts already scores
+            "special_teams_tds", "off_fr_td", "st_fumbles_lost",   # batch 70: the rare DK DFS lines dkpts already scores
             "receiving_air_yards", "car_sh", "tgt_sh", "air_sh", "rz_targets", "gl_targets", "rz_carries", "gl_carries", "rz_attempts", "rz_tgt_sh", "rz_car_sh"]
     player_games = stat_rows[[column_name for column_name in keep if column_name in stat_rows]].rename(columns={"player_id": "player_id", "player_display_name": "name", "position": "pos", "opponent_team": "opp"})
     player_games["opp"] = fix_names(player_games.opp); player_games["recorded"] = 1
@@ -264,10 +264,10 @@ def build():
         report.say(f"\nSELF-CHECK vs canonical pools ({len(scored_files)} slates): skill players who scored {file_name}, DK points differing {mismatch_count};  DSTs {dst_count}, differing {dbad}")
         report.say(f"  skill: {mismatch_count} differ - the pools carry the pre-Oct-2 scoring (no return TDs, return fumbles lost or offensive fumble-recovery TDs); differences there are expected")
         report.say("  DST: the pools carry the pre-Oct-2 DST formula; differences there are expected and mark those pools stale for DST")
-    if "dk_points" in salary_rows:                                   # independent: DraftKings' own recorded points (2016-21)
+    if "dk_points" in salary_rows:                                   # independent: DK DFS own recorded points (2016-21)
         dst_salary = salary_rows[(salary_rows.pos == "DST") & salary_rows.dk_points.notna()].merge(team_games[["season", "week", "team", "dst_pts"]], on=["season", "week", "team"])
         salary_matches = SALp.dropna(subset=["player_id"]).merge(player_games[player_games.played == 1][["player_id", "season", "week", "dk"]], on=["player_id", "season", "week"]).dropna(subset=["dk_points"])
-        report.say(f"\nINDEPENDENT CHECK vs DraftKings' recorded points: DST {len(dst_salary)} games, exact {np.isclose(dst_salary.dk_points, dst_salary.dst_pts, atol=0.05).mean():.1%};  "
+        report.say(f"\nINDEPENDENT CHECK vs DK DFS recorded points: DST {len(dst_salary)} games, exact {np.isclose(dst_salary.dk_points, dst_salary.dst_pts, atol=0.05).mean():.1%};  "
             f"skill {len(salary_matches)} player-games, exact {np.isclose(salary_matches.dk_points, salary_matches.dk, atol=0.05).mean():.1%}")
     pbp_box_crosscheck(SEASONS, report)
     report.write(os.path.join(FACTS_DIR, "facts_report.txt"))
@@ -364,8 +364,8 @@ def load_as_of(season, week):
     PROVENANCE ROOT, Oct 6 2026; consumers move onto it one by one, each witnessed)."""
     player_rows = load(); return player_rows[(player_rows.season < season) | ((player_rows.season == season) & (player_rows.week < week))]
 def price_file(season, week):
-    """The ONE reader of week N's DraftKings Classic price file (written by ingest's fetch to its dk_weekly folder): the only week-N publication inside the information
-    set.  DraftKings' Status (week N's roster status) and AvgPointsPerGame are dropped here, unread.  Returns one row per DraftKings player with dk_position, dk_name,
+    """The ONE reader of week N's DK DFS Classic price file (written by ingest's fetch to its dk_weekly folder): the only week-N publication inside the information
+    set.  DK DFS Status (week N's roster status) and AvgPointsPerGame are dropped here, unread.  Returns one row per DK DFS player with dk_position, dk_name,
     dk_id, salary, team (canonical), name_key (norm) and game (away@home)."""
     price_rows = read_table(DKW / f"DK_{season}_w{week}.csv").drop(columns=["Status", "AvgPointsPerGame"])
     price_rows = price_rows.rename(columns={"Position": "dk_position", "Name": "dk_name", "ID": "dk_id", "Salary": "salary"})
@@ -373,12 +373,12 @@ def price_file(season, week):
     return price_rows
 # ---------------- checks owned by facts ----------------
 def independent_check():
-    """(passed, message): facts' independent check against DraftKings' recorded points at or above its floor (DST 97.5%, skill 99.5%)."""
+    """(passed, message): facts' independent check against DK DFS recorded points at or above its floor (DST 97.5%, skill 99.5%)."""
     report_path = os.path.join(FACTS_DIR, "facts_report.txt"); report_text = open(report_path).read() if os.path.exists(report_path) else ""
     match = re.search(r"DST (\d+) games, exact ([\d.]+)%;\s+skill (\d+) player-games, exact ([\d.]+)%", report_text)
     if not match: return False, "facts_report.txt has no independent check line - run: python3 kit.py facts"
     if float(match.group(2)) < 97.5 or float(match.group(4)) < 99.5: return False, f"independent check below floor: DST {match.group(2)}% (floor 97.5), skill {match.group(4)}% (floor 99.5)"
-    return True, f"facts vs DraftKings: DST {match.group(2)}%, skill {match.group(4)}% exact"
+    return True, f"facts vs DK DFS: DST {match.group(2)}%, skill {match.group(4)}% exact"
 def freshness_check():
     """(passed, message): every facts table is newer than facts.py, its producer."""
     tables = glob.glob(os.path.join(FACTS_DIR, "*.csv.gz")); producer_time = os.path.getmtime(os.path.join(ROOT, "facts.py"))
