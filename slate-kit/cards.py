@@ -11,6 +11,7 @@ from ingest import PROJ_DIR, Report
 from facts import load_as_of, team_game, read_table, SKILL_POSITIONS
 from state import ISSUE_WEEKS, HISTORY_MINIMUM
 from dk import F8_TERM, DK_TERM, DST_TERM
+DK_DFS_HELD = "NOT ISSUED - HELD: DK DFS waits for both of its parts to pass on their own (who plays, N2b; the full-game slices, N2a; the project owner's ruling, 2026-11-10)"
 from draws import week_draws, freeze_draws, LINK_CHAIN_STATE
 CONDITIONING = "given he plays the full game (the project owner's premise, 2026-11-08)"
 QB_RUSHING_CONDITIONING = "given he plays: rushing at his share of every game he played (not yet measured on full games)"
@@ -120,7 +121,7 @@ def card(issue_season, issue_week):
     stat_rows = stat_rows.rename(columns={"key": "player_id", "family": "law_family", "state": "law_state"}).merge(candidates[["player_id", "name", "team", "probability_plays", "probability_starts", "participation_status"]], on="player_id", how="left")
     qb_world = ((stat_rows.position == "QB") & stat_rows.probability_starts.notna()).to_numpy()
     stat_rows["world"] = np.where((stat_rows.position == "QB") & stat_rows.probability_starts.notna(), stat_rows.team.astype(str) + ": " + stat_rows.name.astype(str) + " starts", ALL_WORLDS)
-    stat_rows = stat_rows.assign(issuable="ISSUABLE", conditioning=np.select([qb_world & (stat_rows.term == DK_TERM), stat_rows.term == DK_TERM, qb_world & stat_rows.term.isin(QB_PASSING_TERMS), qb_world & (stat_rows.term == F8_TERM), (stat_rows.position == "QB") & stat_rows.term.str.startswith("QB ")],
+    stat_rows = stat_rows.assign(issuable=np.where(stat_rows.term == DK_TERM, DK_DFS_HELD, "ISSUABLE"), conditioning=np.select([qb_world & (stat_rows.term == DK_TERM), stat_rows.term == DK_TERM, qb_world & stat_rows.term.isin(QB_PASSING_TERMS), qb_world & (stat_rows.term == F8_TERM), (stat_rows.position == "QB") & stat_rows.term.str.startswith("QB ")],
                                                                 [QB_DK_CONDITIONING, DNP_CONDITIONING, QB_FULL_GAME_CONDITIONING, QB_F8_CONDITIONING, QB_RUSHING_CONDITIONING], CONDITIONING), dependence_status=DEPENDENCE_STATUS, issue_mode=ISSUE_MODE, **engine_fields)
     columns = ["season", "week", "player_id", "name", "team", "position", "term", "law_family", "law_state", "layer", "provenance", "conditioned_on_draw", "center", "center_source", "draw_mean",
                "quantile_10", "quantile_25", "quantile_50", "quantile_75", "quantile_90", "issuable", "atlas_qualification", "atlas_rows", "atlas_coverage_10", "atlas_coverage_90", "atlas_bias_mean",

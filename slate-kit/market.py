@@ -51,7 +51,9 @@ def prop(issue_season, issue_week, player_id, term, line, settlement):
     if matching.empty:
         candidates = read_table(os.path.join(PROJ_DIR, f"card_{issue_season}_w{issue_week}_candidates.csv")); candidate = candidates[candidates.player_id == player_id]
         print(f"{player_id} {term}: NOT ISSUED - " + (f"no card stat row; candidate status {candidate.coverage_status.iloc[0]}" if len(candidate) else "not a candidate of this week")); return 1
-    row = matching.iloc[0]; draw_values = frozen["draws"][index[(player_id, term)]]; probabilities = row_probabilities(row, draw_values, line, settlement)
+    row = matching.iloc[0]
+    if str(row.issuable).startswith("NOT ISSUED"): print(f"{row['name']} ({player_id}) {term}: {row.issuable}"); return 1
+    draw_values = frozen["draws"][index[(player_id, term)]]; probabilities = row_probabilities(row, draw_values, line, settlement)
     if probabilities is None: print(f"{row['name']} ({player_id}) {term}: these draws already settle a non-participant at 0 ({row.conditioning}); use zero, or query F8 dk_points for void"); return 2
     over, under, push = probabilities; as_drawn = line_probabilities(draw_values, line)
     print(f"{row['name']} ({player_id}, {row.team} {row.position}) {term} line {line} - {settlement}: {SETTLEMENTS[settlement]}; card conditioning: {row.conditioning}")

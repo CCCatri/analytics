@@ -53,7 +53,7 @@ def slate_pool(issue_season, issue_week):
     ELIGIBLE iff that candidate is ISSUED with a DK row; a DST row is ELIGIBLE iff its team has a DST law.  Every other row carries the reason."""
     prices = price_file(issue_season, issue_week); card = card_rows(issue_season, issue_week)
     candidates = read_table(os.path.join(PROJ_DIR, f"card_{issue_season}_w{issue_week}_candidates.csv")); candidates["name_key"] = norm(candidates.name)
-    expected = card[card.term.isin([DK_TERM, DST_TERM])][["player_id", "term", "draw_mean"]].rename(columns={"player_id": "key", "draw_mean": "expected_points"})
+    expected = card[card.term.isin([DK_TERM, DST_TERM])][["player_id", "term", "draw_mean", "issuable"]].rename(columns={"player_id": "key", "draw_mean": "expected_points"})
     skill_rows = prices[prices.dk_position != "DST"].merge(candidates[["player_id", "name_key", "team", "coverage_status"]], on=["name_key", "team"], how="left")
     skill_rows["match"] = np.where(skill_rows.player_id.notna(), "name and team", "none")
     open_prices = skill_rows[skill_rows.player_id.isna()].assign(surname=lambda frame: surname_key(frame.dk_name))
@@ -64,8 +64,8 @@ def slate_pool(issue_season, issue_week):
     skill_rows = skill_rows.assign(key=skill_rows.player_id, term=DK_TERM); dst_rows = prices[prices.dk_position == "DST"].assign(key=lambda frame: frame.team, term=DST_TERM, coverage_status="DST", match="team")
     pool = pd.concat([skill_rows, dst_rows], ignore_index=True).merge(expected, on=["key", "term"], how="left")
     ambiguous = pool.dk_id.duplicated(keep=False) | (pool.key.notna() & pool.duplicated(["key", "term"], keep=False))
-    pool["eligibility"] = np.select([ambiguous, (pool.term == DK_TERM) & pool.player_id.isna(), (pool.term == DK_TERM) & (pool.coverage_status != "ISSUED"), pool.expected_points.isna()],
-                                    ["NOT ELIGIBLE - name and team match more than one row", "NOT ELIGIBLE - no card candidate with this name and team", "NOT ELIGIBLE - candidate " + pool.coverage_status.astype(str),
+    pool["eligibility"] = np.select([ambiguous, (pool.term == DK_TERM) & pool.player_id.isna(), (pool.term == DK_TERM) & (pool.coverage_status != "ISSUED"), pool.issuable.astype(str).str.startswith("NOT ISSUED"), pool.expected_points.isna()],
+                                    ["NOT ELIGIBLE - name and team match more than one row", "NOT ELIGIBLE - no card candidate with this name and team", "NOT ELIGIBLE - candidate " + pool.coverage_status.astype(str), "NOT ELIGIBLE - " + pool.issuable.astype(str),
                                      np.where(pool.term == DST_TERM, "NOT ELIGIBLE - no DST law", "NOT ELIGIBLE - no DK draw (participation NOT ISSUED)")], "ELIGIBLE")
     return pool.drop_duplicates("dk_id").reset_index(drop=True), candidates
 def legal(lineup_rows):

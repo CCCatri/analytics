@@ -311,14 +311,12 @@ def replay(previous_path, previous_dk_path=None):
     other_rows = pd.concat(other_games, ignore_index=True); other_rows.to_csv(os.path.join(PROJ_DIR, "qb_other_games_rows.csv.gz"), index=False)   # counted apart, never dropped
     pd.concat(dk_graded, ignore_index=True).to_csv(os.path.join(PROJ_DIR, "dk_rows.csv.gz"), index=False); dk_rows = read_table(os.path.join(PROJ_DIR, "dk_rows.csv.gz"))   # batch 73: the score users consume
     judged, issued = product_judgment(graded_rows, previous_rows)
-    if previous_dk_path:
-        dk_judged, dk_issued = product_judgment(dk_rows, read_table(previous_dk_path), (DK_TERM, DK_TEAM_TERM)); judged = pd.concat([judged, dk_judged], ignore_index=True); issued = issued and dk_issued
-        judged["product"] = "ISSUED" if issued else "REFUSED"
+    # DK DFS cells are written (dk_rows.csv.gz) and not judged: held until both of their parts pass on their own (the project owner's ruling, 2026-11-10; VOCABULARY.md, DK DFS)
     judged.to_csv(os.path.join(PROJ_DIR, "product_judgment.csv"), index=False)   # R4: written before any reading
     report.say(f"kit.py replay - THE ONE JUDGMENT (R3): the rewritten product vs {previous_path}, F8 CRPS on rows both graded; season chance test, ALPHA_FAMILY {ALPHA_FAMILY}")
     for row in judged.itertuples(index=False):
         report.say(f"   {row.term} {row.position:<4} vs previous {row.previous_state:<12} paired {row.paired_rows:>6} (previous {row.previous_rows}, new {row.new_rows})  CRPS {row.crps_previous:.4f} -> {row.crps_new:.4f}  bias {row.bias_previous:+.3f} -> {row.bias_new:+.3f}  season gains {row.season_gains}  p better {row.p_better:.4f} worse {row.p_worse:.4f} -> {row.verdict}")
-    report.say(f"PRODUCT {judged['product'].iloc[0]} - written to proj/product_judgment.csv before the readings below" + ("" if previous_dk_path else f";  DK cells and the team total: baseline written (proj/dk_rows.csv.gz, {len(dk_rows)} rows) - no previous DK rows to judge against"))
+    report.say(f"PRODUCT {judged['product'].iloc[0]} - written to proj/product_judgment.csv before the readings below" + f";  DK DFS cells and the team total written (proj/dk_rows.csv.gz, {len(dk_rows)} rows), not judged: held until both of their parts pass (the project owner's ruling, 2026-11-10)" + (f"; the previous DK DFS rows given ({previous_dk_path}) are not read" if previous_dk_path else ""))
     atlas = atlas_cells(graded_rows); atlas.to_csv(os.path.join(PROJ_DIR, "atlas.csv"), index=False)
     ladder = ladder_cells(graded_rows.assign(crps_reference=reference_crps(graded_rows, outcomes)), atlas); ladder.to_csv(os.path.join(PROJ_DIR, "ladder.csv"), index=False)
     coverage = pd.DataFrame(coverage, columns=["season", "week", "candidates", "teams", "players", "law_rows", "f8_rows", "undrawn"])
