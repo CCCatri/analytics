@@ -1,2 +1,2 @@
-# check_downs.py 84fa5fb83296 | acceptance-criteria/downs-check.md 8bbcc31c80f5 | record read (rules-level clause 3), not product
+# check_downs.py d1a68ee7bb50 | acceptance-criteria/downs-check.md a69d1067a274 | record read (rules-level clause 3), not product
 check,word,why,game_id,season,season_type,seq,team,down,ydstogo,yardline_100,expected,prev_seq,prev_kind,prev_down,prev_ptype,prev_pen_team,foul_seq,foul_name,foul_defense,S,L,next_togo,prev_pen,prev2_pen,try_seq,kick_seq,kick_kind,next_seq,next_team,next_kind

@@ -36,7 +36,7 @@ Tally: levels 7 | marks 28 | earned 1 (the rules level IN PRODUCT: out/rules_lev
 ## Status of the rules level (record reads, stamped, never product; run by run.sh stage 4)
 Clock (check_clock.py to clock-check.md): of 223,724 stretches between snaps, 316 lack a real-time clock stamp (206 in 2019, 110 in 2020). Revision stamps are whole seconds through 2021 and mostly thousandths from 2023, so WITHIN REAL TIME and WITHIN RESOLUTION together hold about 99% of stamped stretches each season; FASTER beyond resolution 267 / 238 / 258 / 356 / 349 / 321, each an officials' correction (4-1-4, not logged) or a record error, which the play-by-play record cannot tell apart; the counts were written before the run and met. 40-second check from 2023 only (end stamps): 3,580 to 4,057 snaps a season over, none a called violation (4-6-3).
 Possessions (check_possessions.py to rules-level.md): 36,349 possessions, 1,676 games (76 postseason, printed apart); back-to-back 1,507, unexplained 0; counts equal the run-log line written before the script existed, corrected 2026-11-09 by one possession (a field goal muffed by the receivers and kept by the kickers, A9).
-Downs (check_downs.py to downs-check.md): 328,102 rule checks, OTHER 0 (expected 0), UNCHECKED 0; 191,675 pairs by the basic rule and 17,762 by a named exception; 34,675 pairs not judged (a change of team, a break, or a possession ending on its first snap).
+Downs (check_downs.py to downs-check.md): 328,103 rule checks, OTHER 0 (expected 0), UNCHECKED 0; 191,675 pairs by the basic rule and 17,762 by a named exception; 34,675 pairs not judged (a change of team, a break, or a possession ending on its first snap).
 Season rules (measure_season_rules.py to rules-module.md): each season's values measured before the engine uses them; 2022 UNKNOWN; every rule quoted from its pinned book (run.sh stage 2: UNKNOWN 0 in all five seasons).
 Engine (engine.py, run.sh stage 4): plays 1,676 games from the pinned model files; its games are not yet checked by the play-by-play record checks in run.sh (engine-legality.md, Status).
 
@@ -61,7 +61,7 @@ Reviewer (Cameron): restates sentences and rules; never asked for a decision a m
 
 ## Coverage limits (printed by every run; a zero stands beside its denominator)
 - transition.py generated foul events: 100,000 drawn; 48,864 resolved to a spot, 51,136 UNKNOWN (the rule gives no spot the play-by-play record could verify); 0 off the rule among the resolved.
-- Downs: 328,102 rule checks judged; 34,675 pairs not judged (a change of team, a break, or a possession ending on its first snap); OTHER 0 among the judged.
+- Downs: 328,103 rule checks judged; 34,675 pairs not judged (a change of team, a break, or a possession ending on its first snap); OTHER 0 among the judged.
 - Clock: 316 stretches lack a real-time clock stamp (UNCHECKED); the 40-second check reads end stamps, present from 2023 only; 16 postseason stretches past the first overtime are unchecked.
 - Possessions: 36,349 possessions; back-to-back 1,507, all explained by a rule class; 0 unexplained.
 - Incident suite: revision 12 passes 14 of 14; revision 16 passes the predecessor-index oracle and still fails two (model preflight: sample_gain() missing 'w'; end to end: gain_sack INSUFFICIENT_DATA). Those two are known defects, reproduced, not detections. Its estimator oracle's intervals under-cover (coverage .921, 2SE .020, over hash orders 0-9; `INCIDENT.md` 2026-11-09), so that test passes or fails by hash order; the baseline prints it and does not judge it.

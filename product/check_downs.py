@@ -1,4 +1,4 @@
-"""check_downs.py - rules-level clause 3, downs ("four downs to gain ten"), to downs-check.md v19 (8bbcc31c80f5). A record read, not product.
+"""check_downs.py - rules-level clause 3, downs ("four downs to gain ten"), to downs-check.md v20 (a69d1067a274). A record read, not product.
 Reads record.events (down, ydstogo, yardline_100, yards_gained, posteam, penalty, kind, two_point_attempt, qtr, game clock, scores and turnovers) joined one-to-one
 on (game_id, play_id) to record.raw_frame + record.typed for: order_sequence, season_type, first_down, first_down_penalty, penalty_team, penalty_type,
 desc, own_kickoff_recovery, fumble_recovery_1_team.
@@ -42,10 +42,11 @@ from collections import Counter, defaultdict
 import numpy as np, pandas as pd
 import record, policy
 import rules
+from check_possessions import fg_muff_kept   # v20: one rule for a field goal the receivers muffed and the kickers kept, shared with the possessions check
 from rules import PRESNAP_OFFENSE, LOSS_OF_DOWN, OFF_DURING, OFF_AFTER, DEF_AWARD, DEF_NEXT, DEF_SAME, BOOK, TMM, norm, book, is_exc, touch_yards, next_down
 
 SELF = hashlib.sha256(open(os.path.abspath(__file__), "rb").read()).hexdigest()[:12]
-TARGETS, TSHA = "acceptance-criteria/downs-check.md", "8bbcc31c80f5"
+TARGETS, TSHA = "acceptance-criteria/downs-check.md", "a69d1067a274"
 OUT_COUNTS = "out/downs_counts.csv"
 OUT_OTHER = "out/downs_other.csv"
 OUT_REASONS = "out/downs_reasons.csv"
@@ -296,9 +297,10 @@ def checks(g):
             elif isinstance(pt3, str): item("C3", "EXPLAINED", f"a foul by the offense on 4th down, the 4th down replayed (3-8-4): {nm3}", k, **kw)
             else: item("C3", "EXPLAINED", f"a foul by a side the play-by-play record does not name, followed by the same team's snap: {nm3}", k, **kw)
         else: item("C3", "OTHER", f"followed by {kind[nx]} of {team[nx]}", k, **kw)
-    # C4 kicking-team recovery (7-3-1d, 7-3-1e)
+    # C4 kicking-team recovery (7-3-1d, 7-3-1e); v20: a field goal the receivers muffed and the kickers recovered (9-3-2 Item 1)
     for k in range(n):
-        if kind[k] in ("kickoff", "punt") and (one(c["own_kickoff_recovery"][k]) or (kind[k] == "punt" and isinstance(c["fumble_recovery_1_team"][k], str) and c["fumble_recovery_1_team"][k] == team[k])):
+        if (kind[k] in ("kickoff", "punt") and (one(c["own_kickoff_recovery"][k]) or (kind[k] == "punt" and isinstance(c["fumble_recovery_1_team"][k], str) and c["fumble_recovery_1_team"][k] == team[k]))) \
+                or fg_muff_kept(kind[k], team[k], c["fumble_recovery_1_team"][k], c["desc"][k]):
             nx = next((x for x in DB if x > k), None)
             kw = dict(kick_seq=int(c["order_sequence"][k]), kick_kind=kind[k], next_seq=int(c["order_sequence"][nx]) if nx is not None else None)
             if nx is None: item("C4", "UNCHECKED", "no snap after the recovery", k, **kw)
@@ -435,6 +437,15 @@ def main():
         F = G["2025_08_CLE_NE"].copy(); F.loc[F["order_sequence"] == r["next_seq"], "down"] = 2.0
         w = grader(F, "C4", int(r["next_seq"])); injected_fault(f"NEG5 that snap's down set to 2: AS RULE -> {w}", w == "OTHER")
     else: injected_fault("NEG5 (no P5 to injected_fault on)", False)
+    x = I[(I["check"] == "C4") & (I["game_id"] == "2025_10_NO_CAR") & (I["kick_seq"] == 2504)]; r = x.iloc[0] if len(x) == 1 else None
+    if r is not None: print(f"  P24 2025_10_NO_CAR kick seq 2504 (a field goal the receivers muffed, the kickers kept) -> next snap seq {r['next_seq']}:"); rows("2025_10_NO_CAR", 2504, r["next_seq"])
+    injected_fault(f"P24 a field goal the receivers muffed and the kickers kept, next snap a first down (C4) -> {None if r is None else (r['word'], r['why'])}", r is not None and r["word"] == "AS RULE" and "7-3-1(d)" in r["why"])
+    if r is not None:
+        F = G["2025_10_NO_CAR"].copy(); F.loc[F["order_sequence"] == r["next_seq"], "down"] = 2.0
+        w = grader(F, "C4", int(r["next_seq"])); injected_fault(f"NEG24 that snap's down set to 2: AS RULE -> {w}", w == "OTHER")
+        F = G["2025_10_NO_CAR"].copy(); m = F["order_sequence"] == 2504; F.loc[m, "desc"] = F.loc[m, "desc"].str.replace("MUFFS", "touches", regex=False)
+        w = grader(F, "C4", int(r["next_seq"])); injected_fault(f"NEG24b the muff taken out of the play text: no C4 item at that snap -> {w}", w == "0 items")
+    else: injected_fault("NEG24 (no P24 to injected_fault on)", False); injected_fault("NEG24b (no P24 to injected_fault on)", False)
     C5 = I[(I["check"] == "C5 try") & (I["word"] == "AS RULE")]
     r = C5.iloc[0] if len(C5) else None
     if r is not None: print(f"  P6 found and pinned: {r['game_id']} seq {r['seq']}:"); rows(r["game_id"], r["seq"], r["seq"])
@@ -544,7 +555,7 @@ def main():
         w = grader(F, "C1", r["seq"]); injected_fault(f"NEG23 the penalty's yardage set to 5 yards (case (a) requires a no-play and the same down): EXPLAINED -> {w}", w == "OTHER")
     else: injected_fault("NEG23 (nothing pinned)", False)
     npass = sum(res)
-    if npass != len(res) or len(res) != 46:
+    if npass != len(res) or len(res) != 49:
         print(f"\nDOWNS SUMMARY injected faults {npass}/{len(res)} FAILED | no count read, no file written"); sys.exit(1)
 
     print("\n=== COUNTS per season, regular season and postseason apart (AS RULE / EXPLAINED / OTHER / UNCHECKED; no decision word) ===")
