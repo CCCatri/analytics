@@ -40,6 +40,8 @@ The same words in the README a hiring manager reads, the case pages, the accepta
 | Football | possession | — | A team's snaps from gaining the ball to losing it, two-point tries excluded (3-35, 11-3-1); counted by `check_possessions.py` | new |
 | Football | drive | — | nflfastR's unit (`fixed_drive`): starts whenever the ball changes hands, with or without a snap; drives = possessions + named no-snap kinds (`check_possessions_crosswalk.py`) | new |
 | Football | the stop | — | How the offense's last snap ended its possession, one of eight: punt, field-goal try, interception, lost fumble, touchdown, safety, turnover on downs, clock (3-35-3, 11-2, 11-5, 7-3-2, 4-1); `rules.possession_stop` | new |
+| Football | full game | — | A game a player plays from start to finish; for a quarterback, the only quarterback to throw a pass for his team that game (`draws.qb_games`); every projection is for a full game (acceptance-criteria/full-game-lines.md) | new |
+| Football | kind of game | — | How a player's game went against the full-game premise: started and finished, started and left early, came in relief, did not throw; a graded line uses only the games its condition names | new |
 | Football | the score on the play | — | The first change on the scoreboard from the last snap to the next snap or kickoff, Tries left out: offense 6, 3 or 2, other side 6 or 2, or none (11-1-2); `rules.score_on_play` | new |
 
 Keep distinct, never merged: data validation, data integrity, reconciliation, regression testing, fault injection, mutation testing, golden sets, hold-out sets, provenance, traceability, data lineage.
