@@ -30,13 +30,14 @@ The same words in the README a hiring manager reads, the case pages, the accepta
 | Practice | residual analysis | follow the remainder | Splitting what is left after a fix into parts and tracing each to the input it came from | new |
 | Practice | walk-forward validation | no hindsight | Each season fit only on earlier seasons and scored on its own; with data leakage control, the test that no later data reached a forecast | new |
 | Object | acceptance report | — | One report of scope, results by slice and what is not proven, for a reader who never saw the work | new |
+| Practice | controlled perturbation | population control, environment control, switch-off, regression verification, paired replay, parity (as a test), switch-off replay | Two runs identify the changed input, what was held fixed, and the observed difference | new |
 | Practice | regression testing | — | Re-running known-right and known-wrong cases so a fixed fault cannot return | in use |
 | Practice | reconciliation | two-source cross-check, record comparison, cross-check | Checking that two sources count the same thing | new |
 | Practice | root cause analysis | recount ladder, cause investigation | Walking a discrepancy back to its cause before acting | new |
 | Mechanism | quality gate | gate (as an acceptance mechanism); fail-closed gate | A check a change must pass to be accepted; the Healix harness folder becomes `.quality-gate/` | new |
 | Definition | acceptance criteria | targets, DONE WHEN, predictions first | What must be true for a change to be accepted, written before the run | in use |
 | Verdict | accepted / not accepted | landed, LANDED, NOT LANDED, landing (as acceptance) | A change whose checks passed and whose files the product reads | new |
-| Record | run log | ledger (recording a run) | The record of one run | new |
+| Record | run log | ledger (recording a run), landings | The record of one run | new |
 | Record | acceptance ledger | CHARTER ledger, ledger (bare, for this record) | The digest record of accepted charter lines | in use |
 | Version | revision | wall | One revision of a model or kit; code `revision`, files `*_revision*` | new |
 | Structure | link chain | chain (the kit's dependency chain); file `chain.py` → `link_chain.py` | The ordered links from team volume to a player's result | new |
@@ -67,6 +68,29 @@ The same words in the README a hiring manager reads, the case pages, the accepta
 | Football | the score on the play | — | The first change on the scoreboard from the last snap to the next snap or kickoff, Tries left out: offense 6, 3 or 2, other side 6 or 2, or none (11-1-2); `rules.score_on_play` | new |
 
 Keep distinct, never merged: data validation, data integrity, reconciliation, regression testing, fault injection, mutation testing, golden sets, hold-out sets, provenance, traceability, data lineage.
+
+
+## Concepts: when each counts as measured, and what separates it
+
+Every concept's words live in the rows above; here is when it counts as measured, the test that separates it from its neighbors, and the terms related to it but not the same. The ID column is the key matrix.tsv uses.
+
+| Concept | ID (matrix.tsv) | Measured when | Separating test | Related terms |
+|---|---|---|---|---|
+| abstention (INSUFFICIENT_EVIDENCE) | `abstention` | a known input reaches the decision point, receives it, and the output names what was insufficient | a system can abstain without any fault having been injected; and vice versa | — |
+| controlled perturbation | `controlled_perturbation` | two runs identify the changed input, what was held fixed, and the observed difference | a perturbation changes an input; a fault injection introduces a defect a check must catch | held fixed |
+| fault injection | `fault_injection` | a known defect is introduced and the named check catches it for the expected reason | a regression suite can run without any fault injected to prove it detects a failure | — |
+| regression testing | `regression_verification` | baseline and candidate compared on the same scoped behavior, expected equality or tolerance stated, result recorded | parity can hold with no injected fault; an injected fault can be caught with no baseline | — |
+| acceptance criteria | `acceptance_criteria_before_run` | a dated or revision-pinned expectation names the specific test, precedes it, and the run reports against it | an expectation can be stated after the fact (then it is a description, not a criterion) | — |
+| acceptance ledger | `acceptance_ledger` | a decision binds a change to its evidence, verdict and recorded revision | provenance pins inputs; a ledger records a decision about a change | verdicts.tsv |
+| provenance | `provenance` | a run is tied to exact versions or hashes and a mismatch refuses | a hash identifies an input without anyone reproducing the run | manifest, RAW_PINS, sha, pin, content hash |
+| hold-out set | `hold_out` | which data were withheld from which decisions is stated, scoped to the component that honored it, and the withheld data were evaluated | a hold-out is about data not used in development; a perturbation is about an input changed at run time | lockbox (the folder) |
+| accounting | `accounting_partition` | defined parts are checked against a declared total or complete outcome set; the result is recorded, pass or fail | reconciliation of two sources differs from a partition of one total; both are accounting, scope names which | slices add up, partition, budget, reconciliation |
+| population-relative judgment | `population_relative_judgment` | a verdict is shown to change when the comparison population changes | a population-relative verdict can exist without abstention (always decides) and abstention without a population | chance bar, comparison population |
+| clean reproduction | `clean_reproduction` | a fresh checkout at a named revision ran the documented command with declared dependencies and reproduced the expected result | a result can be measured locally and never reproduced; reproduction is a separate fact about the same result | clean clone, fresh checkout |
+| calibration | `calibration` | a stated chance or error rate is compared with how often it came true, by tenth, on held-out data | a calibrated chance can still carry no information (no spread); a sharp chance can be miscalibrated | — |
+| negative control | `negative_control` | the link under test is broken on purpose (shuffled, blinded) and the result must vanish | a negative control breaks a link and expects no signal; a fault injection introduces a defect a named check must catch | — |
+| metamorphic test | `invariance` | a change that must not matter (row or column order, relabeling) leaves the result unchanged | an invariance check expects no change; a controlled perturbation expects a named change | — |
+| backward diagnosis | `backward_diagnosis` | from a failed check, the record names the pair or draw, the stage, the pinned input and the original expectation | provenance ties a run to its inputs; backward diagnosis walks from a failure to its cause | — |
 
 Verdicts by layer, never merged: a check's result (PASS / FAIL); a link's verdict (ESTABLISHED / NOT SHOWN / NOT TESTABLE); a change's verdict (ACCEPTED / REARRANGED / PRINTED; Healix: BETTER accepted, WORSE closed); a claim's verdict (SUPPORTED / REFUTED / INSUFFICIENT_EVIDENCE).
 
