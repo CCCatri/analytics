@@ -1,8 +1,8 @@
-# rules_level.py 5f8fca92b541 | template 'the rules level' line 508b934b9a43 | out/clock_reasons.csv 1c93ca8d6c97 | out/possessions_classes.csv 61a7066572e0 | out/downs_reasons.csv 7ca71813cfa7 | product: the rules level, the rules sentence, built from measurement
+# rules_level.py 51c417f19594 | template 'the rules level' line 508b934b9a43 | out/clock_reasons.csv 1c93ca8d6c97 | out/possessions_classes.csv 61a7066572e0 | out/downs_reasons.csv 7ca71813cfa7 | product: the rules level, the rules sentence, built from measurement
 clause,part,source,season,season_type,check,word,label,articles,book,count,of,share,share_exact
-1,template,acceptance-criteria/PROGRESS.md,,,,,Every game is 60 minutes,,,,,,
-2,template,acceptance-criteria/PROGRESS.md,,,,,the ball changes hands after every score or stop,,,,,,
-3,template,acceptance-criteria/PROGRESS.md,,,,,four downs to gain ten,,,,,,
+1,template,acceptance-criteria/claim.md,,,,,Every game is 60 minutes,,,,,,
+2,template,acceptance-criteria/claim.md,,,,,the ball changes hands after every score or stop,,,,,,
+3,template,acceptance-criteria/claim.md,,,,,four downs to gain ten,,,,,,
 1,exception,out/clock_reasons.csv,2019,ALL,CLASS,PARTIAL,foul outside windows 4-3-2e,,,1263,36079,0.035007,1263/36079
 1,exception,out/clock_reasons.csv,2019,ALL,CLASS,PARTIAL,"foul outside windows 4-3-2e+injury, from play text 4-5-3",,,42,36079,0.001164,42/36079
 1,exception,out/clock_reasons.csv,2019,ALL,CLASS,PARTIAL,"foul outside windows 4-3-2e+injury, from play text 4-5-3+replay review 15-5-1",,,2,36079,0.000055,2/36079

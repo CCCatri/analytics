@@ -19,7 +19,7 @@ The directories, in one line each: `cases/` the stories and their saved evidence
 
 The lead case is [From a simulated game to a player projection](cases/from-a-simulated-game-to-a-player-projection.md): what the engine and the slate kit each do, where they meet, what the join had to preserve, and what one combined run produced (run `20261107_153255`, PASS; evidence under `cases/evidence/`). Everything below is a part of that case:
 
-- the engine's acceptance criteria and their limits: `acceptance-criteria/engine-vs-record.md`, `engine-legality.md`, `rules-level.md`, `PROGRESS.md`
+- the engine's acceptance criteria and their limits: `acceptance-criteria/engine-vs-record.md`, `engine-legality.md`, `rules-level.md`, `claim.md`
 - the handoff and its quality gates: `acceptance-criteria/engine-to-kit-handoff.md` (section 6 is the integration check the lead case reports)
 - the three earlier cases, each one part of the lead case: `cases/clock-check-passed-a-corrupted-game.md`, `cases/regression-test-needed-data-that-could-trigger-the-bug.md`, `cases/two-components-had-to-agree-on-what-counts-as-an-attempt.md`
 - the sentences the résumé and this repository both copy from, one row per responsibility: `CLAIMS.md` (checked by `checks/check_claims.py`)
@@ -76,7 +76,7 @@ Each version of this project rewrote the product and the checks together. These 
 | Twelve offensive players on a snap refused (Rule 5-1-1) | version 3 revision 16 | `incidents/predecessor-index-mismatch/revision-16-with-regression-test/record.py` `participation` |
 | Synthetic league with season chains and the predecessor oracle | version 3 revision 13–16 | `incidents/predecessor-index-mismatch/revision-16-with-regression-test/tests/` |
 
-My working rule of Oct 26 (in `acceptance-criteria/PROGRESS.md`): history is deleted, not kept; only files a live script reads stay. A check that no live script read went with the version that read it.
+My working rule of Oct 26 (now in `METHOD.md`): history is deleted, not kept; only files a live script reads stay. A check that no live script read went with the version that read it.
 
 ## History
 

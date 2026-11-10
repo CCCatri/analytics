@@ -5,7 +5,7 @@
 | `clock-check.md` | the clock record check's criteria | yes — `product/check_clock.py` pins v16 (`26cd42781320`); do not edit without `repin` |
 | `downs-check.md` | the downs record check's criteria | yes — `product/check_downs.py` pins v19 (`8bbcc31c80f5`) |
 | `rules-module.md`, `rules-level.md` | the rules module and the rules sentence | read by `measure_season_rules.py` / `rules_level.py` |
-| `PROGRESS.md` | status, and the template line `rules_level.py` reads its words from | read by code — not a free-form status page |
+| `claim.md` | the NFL claim: the seven sentences, banned inputs, the yardstick; `rules_level.py` reads the rules line | read by code |
 | `engine-legality.md` | engine v0 acceptance: every generated game obeys the rules; quality gate 1 results | cited by the checks |
 | `engine-vs-record.md` | the engine against the play-by-play record; NOT ACCEPTED on plays per game | cited |
 | `engine-to-kit-handoff.md` | the one interface between engine and kit; section 6 is the integration check | cited |

@@ -1,8 +1,8 @@
 """rules_level.py - the rules level, the rules sentence, built from measurement. Product.
-No word or number in out/rules_level.csv is typed here: the template's words are read from PROGRESS.md (the line starting 'the rules level'), and every label,
+No word or number in out/rules_level.csv is typed here: the template's words are read from acceptance-criteria/claim.md (the line starting 'the rules level'), and every label,
 article, book and count is read from the three record reads' own files: out/clock_reasons.csv (clock), out/possessions_classes.csv (possessions), out/downs_reasons.csv (downs).
 This file fixes only which part each source row belongs to (template, total, as rule, exception, unsettled, not judged, diagnostic) and which count a share
-is taken of. Writes out/rules_level.csv stamped on line 1 with this file's sha, the sha of the template line's own text (not PROGRESS.md's file sha, which
+is taken of. Writes out/rules_level.csv stamped on line 1 with this file's sha, the sha of the template line's own text (not claim.md's file sha, which
 moves with every plan edit) and each source's sha. verify() recomputes every cell from the sources and the template line, and checks the stamped
 template-line sha against the line as it now reads; any difference prints and reads FAIL."""
 import hashlib, io, os, re, sys
@@ -10,7 +10,7 @@ import pandas as pd
 
 SELF = hashlib.sha256(open(os.path.abspath(__file__), "rb").read()).hexdigest()[:12]
 OUT = "out/rules_level.csv"
-TEMPLATE_FILE, TEMPLATE_KEY = "acceptance-criteria/PROGRESS.md", "the rules level"
+TEMPLATE_FILE, TEMPLATE_KEY = "acceptance-criteria/claim.md", "the rules level"
 SRC = {"clock": "out/clock_reasons.csv", "possessions": "out/possessions_classes.csv", "downs": "out/downs_reasons.csv"}
 FITS = "fits one of the rules the play-by-play record cannot tell apart"   # check_downs.py's FITS reason: the play-by-play record does not say which rule applied
 NOT_APART = "not told apart"   # check_downs.py v17 4: a reason naming two readings the play-by-play record does not tell apart
