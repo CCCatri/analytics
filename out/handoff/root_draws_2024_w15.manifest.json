@@ -55,7 +55,7 @@
   "WAS"
  ],
  "teams_without_game": [],
- "engine_py_sha": "548a90acc356",
+ "engine_py_sha": "02f362425913",
  "model_files": {
   "files": {
    "conf.pkl": "c85098532d17",
@@ -75,11 +75,11 @@
   "mode": "full"
  },
  "fit_mode": "look-back: each season's race fit on the five other seasons, later ones included - legality judging only, not a forecast",
- "information_set": "the engine's model files as staged; no week-N information enters",
- "counting_rule": "section 1 without the accepted-foul clause: engine foul rows carry no pass_attempt/rush_attempt, so attempts and carries on nullified plays are not counted (2 of 3,200 team-weeks on the record)",
- "accepted_foul_rows_with_a_ball_handler": 2475,
- "root_draws_sha": "ee8dcc1dd089",
- "written": "2026-11-05T23:47:31Z",
+ "information_set": "the engine's model files as staged, and each offense's dropback tendency from its own games before this week in this season (engine.team_tendency); no week-N information enters",
+ "counting_rule": "section 1 without the accepted-foul clause: engine foul rows carry no pass_attempt/rush_attempt, so attempts and carries on nullified plays are not counted (2 of 3,200 team-games on the play-by-play record)",
+ "accepted_foul_rows_with_a_ball_handler": 2458,
+ "root_draws_sha": "e9751474cb5d",
+ "written": "2026-11-09T23:44:31Z",
  "games_file": "games_2024_w15.csv.gz",
- "games_file_sha": "4eb1e17a55e0"
+ "games_file_sha": "dfc3a5061396"
 }

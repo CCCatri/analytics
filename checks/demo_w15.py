@@ -22,7 +22,10 @@ say(f"demo_w15 | output {OUT}")
 # --- pins
 pins = json.load(open(os.path.join(FIXD, "PINS.json"))); moved = {n: h for n, h in pins.items() if sha256(os.path.normpath(os.path.join(FIXD, n))) != h}
 if moved: sys.exit(f"fixtures moved since pinning: {sorted(moved)} - refused; nothing run")
-say(f"  fixtures pinned: {len(pins)} files match PINS.json (engine fixture {pins['../../../out/handoff/root_draws_2024_w15.npz'][:12]})")
+man0 = json.load(open(FIX[:-4] + ".manifest.json")); eng0 = sha256(os.path.join(ROOT, "product", "engine.py"))[:12]; fx0 = sha256(FIX)[:12]
+if man0.get("engine_py_sha") != eng0 or man0.get("root_draws_sha") != fx0:
+    sys.exit(f"engine fixture: made by engine.py {man0.get('engine_py_sha')} (this checkout's is {eng0}); file {fx0} (its manifest names {man0.get('root_draws_sha')}) - the draws do not come from the engine that ships; regenerate with product/handoff_root_draws.py - refused; nothing run")
+say(f"  fixtures pinned: {len(pins)} files match PINS.json | engine fixture {fx0} made by this checkout's engine.py {eng0} (its manifest)")
 # --- data/ for the participation law
 DATA = os.path.join(KIT, "data"); INJ = [f"injuries_{s}.csv" for s in (2019, 2020, 2021, 2023, 2024)]
 if not os.path.isdir(DATA):
