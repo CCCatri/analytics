@@ -26,6 +26,7 @@ echo "== 5. generated-game acceptance (gate 1 of the handoff): the record checks
 if [ -f out/handoff/games_2024_w15.csv.gz ]; then
   python3 checks/check_generated.py 2024 15 0 | grep -E "^(check_generated|  possessions|  intervals|  game level|  items|  checked|  kickoff touchbacks|  [a-z].*: (PASS|FAIL)|GATE 1)" || exit 1
   python3 checks/test_quality_gate1_injected_faults.py || exit 1
+  python3 checks/check_possession_ends.py || echo "  NOT MET: the engine's scores are not accepted as forecasts (acceptance-criteria/possession-ends.md clause 4); the rest of the run is unaffected"
 else
   echo "  out/handoff/games_2024_w15.csv.gz missing: run 'PYTHONPATH=product python3 product/handoff_root_draws.py 2024 15 30' first (about 10 minutes); gate 1 NOT RUN"
 fi
