@@ -69,6 +69,36 @@ def who_plays_probability(laws, rows):
         at = (rows.position == position).to_numpy()
         if at.any(): probability[at] = expit(who_plays_design(rows[at], cells, designations) @ coefficients)
     return probability
+WHO_STARTS_QUALIFICATION = "ISSUED - WHO-STARTS LAW (2026-11-09): within a team-week, a softmax over its quarterback candidates of b1 x logit(P(plays)) with an outside option exp(b0) (a starter not among them); walk-forward log loss BETTER than P(plays) at naming the starter in every judged season (checks/check_who_starts.py)"
+def who_starts_training(player_rows, team_games, last_fit_season):
+    """Quarterback candidates of every season after the first through last_fit_season, each with the P(plays) the who-plays law fit on the seasons before it
+    would have issued, and the started label: the quarterback with the most attempts in his team's game, more than none (acceptance-criteria/one-game-one-reality.md)."""
+    first = int(player_rows.season.min()); known = player_rows[player_rows.season <= last_fit_season]
+    rows = model_rows_of(who_plays_inputs(known, team_games, range(first, last_fit_season + 1)))
+    attempts = known[["player_id", "season", "week", "attempts"]].drop_duplicates(["player_id", "season", "week"])
+    out = []
+    for season in sorted(set(rows.season))[1:]:
+        laws, _ = who_plays_fit(rows[rows.season < season])
+        if "QB" not in laws: continue
+        season_rows = rows[(rows.season == season) & (rows.position == "QB")].copy(); season_rows["probability_plays"] = who_plays_probability(laws, season_rows); out.append(season_rows)
+    if not out: return pd.DataFrame(columns=["season", "week", "team", "player_id", "probability_plays", "started"])
+    qb = pd.concat(out, ignore_index=True).merge(attempts, on=["player_id", "season", "week"], how="left").fillna({"attempts": 0})
+    most = qb.groupby(["season", "week", "team"]).attempts.transform("max"); qb["started"] = ((qb.attempts == most) & (qb.attempts > 0)).astype(int)
+    return qb
+def who_starts_probability(theta, rows):
+    """P(starts) of each quarterback row: exp(b1 x logit P(plays)) over the sum across his team-week's candidates plus exp(b0); one team-week's chances add to 1
+    with the outside option."""
+    score = np.exp(theta[1] * logit(rows.probability_plays.clip(1e-6, 1 - 1e-6).to_numpy(float)))
+    team_week = rows.season.astype(str) + "|" + rows.week.astype(str) + "|" + rows.team.astype(str)
+    return score / (pd.Series(score, index=rows.index).groupby(team_week.to_numpy()).transform("sum").to_numpy() + np.exp(theta[0]))
+def who_starts_fit(rows):
+    """(b0, b1) by maximum likelihood over team-weeks: the started candidate's chance, or the outside option's when none of them started."""
+    team_week = (rows.season.astype(str) + "|" + rows.week.astype(str) + "|" + rows.team.astype(str)).to_numpy(); started = rows.started.to_numpy(int)
+    def negative_log_likelihood(theta):
+        p = pd.Series(who_starts_probability(theta, rows), index=rows.index); frame = pd.DataFrame({"tw": team_week, "p": p.to_numpy(), "y": started})
+        per = frame.groupby("tw").agg(total=("p", "sum"), hit=("y", "max")); pick = frame[frame.y == 1].groupby("tw").p.first().reindex(per.index)
+        return -float(np.sum(np.where(per.hit == 1, np.log(np.clip(pick.fillna(1e-9), 1e-9, 1)), np.log(np.clip(1 - per.total, 1e-9, 1)))))
+    return minimize(negative_log_likelihood, np.array([-2.0, 0.6]), method="Nelder-Mead", options={"maxiter": 2000, "xatol": 1e-6, "fatol": 1e-8}).x
 def week_participation(issue_season, issue_week):
     """P(plays) for every skill candidate of week N with its participation status: the law fit on every stamped season from the first season in facts through
     min(FROZEN_THRU, N's season - 1), applied to week N's inputs built from results through week N-1.  Returns (candidate rows, the fit summary)."""
@@ -80,6 +110,10 @@ def week_participation(issue_season, issue_week):
     week_rows["probability_plays"] = np.where(week_rows.in_domain, who_plays_probability(laws, week_rows), np.nan)
     week_rows["participation_status"] = np.where(week_rows.in_domain, PARTICIPATION_QUALIFICATION, "NOT ISSUED - " + week_rows.domain_reason)
     week_rows["participation_cell"] = np.where(week_rows.in_domain, week_rows.cell, "")
+    quarterbacks = (week_rows.in_domain & (week_rows.position == "QB") & week_rows.probability_plays.notna()).to_numpy(); week_rows["probability_starts"] = np.nan
+    if quarterbacks.any():
+        training = who_starts_training(player_rows, team_games, last_fit_season)
+        if len(training): week_rows.loc[quarterbacks, "probability_starts"] = who_starts_probability(who_starts_fit(training), week_rows[quarterbacks])
     return week_rows, {"seasons": sorted(int(season) for season in set(fit_rows.season)), "rows": int(len(fit_rows)), "positions": sorted(laws)}
 def participation_check():
     """python3 kit.py participation-check: the law's walk-forward (each season fit on the stamped seasons before it) beside T1's recorded walk-forward witness
