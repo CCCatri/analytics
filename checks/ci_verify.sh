@@ -17,6 +17,9 @@ foundation)
   python3 product/check_clock.py || exit 1
   python3 product/check_downs.py || exit 1
   python3 product/rules_level.py || exit 1
+  step "the claims the resume copies, and the checks on the checks (catch and false-alarm rates)"
+  python3 checks/check_claims.py || exit 1
+  PYTHONPATH=product:slate-kit:checks python3 checks/validate_checks.py || exit 1
   ;;
 card)
   step "the demo card"
@@ -32,6 +35,8 @@ card)
   python3 checks/check_one_game_one_reality.py "$P/frozen_draws_2024_w15.npz" "$P/card_2024_w15.csv" "$P/team_draws_2024_w15.npz" || exit 1
   step "who starts: walk-forward against P(plays)"
   python3 checks/check_who_starts.py || exit 1
+  step "who plays: the law on the final active list"
+  python3 checks/check_who_plays_active.py || exit 1
   step "the replay against the committed baseline (the last accepted product)"
   mkdir -p slate-kit/proj
   python3 slate-kit/kit.py replay checks/fixtures/replay_baseline/atlas_rows.csv.gz || exit 1
