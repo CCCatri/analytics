@@ -7,12 +7,20 @@ week N-1 (logit), the injury report's game designation as of the freeze (facts.g
 and log(1 + its mean count of players who played per team-game this season through week N-1).  Every input is week N-1 results, week N's schedule, or the
 report as of the freeze.  Inputs come from state.participation_frame; the fit rows are its in-domain rows, weeks 4-16.  week_participation() is the card's door.
 participation_check() reads the law's walk-forward beside T1's recorded walk-forward witness (proj/at_t_rows.csv.gz)."""
-import os, numpy as np, pandas as pd
+import os, functools, numpy as np, pandas as pd
 from scipy.optimize import minimize
 from scipy.special import expit, logit
 from ingest import PROJ_DIR, FROZEN_THRU, Report
-from facts import load, team_game, read_table, plain, game_status_as_of
+from facts import load, team_game, read_table, plain, game_status_as_of, active_keys
 from state import participation_frame, ISSUE_WEEKS
+@functools.lru_cache(maxsize=1)
+def final_active_list(): return active_keys()
+def is_active(rows):
+    """True where the player is on his team's final active list that week (facts.active_keys; the project owner's ruling, Oct 8 2026: it is known at decision
+    time).  The who-plays law is fit and scored only on these rows (n2b_read_2026-11-10: fit on every candidate, it gave inactive players a 0.32-0.47 chance
+    while about 1% played, and read active players low by 0.03-0.09)."""
+    active = final_active_list()
+    return pd.Series([player_id in active.get((int(season), int(week), team), ()) for player_id, season, week, team in zip(rows.player_id, rows.season, rows.week, rows.team)], index=rows.index, dtype=bool)
 PARTICIPATION_QUALIFICATION = "ISSUED - WHO-PLAYS LAW (batch 71): walk-forward log loss BETTER than T1 in every judged season; group sums are R2's (not yet drawn jointly)"
 def model_rows_of(frame_rows):
     """The fit rows: in-domain participation rows, weeks 4-16."""
@@ -54,20 +62,24 @@ def who_plays_design(rows, cells, designations):
     columns += [np.log(rows.group_n.to_numpy(float)), np.log1p(rows.k_mean_through.fillna(0.0).to_numpy(float)), rows.k_mean_through.isna().to_numpy(float)]
     return np.column_stack(columns)
 def who_plays_fit(fit_rows):
-    """The law per position by maximum likelihood on fit rows (in-domain, played labelled) of seasons whose report is stamped as of the freeze - never an
-    unstamped file (it would teach the law the post-freeze leak).  Returns {position: (cells, designations, coefficients)} and the rows fit."""
+    """The law per position by maximum likelihood on fit rows (in-domain, played labelled, on the final active list) of seasons whose report is stamped as of the freeze - never an
+    unstamped file (it would teach the law the post-freeze leak).  Returns {position: (cells, designations, coefficients, inactive rate)} and the rows fit."""
     rows = fit_rows[fit_rows.designation_construction == "as of the freeze"]; laws = {}
+    on_list = is_active(rows); inactive_rows = rows[~on_list]; rows = rows[on_list]   # an inactive player's chance is the rate inactive players played in these rows: its own average so far; nothing measured moves it
     for position, position_rows in rows.groupby("position"):
         cells = sorted(set(rows.cell)); designations = sorted(set(position_rows.game_status_as_of) - {"NOT LISTED"}); design = who_plays_design(position_rows, cells, designations); labels = position_rows.played.to_numpy(float)
         def negative_log_likelihood(coefficients): z = design @ coefficients; return float(np.sum(np.logaddexp(0, z) - labels * z) + 1e-6 * coefficients @ coefficients)
-        laws[position] = (cells, designations, minimize(negative_log_likelihood, np.zeros(design.shape[1]), method="L-BFGS-B").x)
+        laws[position] = (cells, designations, minimize(negative_log_likelihood, np.zeros(design.shape[1]), method="L-BFGS-B").x, float(inactive_rows.played[inactive_rows.position == position].mean()))
     return laws, rows
 def who_plays_probability(laws, rows):
-    """P(plays) of each row from its position's law (NaN for a position the law has no fit for)."""
+    """P(plays) of each row: from its position's law when he is on the final active list, else the rate inactive players of his position played in the fit rows
+    (NaN for a position the law has no fit for)."""
     probability = np.full(len(rows), np.nan)
-    for position, (cells, designations, coefficients) in laws.items():
-        at = (rows.position == position).to_numpy()
+    on_list = is_active(rows).to_numpy()
+    for position, (cells, designations, coefficients, inactive_rate) in laws.items():
+        at = (rows.position == position).to_numpy() & on_list
         if at.any(): probability[at] = expit(who_plays_design(rows[at], cells, designations) @ coefficients)
+        probability[(rows.position == position).to_numpy() & ~on_list] = inactive_rate
     return probability
 WHO_STARTS_QUALIFICATION = "ISSUED - WHO-STARTS LAW (2026-11-09): within a team-week, a softmax over its quarterback candidates of b1 x logit(P(plays)) with an outside option exp(b0) (a starter not among them); walk-forward log loss BETTER than P(plays) at naming the starter in every judged season (checks/check_who_starts.py)"
 def who_starts_training(player_rows, team_games, last_fit_season):
