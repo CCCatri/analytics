@@ -33,6 +33,8 @@ jobs:
           python3 checks/check_expected_budget.py --self-test
           python3 checks/check_expected_budget.py "$P/frozen_draws_2024_w15.npz" "$P/card_2024_w15.csv" "$P/team_draws_2024_w15.npz"
           python3 checks/check_expected_budget.py "$P/frozen_draws_2024_w15.npz" "$P/card_2024_w15.csv" "$P/team_draws_2024_w15.npz" --inject WORST 1.2
+          python3 checks/check_one_game_one_reality.py --self-test
+          python3 checks/check_one_game_one_reality.py "$P/frozen_draws_2024_w15.npz" "$P/card_2024_w15.csv" "$P/team_draws_2024_w15.npz" || echo "NOT MET: the card holds two full-game quarterbacks in one game (acceptance-criteria/one-game-one-reality.md); reported, not blocking"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
