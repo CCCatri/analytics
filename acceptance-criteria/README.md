@@ -9,6 +9,10 @@
 | `engine-legality.md` | engine v0 acceptance: every generated game obeys the rules; quality gate 1 results | cited by the checks |
 | `engine-vs-record.md` | the engine against the play-by-play record; NOT ACCEPTED on plays per game | cited |
 | `engine-to-kit-handoff.md` | the one interface between engine and kit; section 6 is the integration check | cited |
+| `executor.md` | the executor (checks/experiment.py): who supplies what, and the clauses it is judged on | cited |
+| `possession-ends.md` | possession ends: one definition (the stop, the score on the play), every use | cited |
+| `one-game-one-reality.md` | one game, one reality: one starting quarterback per simulated game | cited |
+| `full-game-lines.md` | full-game lines: a line names the game it is about and is graded only on matching games | cited |
 | `forward-window.md` | the forecast-value test, design only, project owner's rulings blank | — |
 
 Readers start at `README.md` and `cases/`; this directory is what those point back to.
