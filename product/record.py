@@ -23,7 +23,8 @@ def raw_pins():
     if not os.path.exists(policy.PINS_FILE):
         raise DataGap(f"pins file missing: {policy.PINS_FILE}")
     pins = json.load(open(policy.PINS_FILE))
-    if pins.get("raw_dir") != policy.RAW_DIR:
+    pinned_dir = os.path.normpath(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), pins.get("raw_dir", "")))   # repo-relative, so any checkout reads it; an absolute path stays as is
+    if pinned_dir != os.path.normpath(policy.RAW_DIR):
         raise DataGap(f"pins raw_dir {pins.get('raw_dir')!r} != policy.RAW_DIR {policy.RAW_DIR!r}")
     if len(pins["pins"]) != policy.RAW_FILE_COUNT:
         raise DataGap(f"pins count {len(pins['pins'])} != policy.RAW_FILE_COUNT {policy.RAW_FILE_COUNT}")

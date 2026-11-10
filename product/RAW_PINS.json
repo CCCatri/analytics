@@ -47,5 +47,5 @@
   "stats_2024.csv.gz": "61fc9a44706522218a4448001706e3fec65ebbb97c1d9c5746ceef364989125d",
   "stats_2025.csv.gz": "c7401e321bdb369443f3280b9acd74ba6e16d82e710383bf1c01acabfebeac0b"
  },
- "raw_dir": "/Users/cameroncatri/LocalWork/analytics/data/raw"
+ "raw_dir": "data/raw"
 }

@@ -1,0 +1,33 @@
+name: verify
+on: [push, pull_request]
+jobs:
+  foundation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: the record checks on the pinned raw files (30 fetched from nflverse with fingerprints checked, 15 committed)
+        run: bash checks/ci_verify.sh foundation
+  card:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: the demo card, its checks, and the replay against the committed baseline
+        run: bash checks/ci_verify.sh card
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: card_and_replay
+          path: |
+            out/demo_w15/*/RESULT.txt
+            slate-kit/proj/replay_report.txt
+            slate-kit/proj/product_judgment.csv
