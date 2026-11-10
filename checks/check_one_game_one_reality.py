@@ -9,14 +9,18 @@ Exit 0 when no team has two full-game quarterback lines in one world; exit 1 whe
 self-test fails. Reads only; writes nothing."""
 import sys, os, numpy as np, pandas as pd
 ONE_WORLD = "one world (the card carries no world label)"
+EVERY_WORLD = "every world (carried over unchanged)"   # the card's label for a line that is in every world: it is checked against each of them
 
 
 def full_game_pairs(lines, team_att):
     """lines: (team, world, player, attempts if he plays); team_att: {team: mean team attempts}. Returns (team, world, [(player, attempts)], team attempts)
     for every team and world where two or more lines each exceed half the team's attempts."""
     out = []
-    df = pd.DataFrame(lines, columns=["team", "world", "player", "att"])
-    for (t, w), d in df.groupby(["team", "world"]):
+    df = pd.DataFrame(lines, columns=["team", "world", "player", "att"]); groups = []
+    for t, d in df.groupby("team"):
+        named = sorted(set(d["world"]) - {EVERY_WORLD}); every = d[d["world"] == EVERY_WORLD]
+        groups += [((t, w), pd.concat([d[d["world"] == w], every])) for w in named] if named else [((t, EVERY_WORLD), every)]
+    for (t, w), d in groups:
         if t not in team_att: continue
         full = d[d["att"] > 0.5 * team_att[t]].sort_values("att", ascending=False)
         if len(full) >= 2: out.append((t, w, [(p, round(a, 2)) for p, a in zip(full["player"], full["att"])], round(team_att[t], 2)))
@@ -28,9 +32,10 @@ def self_test():
     same = full_game_pairs([("AAA", ONE_WORLD, "starter", 30.0), ("AAA", ONE_WORLD, "backup", 22.0)], T)
     split = full_game_pairs([("BBB", "starter starts", "starter", 30.0), ("BBB", "backup starts", "backup", 22.0)], T)
     relief = full_game_pairs([("CCC", ONE_WORLD, "starter", 30.0), ("CCC", ONE_WORLD, "backup", 4.0)], T)
-    ok = len(same) == 1 and not split and not relief
+    T["DDD"] = 34.0; every = full_game_pairs([("DDD", "starter starts", "starter", 30.0), ("DDD", EVERY_WORLD, "unlabelled", 29.0)], T)
+    ok = len(same) == 1 and not split and not relief and len(every) == 1
     print(f"self-test: starter + full-game backup in one world -> {'NOT MET' if same else 'met'} (want NOT MET) | in two worlds -> {'NOT MET' if split else 'met'} (want met) | "
-          f"backup in relief -> {'NOT MET' if relief else 'met'} (want met) | {'PASS' if ok else 'FAIL, the check is blind'}")
+          f"backup in relief -> {'NOT MET' if relief else 'met'} (want met) | a full-game line in every world beside a world's starter -> {'NOT MET' if every else 'met'} (want NOT MET) | {'PASS' if ok else 'FAIL, the check is blind'}")
     return ok
 
 

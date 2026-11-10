@@ -14,7 +14,11 @@ from dk import F8_TERM, DK_TERM, DST_TERM
 from draws import week_draws, freeze_draws, LINK_CHAIN_STATE
 CONDITIONING = "given he plays"
 DNP_CONDITIONING = "DNP = 0: P(plays) mixed into the draws"
-ALL_WORLDS = "every world (carried over unchanged)"   # acceptance-criteria/one-game-one-reality.md: a quarterback line names the world he starts in
+ALL_WORLDS = "every world (carried over unchanged)"
+QB_FULL_GAME_CONDITIONING = "given he starts and plays the full game (the project owner's premise, 2026-11-08)"
+QB_F8_CONDITIONING = "given he starts: passing for the full game, rushing at his share of every game he played"
+QB_DK_CONDITIONING = "DNP = 0: scored in the worlds he starts, 0 elsewhere"
+QB_PASSING_TERMS = ("Q1 attempts", "Q2 completions", "Q3 passing yards", "Q4 passing TDs", "Q5 interceptions")   # acceptance-criteria/one-game-one-reality.md: a quarterback line names the world he starts in
 DST_CONDITIONING = "the defense plays every game"
 DST_PARTICIPATION = "NOT APPLICABLE - the defense plays every game"
 DEPENDENCE_STATUS = "cross-player dependence NOT MODELLED (M9); within-player order as earned"
@@ -113,8 +117,10 @@ def card(issue_season, issue_week):
     flags["flag"] = flags.flag.where(judged | flags.flag.str.startswith("NOT RATED"), "NOT RATED - the judge has not qualified this line (atlas or ladder)")
     stat_rows = pd.concat([stat_rows, flags], axis=1)
     stat_rows = stat_rows.rename(columns={"key": "player_id", "family": "law_family", "state": "law_state"}).merge(candidates[["player_id", "name", "team", "probability_plays", "probability_starts", "participation_status"]], on="player_id", how="left")
+    qb_world = ((stat_rows.position == "QB") & stat_rows.probability_starts.notna()).to_numpy()
     stat_rows["world"] = np.where((stat_rows.position == "QB") & stat_rows.probability_starts.notna(), stat_rows.team.astype(str) + ": " + stat_rows.name.astype(str) + " starts", ALL_WORLDS)
-    stat_rows = stat_rows.assign(issuable="ISSUABLE", conditioning=np.where(stat_rows.term == DK_TERM, DNP_CONDITIONING, CONDITIONING), dependence_status=DEPENDENCE_STATUS, issue_mode=ISSUE_MODE, **engine_fields)
+    stat_rows = stat_rows.assign(issuable="ISSUABLE", conditioning=np.select([qb_world & (stat_rows.term == DK_TERM), stat_rows.term == DK_TERM, qb_world & stat_rows.term.isin(QB_PASSING_TERMS), qb_world & (stat_rows.term == F8_TERM)],
+                                                                [QB_DK_CONDITIONING, DNP_CONDITIONING, QB_FULL_GAME_CONDITIONING, QB_F8_CONDITIONING], CONDITIONING), dependence_status=DEPENDENCE_STATUS, issue_mode=ISSUE_MODE, **engine_fields)
     columns = ["season", "week", "player_id", "name", "team", "position", "term", "law_family", "law_state", "layer", "provenance", "conditioned_on_draw", "center", "center_source", "draw_mean",
                "quantile_10", "quantile_25", "quantile_50", "quantile_75", "quantile_90", "issuable", "atlas_qualification", "atlas_rows", "atlas_coverage_10", "atlas_coverage_90", "atlas_bias_mean",
                *[field for field in LADDER_FIELDS.values() if field != "prospective_evidence"], "reference_status", "prospective_evidence", "conditioning", "probability_plays", "probability_starts", "world", "participation_status", "dependence_status", "issue_mode", *engine_fields.keys()]

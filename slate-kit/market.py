@@ -11,7 +11,7 @@ import os, numpy as np, pandas as pd
 from ingest import PROJ_DIR, Report
 from facts import read_table
 from draws import week_draws, player_draw_matrix, frozen_draws_path, QUANTILE_LEVELS, QUANTILE_NAMES
-from cards import CONDITIONING, DNP_CONDITIONING, DST_CONDITIONING
+from cards import CONDITIONING, DNP_CONDITIONING, DST_CONDITIONING, QB_FULL_GAME_CONDITIONING, QB_F8_CONDITIONING
 SETTLEMENTS = {"void": "the market voids the prop when he does not play: P(Y | plays), P(plays) beside it",
                "zero": "the market settles a non-participant at zero: (1 - P(plays)) x atom at 0 + P(plays) x P(Y | plays)"}
 def frozen_draws(issue_season, issue_week):
@@ -30,11 +30,12 @@ def settled(given_plays, line, probability_plays, settlement):
     return tuple((1 - probability_plays) * zero_value + probability_plays * given_value for zero_value, given_value in zip(zero_outcome, given_plays))
 def settlement_applies(conditioning, settlement):
     """Void does not apply to DNP = 0 draws (they already settle a non-participant at 0); every other pairing applies."""
-    return not (conditioning == DNP_CONDITIONING and settlement == "void")
+    return not (str(conditioning).startswith("DNP = 0") and settlement == "void")
 def row_probabilities(row, draw_values, line, settlement):
     """(over, under, push) of one card row under a settlement, by its conditioning; None when the settlement does not apply to the row."""
     if not settlement_applies(row.conditioning, settlement): return None
     as_drawn = line_probabilities(draw_values, line)
+    if row.conditioning in (QB_FULL_GAME_CONDITIONING, QB_F8_CONDITIONING): return settled(as_drawn, line, row.probability_starts, settlement)   # given he starts: P(starts) settles it
     return settled(as_drawn, line, row.probability_plays, settlement) if row.conditioning == CONDITIONING else as_drawn
 def decision_status(atlas_qualification, participation_status, settlement, conditioning):
     if atlas_qualification != "DECISION-QUALIFIED": return f"UNRESOLVED - stat {atlas_qualification}"
