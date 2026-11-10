@@ -61,6 +61,18 @@ def width(s):
     return float(s.groupby(["game_id", "posteam"])["dropback"].sum().std(ddof=1))
 
 
+def passes(pairs):
+    """The pass rule, written only here: every score state's pooled gap (generated minus record, outside the last 2:00 of a half) within TOL.
+    pairs: {season: (generated snaps, record snaps)} or a list of such pairs."""
+    items = pairs.values() if isinstance(pairs, dict) else pairs
+    gaps = {k: [] for k in STATES}
+    for g, r in items:
+        rg, rr = rates(g), rates(r)
+        for k in STATES:
+            gaps[k].append(rg[k][0] - rr[k][0])
+    return all(abs(np.array(gaps[k], float).mean()) <= TOL for k in STATES)
+
+
 def score(pairs, label):
     """pairs: {season: (generated snaps, record snaps)}. Prints the table and returns PASS or FAIL."""
     seasons = sorted(pairs)
@@ -74,13 +86,12 @@ def score(pairs, label):
             gp = rg[k][0] - rr[k][0]; gaps[k].append(gp); cells.append(f"{gp:+.3f} ({rg[k][1]})")
         w = width(g) / width(r); wr.append(w)
         print(f"{y} | " + " | ".join(cells) + f" | {w:.3f}")
-    verdict = "PASS"
+    verdict = "PASS" if passes(pairs) else "FAIL"
     print("pooled over seasons (mean, 2SE across seasons, seasons with the same sign as the pool):")
     for k in STATES:
         a = np.array(gaps[k], float); m = a.mean(); se2 = 2 * a.std(ddof=1) / np.sqrt(len(a))
         same = int(np.sum(np.sign(a) == np.sign(m))) if m != 0 else 0
         ok = abs(m) <= TOL
-        if not ok: verdict = "FAIL"
         print(f"  {k:<11} gap {m:+.3f}  2SE {se2:.3f}  same sign {same} of {len(a)}  {'within' if ok else 'OUTSIDE'} +/-{TOL:.3f}")
     print(f"  width of team-game dropbacks, generated / record: mean {np.mean(wr):.3f} over {len(wr)} seasons (1.000 = right width; below 1 = too narrow)")
     print(f"{label}: {verdict}")

@@ -2,9 +2,9 @@
 
 Known-good: one half of a season's real games, chosen at random, compared with the other half. Both are real, so a reliable check passes.
 Faults are injected into the first half only and compared with the untouched second half, at full, half and quarter strength.
-Checks under test, each by its own pass rule (imported, not re-derived):
+Checks under test, each by its own passes() function, imported from the check so the rule is written in one place:
   check_dropback_by_score: every score state's pooled gap within TOL. Fault: dropback flags shuffled across score states within quarter, on that share of snaps.
-  check_team_tendency: generated tendency clears zero by 2SE and is no more than the record's plus its 2SE. Fault: team labels shuffled on that share of team-games.
+  check_team_tendency: generated tendency clears zero by its 2SE and sits within the two 2SEs of its reference (here the other half). Fault: team labels shuffled on that share of team-games.
 Battery self-test, required before any verdict counts: a blind check (always PASS) must read BLIND; a jumpy check (always FAIL) must read NOISY.
 Labels: RELIABLE = false alarms at most 5% and full-strength catch at least 95%; BLIND = full-strength catch at most 5%; NOISY = false alarms 50% or more; else WEAK.
 Half-season samples are noisier than the full-season comparisons the checks make, so these rates are conservative.
@@ -34,17 +34,11 @@ def load():
 
 
 def dropback_pass(pairs):
-    gaps = {k: [] for k in D.STATES}
-    for g, r in pairs:
-        rg, rr = D.rates(g), D.rates(r)
-        for k in D.STATES:
-            gaps[k].append(rg[k][0] - rr[k][0])
-    return all(abs(np.mean(gaps[k])) <= D.TOL for k in D.STATES)
+    return D.passes(pairs)
 
 
 def tendency_pass(pairs):
-    mg, sg = T.pooled([T.tendency(g) for g, _ in pairs]); mr, sr = T.pooled([T.tendency(r) for _, r in pairs])
-    return (mg - sg > 0) and (mg <= mr + sr)
+    return T.passes([T.tendency(g) for g, _ in pairs], [T.tendency(r) for _, r in pairs])
 
 
 def score_blind(d, s, rng):
