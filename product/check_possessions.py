@@ -1,11 +1,12 @@
 """check_possessions.py - rules-level clause 2, possessions: the R1 read of RUBRIC run_log line 322, saved as a script. A record read, not product.
 Possession = the offensive plays (pass, run, kneel, spike, punt, field goal; Tries excluded, 11-3-1) one team runs, broken at a kickoff, a punt,
-a change of offensive team, halftime or overtime start, an interception, or a fumble first recovered by the other side (a fumble kept ends nothing, 3-35-3).
+a change of offensive team, halftime or overtime start, an interception, a fumble first recovered by the other side (a fumble kept ends nothing, 3-35-3),
+or a field-goal attempt the receivers muff and the kickers recover, which gives the kickers a new series as a muffed punt does (9-3-2 Item 1, 7-3-1d; the muff read from the play text).
 Back-to-back possessions (one team twice in a row) are classed by the rule that hands the ball back:
   A11 halftime / overtime start; A8 the other side scored; A10 two changes in one down (incl. a touchback award);
   A9 the kicking team recovered; A7 a safety before the receiving side's own snap, the scored-on side read from the score change (11-5-1(b), 11-5-2).
 Reads record.events (the columns it carries) joined one-to-one on (game_id, play_id) to record.raw_frame + record.typed for the rest:
-order_sequence, season_type, return_touchdown, touchback, own_kickoff_recovery, fumble_recovery_1_team, fumble_recovery_2_team.
+order_sequence, season_type, return_touchdown, touchback, own_kickoff_recovery, fumble_recovery_1_team, fumble_recovery_2_team, desc (the muff on a field goal).
 Injected faults run first, row by row; any FAIL, or any count off run_log line 322, stops the run before the file is written.
 Writes out/possessions_possessions.csv and out/possessions_classes.csv, stamped on line 1 with this file's sha and rules-level.md's sha.
 out/possessions_classes.csv (N7): possessions and back-to-back possessions per season and class, each class with the articles rules-level.md cites on its line
@@ -19,15 +20,16 @@ import record, policy
 from rules import SNAP_KINDS, next_possession
 
 SELF = hashlib.sha256(open(os.path.abspath(__file__), "rb").read()).hexdigest()[:12]
-RULES, RSHA = "acceptance-criteria/rules-level.md", "3756eff7170d"
+RULES, RSHA = "acceptance-criteria/rules-level.md", "8fae1db04c0b"
 OUT = "out/possessions_possessions.csv"
 OUT_CLASSES = "out/possessions_classes.csv"
 EXTRA = {"game_id": ("str", False), "play_id": ("int", False), "order_sequence": ("int", False), "season_type": ("str", False), "return_touchdown": ("int", True),
-         "touchback": ("int", True), "own_kickoff_recovery": ("int", True), "fumble_recovery_1_team": ("str", True), "fumble_recovery_2_team": ("str", True)}
+         "touchback": ("int", True), "own_kickoff_recovery": ("int", True), "fumble_recovery_1_team": ("str", True), "fumble_recovery_2_team": ("str", True), "desc": ("str", True)}
 FROM_EVENTS = ["game_id", "play_id", "posteam", "home_team", "away_team", "total_home_score", "total_away_score", "qtr", "play_type", "two_point_attempt",
                "interception", "td_team", "safety"]
-RUN_LOG_322 = {"possessions": 36348, "games": 1676, "gap": {0: 715, 1: 798, 2: 154, 3: 8, 4: 1}, "kinds": {"other": 644, "halftime": 824, "overtime start": 38},
-              "classes": {"A8 other side scored": 428, "A9 kicking team recovered": 202, "A10 two changes in one down": 11, "A7 safety before the receiving side's own snap": 3}}
+# run_log line 322, written before this script existed, corrected 2026-11-09 by one A9 possession: 2025_10_NO_CAR, a field goal muffed by the receivers and kept by the kickers
+RUN_LOG_322 = {"possessions": 36349, "games": 1676, "gap": {0: 714, 1: 799, 2: 154, 3: 8, 4: 1}, "kinds": {"other": 645, "halftime": 824, "overtime start": 38},
+              "classes": {"A8 other side scored": 428, "A9 kicking team recovered": 203, "A10 two changes in one down": 11, "A7 safety before the receiving side's own snap": 3}}
 
 
 def articles(path):
@@ -65,11 +67,16 @@ def load(season):
     return d
 
 
+def fg_muff_kept(pt, team, r1, desc):
+    """A field-goal attempt the receivers muffed and the kickers recovered: the kickers' ball and a new series (9-3-2 Item 1, 7-3-1d), as for a punt."""
+    return pt == "field_goal" and isinstance(r1, str) and r1 == team and isinstance(desc, str) and "MUFF" in desc.upper()
+
+
 def possessions(D):
     rows = []
     for g, d in D.groupby("game_id", sort=False):
         cur = None; pid = 0; brk = True; lastq = None
-        for seq, team, q, pt, tp, itc, r1 in zip(d["order_sequence"], d["posteam"], d["qtr"], d["play_type"], d["two_point_attempt"], d["interception"], d["fumble_recovery_1_team"]):
+        for seq, team, q, pt, tp, itc, r1, ds in zip(d["order_sequence"], d["posteam"], d["qtr"], d["play_type"], d["two_point_attempt"], d["interception"], d["fumble_recovery_1_team"], d["desc"]):
             if lastq is not None and ((lastq in (1, 2) and q in (3, 4)) or (q == 5 and lastq != 5)):
                 brk = True                                   # halftime, overtime start (4-1-2, 16-1)
             lastq = q
@@ -81,8 +88,8 @@ def possessions(D):
                 pid += 1; cur = team; brk = False; rows.append([g, pid, team, q, seq, seq])
             else:
                 rows[-1][5] = seq
-            if pt == "punt" or itc == 1 or (isinstance(r1, str) and r1 != team):
-                brk = True                                    # punt, interception, fumble first recovered by the other side
+            if pt == "punt" or itc == 1 or (isinstance(r1, str) and r1 != team) or fg_muff_kept(pt, team, r1, ds):
+                brk = True                                    # punt, interception, fumble first recovered by the other side, field goal muffed by the receivers and kept by the kickers
     P = pd.DataFrame(rows, columns=["game_id", "pid", "team", "q", "s0", "s1"])
     for c in ("team", "q", "s1"):
         P["prev_" + c] = P.groupby("game_id")[c].shift()
@@ -110,7 +117,8 @@ def classes(r, full):
     back = mine & ((r1.notna() & (r1 != t) & (r2 == t)) | ((w["interception"] == 1) & (r1 == t)))
     if back.any() or (lost & (w["touchback"] == 1)).any(): found.add("A10 two changes in one down")
     kick = w["play_type"].isin(["kickoff", "punt"])
-    if (w["own_kickoff_recovery"] == 1).any() or (kick & (r1 == t)).any(): found.add("A9 kicking team recovered")
+    fgm = pd.Series([fg_muff_kept(a, b, c, e) for a, b, c, e in zip(w["play_type"], w["posteam"], r1, w["desc"])], index=w.index, dtype=bool)
+    if (w["own_kickoff_recovery"] == 1).any() or (kick & (r1 == t)).any() or fgm.any(): found.add("A9 kicking team recovered")
     for sseq in w.loc[w["safety"] == 1, "order_sequence"]:
         so = scored_on(full.sort_values("order_sequence").reset_index(drop=True), sseq)
         if so is None or next_possession("safety", scorer=(t if so != t else None), scored_on=so)[0] != t: continue   # the rules module the next-possession rule
@@ -173,6 +181,9 @@ def main():
         x = around(g, t, seq); injected_fault(f"A9 exact {g} {t} around {seq} ({len(x)}): {show(x)}", len(x) == 1 and word(cl(x.iloc[0])) == "A9 kicking team recovered")
     x = around("2025_08_CLE_NE", "CLE", 3742); F = G["2025_08_CLE_NE"].copy(); F["own_kickoff_recovery"] = 0.0; F["fumble_recovery_1_team"] = None
     injected_fault("A9 negative: CLE-NE with the recovery cleared", len(x) == 1 and "A9 kicking team recovered" not in cl(x.iloc[0], F))
+    x = around("2025_10_NO_CAR", "CAR", 2504); injected_fault(f"A9 field goal muffed by the receivers, kept by the kickers: NO-CAR CAR around 2504 ({len(x)}): {show(x)}", len(x) == 1 and word(cl(x.iloc[0])) == "A9 kicking team recovered")
+    F = D[D["game_id"] == "2025_10_NO_CAR"].copy(); F.loc[F["order_sequence"] == 2504, "desc"] = "field goal is BLOCKED, recovered by CAR at NO 30"
+    injected_fault(f"A9 field goal negative: no muff in the play text (the kickers recover their own block), so 2504 ends no possession ({int((possessions(F)['s1'] == 2504).sum())})", int((possessions(F)["s1"] == 2504).sum()) == 0)
     for g, t, seq in (("2021_17_ATL_BUF", "ATL", 203), ("2024_01_DEN_SEA", "DEN", 1354), ("2025_06_DEN_NYJ", "NYJ", 2604)):
         x = after(g, t, seq); injected_fault(f"A7 {g} {t} after {seq} ({len(x)}): {show(x)}", len(x) == 1 and word(cl(x.iloc[0])) == "A7 safety before the receiving side's own snap")
     x = after("2024_01_DEN_SEA", "DEN", 1354)
@@ -192,10 +203,10 @@ def main():
     injected_fault("A3: no SF back-to-back in SF-TB q4", sel("2019_01_SF_TB", "SF", 4).empty)
     injected_fault("no CAR back-to-back in TB-CAR q1", sel("2019_02_TB_CAR", "CAR", 1).empty)
     npass = sum(res)
-    if npass != len(res) or len(res) != 24:
+    if npass != len(res) or len(res) != 26:
         print(f"\nPOSSESSIONS SUMMARY injected faults {npass}/{len(res)} FAILED | no count read, no file written"); sys.exit(1)
 
-    print("\n=== COUNTS against run_log line 322 (written before this script existed) ===")
+    print("\n=== COUNTS against run_log line 322 (written before this script existed), corrected 2026-11-09 by one A9 possession (NO-CAR, a field goal muffed and kept) ===")
     agree = {k: C[k] == RUN_LOG_322[k] for k in RUN_LOG_322}
     for k in RUN_LOG_322:
         print(f"  {k}: {C[k]} | run_log 322 {RUN_LOG_322[k]} -> {'AGREE' if agree[k] else 'DISAGREE'}")
@@ -239,7 +250,7 @@ def main():
     with open(OUT_CLASSES, "w") as f:
         f.write(f"# {tag}\n"); CC.to_csv(f, index=False)
     print(f"written, stamped on line 1: {OUT_CLASSES} rows {len(CC)} sha {sha(OUT_CLASSES)}")
-    print(f"\nPOSSESSIONS SUMMARY injected faults {npass}/{len(res)} | possessions {C['possessions']} games {C['games']} = run_log 322 | unexplained 0 | without the {len(post)} postseason games: possessions {Cr['possessions']} games {Cr['games']} back-to-back {Cr['kinds']} | {OUT} {sha(OUT)}")
+    print(f"\nPOSSESSIONS SUMMARY injected faults {npass}/{len(res)} | possessions {C['possessions']} games {C['games']} = run_log 322 as corrected | unexplained 0 | without the {len(post)} postseason games: possessions {Cr['possessions']} games {Cr['games']} back-to-back {Cr['kinds']} | {OUT} {sha(OUT)}")
 
 
 if __name__ == "__main__":

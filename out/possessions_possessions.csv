@@ -1,4 +1,4 @@
-# check_possessions.py 6d9acf7f5718 | acceptance-criteria/rules-level.md 3756eff7170d | record read (rules-level clause 2), not product
+# check_possessions.py f91a43932819 | acceptance-criteria/rules-level.md 8fae1db04c0b | record read (rules-level clause 2), not product
 game_id,season_type,pid,team,q,s0,s1,back_to_back,rule_class
 2019_01_ATL_MIN,REG,1,ATL,1.0,51.0,121.0,,
 2019_01_ATL_MIN,REG,2,MIN,1.0,185.0,214.0,,
@@ -33406,12 +33406,13 @@ game_id,season_type,pid,team,q,s0,s1,back_to_back,rule_class
 2025_10_NO_CAR,REG,10,NO,2.0,1659.0,1947.0,,
 2025_10_NO_CAR,REG,11,CAR,2.0,1966.0,2045.0,,
 2025_10_NO_CAR,REG,12,NO,3.0,2115.0,2231.0,,
-2025_10_NO_CAR,REG,13,CAR,3.0,2251.0,2618.0,,
-2025_10_NO_CAR,REG,14,NO,3.0,2654.0,2952.0,,
-2025_10_NO_CAR,REG,15,CAR,4.0,2972.0,3011.0,,
-2025_10_NO_CAR,REG,16,NO,4.0,3043.0,3137.0,,
-2025_10_NO_CAR,REG,17,CAR,4.0,3252.0,3405.0,,
-2025_10_NO_CAR,REG,18,NO,4.0,3430.0,3768.0,,
+2025_10_NO_CAR,REG,13,CAR,3.0,2251.0,2504.0,,
+2025_10_NO_CAR,REG,14,CAR,3.0,2534.0,2618.0,other,A9 kicking team recovered
+2025_10_NO_CAR,REG,15,NO,3.0,2654.0,2952.0,,
+2025_10_NO_CAR,REG,16,CAR,4.0,2972.0,3011.0,,
+2025_10_NO_CAR,REG,17,NO,4.0,3043.0,3137.0,,
+2025_10_NO_CAR,REG,18,CAR,4.0,3252.0,3405.0,,
+2025_10_NO_CAR,REG,19,NO,4.0,3430.0,3768.0,,
 2025_10_NYG_CHI,REG,1,CHI,1.0,69.0,199.0,,
 2025_10_NYG_CHI,REG,2,NYG,1.0,222.0,361.0,,
 2025_10_NYG_CHI,REG,3,CHI,1.0,381.0,588.0,,
