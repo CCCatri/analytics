@@ -21,16 +21,20 @@ The same words in the README a hiring manager reads, the case pages, the accepta
 | Object | product | project, domain, domains, tree, branch (as NFL, Healix or the résumé; the title Project Owner stays) | The NFL engine, Healix, the résumé: each judged through its own connector; product files are the files it reads | new |
 | Practice | negative control | shuffle control | Breaking the link under test on purpose (shuffled, blinded); the result must vanish | new |
 | Practice | calibration | chances come true | A stated chance or error rate compared with how often it came true, on held-out data | new |
-| Practice | invariance check | permuted (as a test) | A change that must not matter (row or column order, relabeling) leaves the result unchanged | new |
+| Practice | metamorphic test | invariance check, permuted (as a test) | A change that must not matter (row or column order, relabeling) leaves the result unchanged | new |
 | Practice | backward diagnosis | trace (as from a failure) | From a failed check, the record names the pair or draw, the stage, the pinned input and the expectation | new |
 | Rule | the specific acceptance criterion or data validation rule | honesty rail | Name the rule itself, not a metaphor for it (note 05) | new |
 | Practice | data leakage control | leakage prevention | Keeping data unavailable at prediction time out of a forecast's inputs (note 05) | new |
 | Football | team-games | team-weeks (the 3,200 count) | One team's game in one week; a bye week holds none (note 05) | new |
+| Practice | independent validation | check against an independent source | A model's output compared with independent ground truth (six real seasons; nflfastR's drives); distinct from reconciliation, which compares two records of the same facts | new |
+| Practice | residual analysis | follow the remainder | Splitting what is left after a fix into parts and tracing each to the input it came from | new |
+| Practice | walk-forward validation | no hindsight | Each season fit only on earlier seasons and scored on its own; with data leakage control, the test that no later data reached a forecast | new |
+| Object | acceptance report | — | One report of scope, results by slice and what is not proven, for a reader who never saw the work | new |
 | Practice | regression testing | — | Re-running known-right and known-wrong cases so a fixed fault cannot return | in use |
 | Practice | reconciliation | two-source cross-check, record comparison, cross-check | Checking that two sources count the same thing | new |
 | Practice | root cause analysis | recount ladder, cause investigation | Walking a discrepancy back to its cause before acting | new |
 | Mechanism | quality gate | gate (as an acceptance mechanism); fail-closed gate | A check a change must pass to be accepted; the Healix harness folder becomes `.quality-gate/` | new |
-| Definition | acceptance criteria | targets, DONE WHEN | What must be true for a change to be accepted, written before the run | in use |
+| Definition | acceptance criteria | targets, DONE WHEN, predictions first | What must be true for a change to be accepted, written before the run | in use |
 | Verdict | accepted / not accepted | landed, LANDED, NOT LANDED, landing (as acceptance) | A change whose checks passed and whose files the product reads | new |
 | Record | run log | ledger (recording a run) | The record of one run | new |
 | Record | acceptance ledger | CHARTER ledger, ledger (bare, for this record) | The digest record of accepted charter lines | in use |

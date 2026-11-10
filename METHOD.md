@@ -11,9 +11,18 @@ One file for how work is found, judged and accepted, in every product (the NFL e
 
 Then Theory of Constraints: find the single bottleneck holding back the goal and the smallest action that moves it. Nothing else gets effort until it moves. No new frameworks.
 
-Inside the products: invariance = the rules file and invariance checks; triangulation = held-out seasons and independent views; inversion = injected faults and predictions that would fail; three orders = the map down (the split) and up (results to the next calls); change the grain = the levels, game to touch.
+Inside the products: invariance = the rules file and metamorphic tests; triangulation = held-out seasons and independent views; inversion = injected faults and predictions that would fail; three orders = the map down (the split) and up (results to the next calls); change the grain = the levels, game to touch.
 
 How the AI applies it: restate the ask as the claim sentence and blank it serves; run the five moves on the evidence; name the one constraint; give the smallest action.
+
+## The rule under every claim
+- When one number answers two questions, separate them and test each part on its own before judging the combined result: who is in it (the members), what each gets (the split), and whether the parts add up (the sum). A combined result is judged only after every part passes, and each part on the members it serves.
+- Top-down: a level is measured only after the level above has its map. Slices add up exactly: every part of a claim has its support below it, and everything below serves a part of the claim.
+- A blank is filled by a measured link, or left open with its reason ("its own average so far; nothing measured moves it").
+
+## Who does what
+- I hold the question and premise each product rests on, the acceptance criteria (written before any code), the rulings on what counts as right, the domain knowledge (football, operations, real records), and the call to stop, redirect or go deeper.
+- The AI writes the code and the measurement scripts, proposes checks and the injected faults that must fail them, and runs the arithmetic, reporting misses as plainly as hits.
 
 ## Evidence: what may be stated
 Honesty, then accuracy: a well-calibrated lie is a failure. Every lie, blatant or by omission, is resolved before anything is tested.
@@ -27,6 +36,9 @@ Honesty, then accuracy: a well-calibrated lie is a failure. Every lie, blatant o
 - A number is used only if it can be explained out loud.
 - A link must open for a signed-out stranger. Every figure on the résumé appears in CLAIMS.md. When two of my accounts disagree, use the version in the source file or leave it off.
 - A clean clone is the test of "runs anywhere": local passes can hide missing dependencies.
+- A figure measured on a product that has since changed is withdrawn until it is measured again.
+- One authoritative data source per fact: a figure is sourced once, and every copy matches it.
+- A measured NOT SHOWN is a result: recorded and closed, never forced; a retry at a finer grain says so first.
 - Whose words: only lines I typed count as mine. Say what the AI did and what I did.
 - Confidentiality (Mercor): never stated outside Mercor: the project name, scores (checker results, counts, approvals), reviewer quotes, pay and tier, task content. A method description with no task content is allowed.
 
