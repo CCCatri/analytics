@@ -1,5 +1,5 @@
 """N2b, first landing: the who-plays law is fit and scored on the final active list (facts.active_keys).  Known-right: an inactive player's chance equals the rate
-inactive players of his position played in the fit rows.  Plants: the old law (fit on every candidate) must read MISCALIBRATED on active RB, WR and TE; active RB
+inactive players of his position played in the fit rows.  Injected faults: the old law (fit on every candidate) must read MISCALIBRATED on active RB, WR and TE; active RB
 chances shifted down 0.10 must not read COMES TRUE.  Target: on active rows the walk-forward gap (how often he played minus the chance) COMES TRUE within +-0.03 at
 2SE at QB, RB, WR and TE, and inactive chances sit below 0.05."""
 import sys, numpy as np, pandas as pd; sys.path.insert(0, "slate-kit")
@@ -32,16 +32,16 @@ t, known = walk(); t = t[t.p.notna()].merge(snaps, on=["player_id", "season", "w
 bad = [k for k in known if not k[4]]
 print(f"KNOWN-RIGHT: inactive chance equals the earlier inactive play rate in {len(known) - len(bad)} of {len(known)} season-positions" + ("" if not bad else f"; off: {bad}"))
 if bad: fails.append("known-right")
-print("PLANT 1: the old law, fit on every candidate, scored on active rows")
+print("INJECTED FAULT 1: the old law, fit on every candidate, scored on active rows")
 real = participation.is_active; participation.is_active = lambda r: pd.Series(True, index=r.index); old, unused = walk(); participation.is_active = real
 old = old[old.p.notna() & old.on_list]
 for pos in ("RB", "WR", "TE"):
     m, s = gap(old.played[old.position == pos], old.p[old.position == pos]); v = verdict(m, s)
-    print(f"  {pos}: gap {m:+.3f} (2SE {s:.3f}) {v} -> {'PLANT CAUGHT' if v == 'MISCALIBRATED' else 'PLANT MISSED'}")
-    if v != "MISCALIBRATED": fails.append(f"plant 1 {pos}")
+    print(f"  {pos}: gap {m:+.3f} (2SE {s:.3f}) {v} -> {'INJECTED FAULT CAUGHT' if v == 'MISCALIBRATED' else 'INJECTED FAULT MISSED'}")
+    if v != "MISCALIBRATED": fails.append(f"injected fault 1 {pos}")
 a = t[t.on_list]; r = a[a.position == "RB"]; m, s = gap(r.played, (r.p - 0.10).clip(0, 1)); v = verdict(m, s)
-print(f"PLANT 2: active RB chances down 0.10 -> gap {m:+.3f} (2SE {s:.3f}) {v} -> {'PLANT CAUGHT' if v != 'COMES TRUE' else 'PLANT MISSED'}")
-if v == "COMES TRUE": fails.append("plant 2")
+print(f"INJECTED FAULT 2: active RB chances down 0.10 -> gap {m:+.3f} (2SE {s:.3f}) {v} -> {'INJECTED FAULT CAUGHT' if v != 'COMES TRUE' else 'INJECTED FAULT MISSED'}")
+if v == "COMES TRUE": fails.append("injected fault 2")
 print("TARGET: active rows, played; inactive chance below 0.05")
 for pos in POSITIONS:
     r = a[a.position == pos]; ina = t[(t.position == pos) & ~t.on_list]
