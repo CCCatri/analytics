@@ -29,8 +29,11 @@ TERMS = {  # label: pattern.  Canonical phrases that contain a retired word (qua
     "the record -> play-by-play record": r"\bthe record\b",
     "man/men (players) -> player(s)": r"\b(man|men)\b",
     "DraftKings / fantasy / daily-fantasy -> DK DFS (its web addresses kept)": r"(?<!www\.)(?<!api\.)\bdraftkings\b|\bdaily-fantasy\b|\bfantasy\b",
+    "shared spine / trunk / shared engine / shared checker -> executor": r"\bshared spine\b|\btrunk\b|\bshared engine\b|\bshared[- ]checker\b",
+    "In Repo / Code pushed / measured_locally / measured on my Mac / reproduced by CI -> Evidence pushed, On Mac, CI Passed": r"\bIn Repo\b|\bCode pushed\b|\bmeasured_locally\b|\bmeasured on my Mac\b|\breproduced by CI\b",
+    "two-domain / shuffle control / honesty rail / leakage prevention / team-weeks -> product, negative control, the rule itself, data leakage control, team-games": r"\btwo-domain\b|\bshuffle control\b|\bhonesty rail\b|\bleakage prevention\b|\bteam-weeks\b",
 }
-CASE_SENSITIVE = {"Contract (rules doc) -> incident-derived rules", "\"right\" / \"yes\" (verdict) -> SUPPORTED", "DONE WHEN -> acceptance criteria"}
+CASE_SENSITIVE = {"Contract (rules doc) -> incident-derived rules", "\"right\" / \"yes\" (verdict) -> SUPPORTED", "DONE WHEN -> acceptance criteria", "In Repo / Code pushed / measured_locally / measured on my Mac / reproduced by CI -> Evidence pushed, On Mac, CI Passed"}
 TEXT = (".md", ".py", ".ts", ".tsv", ".yml", ".yaml", ".sh", ".txt", ".json", ".csv", ".stan", ".toml", ".cfg")
 SKIP_DIRS = {".git", "node_modules", "__pycache__", "dist"}
 LIVE = "--live" in sys.argv

@@ -9,6 +9,23 @@ The same words in the README a hiring manager reads, the case pages, the accepta
 | Verdict | `INSUFFICIENT_EVIDENCE` | UNKNOWN, unknown, can't tell (as a verdict) | The evidence reaches neither bar; the output names what is missing | new |
 | Practice | fault injection | planting faults, planting | Introducing a known fault to prove a check detects it | new |
 | Object | injected fault | plant, planted fault, plants | The fault so introduced; code `injected_fault` (object), `inject_fault` (action) | new |
+| Evidence | Someone else's record | third-party record | A record kept by someone else: nflfastR's drives, DK DFS's recorded points, a grader's verdict (note 03 tier 1) | new |
+| Evidence | CI Passed | reproduced, reproduced by CI, a run a stranger can repeat (as a tier) | Rerun on a clean copy by CI and passed (tier 2) | new |
+| Evidence | Evidence pushed | In Repo, Code pushed, measured (as a tier) | Run, with its evidence files committed where a signed-out stranger can open them (tier 3, pushed) | new |
+| Evidence | On Mac | measured_locally, measured locally, measured on my Mac | Run, with its evidence on one machine; a stranger cannot open it (tier 3, local) | new |
+| Evidence | Account only | my account (as a tier) | No record; fine for a habit, never for a number (tier 4) | new |
+| Work | Not built | mentioned, named (as a status) | Named only; no test written, nothing run | new |
+| Work | Test written | specified, designed (as a status) | The pass test is stated before any run | new |
+| Verdict | NOT SHOWN | closed by a read, inconclusive (as a link verdict) | A link measured and not distinguishable from no effect at the stated bound; recorded and closed, never forced | new |
+| Object | executor | shared spine, trunk, shared engine, shared checker, runner (as the shared code) | The one piece of code that runs every product's cases and writes their evidence records (checks/experiment.py; acceptance-criteria/executor.md) | new |
+| Object | product | project, domain, domains, tree, branch (as NFL, Healix or the résumé; the title Project Owner stays) | The NFL engine, Healix, the résumé: each judged through its own connector; product files are the files it reads | new |
+| Practice | negative control | shuffle control | Breaking the link under test on purpose (shuffled, blinded); the result must vanish | new |
+| Practice | calibration | chances come true | A stated chance or error rate compared with how often it came true, on held-out data | new |
+| Practice | invariance check | permuted (as a test) | A change that must not matter (row or column order, relabeling) leaves the result unchanged | new |
+| Practice | backward diagnosis | trace (as from a failure) | From a failed check, the record names the pair or draw, the stage, the pinned input and the expectation | new |
+| Rule | the specific acceptance criterion or data validation rule | honesty rail | Name the rule itself, not a metaphor for it (note 05) | new |
+| Practice | data leakage control | leakage prevention | Keeping data unavailable at prediction time out of a forecast's inputs (note 05) | new |
+| Football | team-games | team-weeks (the 3,200 count) | One team's game in one week; a bye week holds none (note 05) | new |
 | Practice | regression testing | — | Re-running known-right and known-wrong cases so a fixed fault cannot return | in use |
 | Practice | reconciliation | two-source cross-check, record comparison, cross-check | Checking that two sources count the same thing | new |
 | Practice | root cause analysis | recount ladder, cause investigation | Walking a discrepancy back to its cause before acting | new |
@@ -46,3 +63,7 @@ The same words in the README a hiring manager reads, the case pages, the accepta
 | Football | the score on the play | — | The first change on the scoreboard from the last snap to the next snap or kickoff, Tries left out: offense 6, 3 or 2, other side 6 or 2, or none (11-1-2); `rules.score_on_play` | new |
 
 Keep distinct, never merged: data validation, data integrity, reconciliation, regression testing, fault injection, mutation testing, golden sets, hold-out sets, provenance, traceability, data lineage.
+
+Verdicts by layer, never merged: a check's result (PASS / FAIL); a link's verdict (ESTABLISHED / NOT SHOWN / NOT TESTABLE); a change's verdict (ACCEPTED / REARRANGED / PRINTED; Healix: BETTER accepted, WORSE closed); a claim's verdict (SUPPORTED / REFUTED / INSUFFICIENT_EVIDENCE).
+
+One evidence scale at two layers: an evidence record carries its tier; a claim's tier is the weakest record it cites. Strongest first: Someone else's record · CI Passed · Evidence pushed · On Mac · Account only. Before any evidence: Not built · Test written.
