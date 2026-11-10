@@ -12,7 +12,10 @@ Engine root (2026-11-05, acceptance-criteria/engine-to-kit-handoff.md section 6)
 carries) are taken from an engine draw file (SLATE_ROOT_FILE, a .npz with its manifest beside it) instead of the link chain's own level draw: kit column j takes
 engine source draw j mod K, both teams of a game from the same engine draw; the root center is the engine draws' mean; a missing file, a manifest hash that
 differs from the file, a team with a game but no draws, or a declared draw count that differs from the arrays refuse the issue by name - never a fallback to the
-kit's own root draw.  With SLATE_ROOT_SOURCE unset or 'kit' nothing here differs from before."""
+kit's own root draw.  With SLATE_ROOT_SOURCE unset or 'kit' nothing here differs from before.
+One quarterback per world (2026-11-10, acceptance-criteria/one-game-one-reality.md): column j of a team is one world in which exactly one of its quarterback
+candidates starts (or a starter not on the card), drawn from P(starts) on the team's own substream; the frozen draws carry it as starts_keys / starts, and the
+card names each quarterback line's world.  His lines stay 'given he plays'; what changes is that two of them are never one game."""
 import os, glob, json, hashlib, numpy as np, pandas as pd
 from scipy.stats import t as student_t
 from ingest import PROJ_DIR, FROZEN_THRU, Report, sha
@@ -39,6 +42,16 @@ F8_PARTS = {**{position: ("F5 receptions", "F5 receiving yards", "F5 rushing yar
             "QB": ("Q3 passing yards", "Q4 passing TDs", "Q5 interceptions", "QB rushing yards", "QB rushing TDs")}
 F8_TRANSFORM = {**{position: skill_dk for position in RECEIVER_POSITIONS}, "QB": qb_dk}
 GRADED_COLUMNS = ["season", "week", "key", "term", "position", "state", "outcome", "draw_mean", "outcome_rank", "crps", "bias", "quantile_10", "quantile_50", "quantile_90", "p_bonus"]
+WORLD_TERM = "who starts"
+def quarterback_worlds(players, participation_rows, season, week):
+    """{quarterback key: starts (bool, DRAW_COUNT)}: for each team, every column is one world with exactly one of its quarterback candidates starting, or none of
+    them (the outside option, 1 - the sum of their P(starts)), drawn from P(starts) on the team's own substream; a team's columns are partitioned among them."""
+    p_starts = participation_rows.dropna(subset=["probability_starts"]).set_index("player_id").probability_starts.to_dict(); worlds = {}
+    for team, team_qbs in players[(players.position == "QB") & players.key.isin(p_starts)].groupby("team"):
+        keys = list(team_qbs.key); weights = np.array([p_starts[k] for k in keys], float); weights = np.append(weights, max(0.0, 1.0 - weights.sum())); weights = weights / weights.sum()
+        pick = substream(WORLD_TERM, "QB", season, week, team, "one quarterback per world").choice(len(weights), size=DRAW_COUNT, p=weights)
+        for i, key in enumerate(keys): worlds[key] = pick == i
+    return worlds
 def substream(term, position, season, week, key, label):
     """A row's own generator, keyed by what the row is (SHA-256 of term|position|season|week|key|label): a row's draws never depend on which other rows are drawn."""
     return np.random.default_rng(int.from_bytes(hashlib.sha256("|".join(str(part) for part in (term, position, season, week, key, label)).encode()).digest()[:8], "little"))
@@ -299,7 +312,7 @@ def week_draws(issue_season, issue_week):
     known = player_rows[(player_rows.season < issue_season) | ((player_rows.season == issue_season) & (player_rows.week < issue_week))]; history = link_chain_history(known)
     teams, players, candidate_rows = slate_members(player_rows, team_games, issue_season, issue_week); active = active_keys(); slate = draw_slate(history, fit_link_chain(history, issue_season, active), issue_season, issue_week, teams, players, active)
     participation_rows, participation_cells = week_participation(issue_season, issue_week); probability_of = participation_rows.dropna(subset=["probability_plays"]).set_index("player_id").probability_plays.to_dict()
-    dk_draws = dk_draws_of(slate["composed"], probability_of, issue_season, issue_week)
+    dk_draws = dk_draws_of(slate["composed"], probability_of, issue_season, issue_week); worlds = quarterback_worlds(players, participation_rows, issue_season, issue_week)
     dst_rows, dst_draws, dst_without = dst_week(issue_season, issue_week); laws = slate["laws"]
     root_center_source = {law.key + "|" + law.term: ("the engine draws' mean" if str(law.family) == ENGINE_FAMILY else "the one link chain: the parent's center x the pregame rate") for law in laws.itertuples(index=False)}
     summaries = summary_frame([(issue_season, issue_week, law.key, law.term, law.position, law.family, law.state, slate["centers"][(law.key, law.term)], root_center_source[law.key + "|" + law.term], slate["draws"][(law.key, law.term)]) for law in laws.itertuples(index=False)]
@@ -308,12 +321,13 @@ def week_draws(issue_season, issue_week):
                               + [(issue_season, issue_week, key, DK_TERM, position, "F8 x Bernoulli(P(plays)), DNP = 0", form, dk_draws[(key, DK_TERM)].mean(), "mean of the DK draws", dk_draws[(key, DK_TERM)]) for key, position, form, f8_draws in slate["composed"] if (key, DK_TERM) in dk_draws])
     return dict(issued=dict(candidates=candidate_rows, teams=teams, players=players), laws=laws, draws={**slate["draws"], **dk_draws, **dst_draws}, undrawn=slate["undrawn"], composed=slate["composed"],
                 participation=(participation_rows, participation_cells), dst=dict(rows=dst_rows, without=dst_without, draws=dst_draws), dk=dict(draws=dk_draws, without=[key for key, position, form, f8_draws in slate["composed"] if key not in probability_of]), summaries=summaries,
-                root=root_record())
+                root=root_record(), worlds=worlds)
 def frozen_draws_path(issue_season, issue_week): return os.path.join(PROJ_DIR, f"frozen_draws_{issue_season}_w{issue_week}.npz")
 def player_draw_matrix(week):
     """Every issued player and DST row of week N (TEAM rows excluded), in summary order: key, term and position arrays and the draw matrix (DRAW_COUNT draws per row)."""
-    player_rows = week["summaries"][week["summaries"].position != TEAM_KEY]
-    return dict(keys=player_rows.key.to_numpy(dtype=str), terms=player_rows.term.to_numpy(dtype=str), positions=player_rows.position.to_numpy(dtype=str), draws=np.vstack([week["draws"][(row.key, row.term)] for row in player_rows.itertuples(index=False)]))
+    player_rows = week["summaries"][week["summaries"].position != TEAM_KEY]; worlds = week.get("worlds", {}); starters = sorted(worlds)
+    return dict(keys=player_rows.key.to_numpy(dtype=str), terms=player_rows.term.to_numpy(dtype=str), positions=player_rows.position.to_numpy(dtype=str), draws=np.vstack([week["draws"][(row.key, row.term)] for row in player_rows.itertuples(index=False)]),
+                starts_keys=np.array(starters, dtype=str), starts=np.vstack([worlds[k] for k in starters]) if starters else np.zeros((0, DRAW_COUNT), dtype=bool))
 def team_draws_path(issue_season, issue_week): return os.path.join(PROJ_DIR, f"team_draws_{issue_season}_w{issue_week}.npz")
 def team_draw_matrix(week):
     """Every TEAM row of week N (the parents the player slices are drawn from), in summary order: key, term and position arrays and the draw matrix.

@@ -24,13 +24,14 @@ BUDGETS = {"targets": (("F5 targets",), "F2 team targets", "Rule 8"), "attempts"
 INJECTED_FACTOR = 1.1
 LOW_COVERAGE = 0.75
 
-def sums(keys, terms, draws, team_of, p_of, member_terms):
+def sums(keys, terms, draws, team_of, p_of, member_terms, starts=None):
     """team -> (card sum of member draws, expected sum: each member's draws x his P(plays))."""
     card, expected = {}, {}
     for key, term, row in zip(keys, terms, draws):
         team = team_of.get(key)
         if team is None or term not in member_terms: continue
-        card[team] = card.get(team, 0.0) + row; expected[team] = expected.get(team, 0.0) + p_of[key] * row
+        weight = starts[key].astype(float) if starts is not None and key in starts else p_of[key]   # a quarterback with a world: his draws count only where he starts
+        card[team] = card.get(team, 0.0) + row; expected[team] = expected.get(team, 0.0) + weight * row
     return card, expected
 
 def readout(card_sums, expected_sums, team_draws):
@@ -49,6 +50,7 @@ def load(frozen_path, card_path, team_path, inject=None, factor=INJECTED_FACTOR)
     for p in (frozen_path, card_path, team_path):
         if not os.path.exists(p): print(f"REFUSED: input missing: {p}"); sys.exit(1)
     z = np.load(frozen_path, allow_pickle=False); keys, terms, draws = z["keys"].astype(str), z["terms"].astype(str), z["draws"].astype(float)
+    starts = dict(zip(z["starts_keys"].astype(str), z["starts"])) if "starts_keys" in z.files else None   # one quarterback per world, when the draws carry it
     card = pd.read_csv(card_path, usecols=["player_id", "team", "probability_plays"]); card["player_id"] = card.player_id.astype(str); card["team"] = card.team.astype(str)
     team_of = dict(zip(card.player_id, card.team))
     p_rows = card.dropna(subset=["probability_plays"]).drop_duplicates("player_id"); p_of = dict(zip(p_rows.player_id, p_rows.probability_plays.astype(float)))
@@ -59,13 +61,13 @@ def load(frozen_path, card_path, team_path, inject=None, factor=INJECTED_FACTOR)
     team_draws = {name: {k: row for k, term, row in zip(tk, tt, td) if term == parent} for name, (_, parent, _) in BUDGETS.items()}
     if inject:
         if inject == "WORST":
-            c0, e0 = sums(keys, terms, draws, team_of, p_of, BUDGETS["targets"][0]); passing = [r for r in readout(c0, e0, team_draws["targets"]) if r["verdict"] == "PASS"]
+            c0, e0 = sums(keys, terms, draws, team_of, p_of, BUDGETS["targets"][0], starts); passing = [r for r in readout(c0, e0, team_draws["targets"]) if r["verdict"] == "PASS"]
             if not passing: print("REFUSED: --inject WORST: no passing team on targets to inject into"); sys.exit(1)
             inject = passing[0]["team"]; print(f"INJECTED FAULT TARGET: {inject}, the passing team with the least headroom on targets (expected/team {passing[0]['ratio']:.3f})")
         team_members = {k for k, t in team_of.items() if t == inject}; mask = np.array([(t == "F5 targets") and (k in team_members) for k, t in zip(keys, terms)])
         if not mask.any(): print(f"REFUSED: --inject {inject}: no receiver-target rows for that team on the card"); sys.exit(1)
         draws = draws.copy(); draws[mask] *= factor; print(f"INJECTED FAULT: {inject} receiver targets x {factor} on {int(mask.sum())} rows")
-    both = {name: sums(keys, terms, draws, team_of, p_of, member_terms) for name, (member_terms, _, _) in BUDGETS.items()}
+    both = {name: sums(keys, terms, draws, team_of, p_of, member_terms, starts) for name, (member_terms, _, _) in BUDGETS.items()}
     return {n: both[n][0] for n in both}, {n: both[n][1] for n in both}, team_draws, inject
 
 def print_readout(card_sums, expected_sums, team_draws, inject=None):

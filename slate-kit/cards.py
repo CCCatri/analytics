@@ -14,6 +14,7 @@ from dk import F8_TERM, DK_TERM, DST_TERM
 from draws import week_draws, freeze_draws, LINK_CHAIN_STATE
 CONDITIONING = "given he plays"
 DNP_CONDITIONING = "DNP = 0: P(plays) mixed into the draws"
+ALL_WORLDS = "every world (carried over unchanged)"   # acceptance-criteria/one-game-one-reality.md: a quarterback line names the world he starts in
 DST_CONDITIONING = "the defense plays every game"
 DST_PARTICIPATION = "NOT APPLICABLE - the defense plays every game"
 DEPENDENCE_STATUS = "cross-player dependence NOT MODELLED (M9); within-player order as earned"
@@ -112,17 +113,18 @@ def card(issue_season, issue_week):
     flags["flag"] = flags.flag.where(judged | flags.flag.str.startswith("NOT RATED"), "NOT RATED - the judge has not qualified this line (atlas or ladder)")
     stat_rows = pd.concat([stat_rows, flags], axis=1)
     stat_rows = stat_rows.rename(columns={"key": "player_id", "family": "law_family", "state": "law_state"}).merge(candidates[["player_id", "name", "team", "probability_plays", "probability_starts", "participation_status"]], on="player_id", how="left")
+    stat_rows["world"] = np.where((stat_rows.position == "QB") & stat_rows.probability_starts.notna(), stat_rows.team.astype(str) + ": " + stat_rows.name.astype(str) + " starts", ALL_WORLDS)
     stat_rows = stat_rows.assign(issuable="ISSUABLE", conditioning=np.where(stat_rows.term == DK_TERM, DNP_CONDITIONING, CONDITIONING), dependence_status=DEPENDENCE_STATUS, issue_mode=ISSUE_MODE, **engine_fields)
     columns = ["season", "week", "player_id", "name", "team", "position", "term", "law_family", "law_state", "layer", "provenance", "conditioned_on_draw", "center", "center_source", "draw_mean",
                "quantile_10", "quantile_25", "quantile_50", "quantile_75", "quantile_90", "issuable", "atlas_qualification", "atlas_rows", "atlas_coverage_10", "atlas_coverage_90", "atlas_bias_mean",
-               *[field for field in LADDER_FIELDS.values() if field != "prospective_evidence"], "reference_status", "prospective_evidence", "conditioning", "probability_plays", "probability_starts", "participation_status", "dependence_status", "issue_mode", *engine_fields.keys()]
+               *[field for field in LADDER_FIELDS.values() if field != "prospective_evidence"], "reference_status", "prospective_evidence", "conditioning", "probability_plays", "probability_starts", "world", "participation_status", "dependence_status", "issue_mode", *engine_fields.keys()]
     stat_rows = stat_rows[columns + FLAG_COLUMNS].sort_values(["team", "position", "player_id", "term"], kind="stable").reset_index(drop=True)
     candidate_columns = ["player_id", "name", "team", "position", "previous_label", "label_sequence", "coverage_status", "stats_issued", "probability_plays", "probability_starts", "participation_status", "participation_cell", "games_missed", "snap_share_mean_season_pregame"]
     dst_rows = summaries[summaries.position == "DST"].merge(week["dst"]["rows"][["team", "opponent"]], left_on="key", right_on="team", how="left").rename(columns={"key": "player_id", "family": "law_family", "state": "law_state"})
     dst_rows = dst_rows.assign(name=dst_rows.team + " DST", layer=np.nan, provenance="laws.dst_week (the earned yardstick, verdict in proj/dstick_report.txt)", conditioned_on_draw=np.nan, issuable="ISSUABLE",
                                atlas_qualification="NO ATLAS CELL - not graded", atlas_rows=np.nan, atlas_coverage_10=np.nan, atlas_coverage_90=np.nan, atlas_bias_mean=np.nan,
                                **{field: np.nan for field in LADDER_FIELDS.values() if field != "prospective_evidence"}, prospective_evidence="NO LADDER CELL", reference_status=reference_status(np.array([np.nan]))[0], conditioning=DST_CONDITIONING,
-                               probability_plays=np.nan, probability_starts=np.nan, participation_status=DST_PARTICIPATION, dependence_status=DEPENDENCE_STATUS, issue_mode=ISSUE_MODE, **engine_fields)[columns + ["opponent"]].sort_values("team", kind="stable").reset_index(drop=True)
+                               probability_plays=np.nan, probability_starts=np.nan, world=ALL_WORLDS, participation_status=DST_PARTICIPATION, dependence_status=DEPENDENCE_STATUS, issue_mode=ISSUE_MODE, **engine_fields)[columns + ["opponent"]].sort_values("team", kind="stable").reset_index(drop=True)
     card_path = os.path.join(PROJ_DIR, f"card_{issue_season}_w{issue_week}.csv"); candidates_path = os.path.join(PROJ_DIR, f"card_{issue_season}_w{issue_week}_candidates.csv"); dst_path = os.path.join(PROJ_DIR, f"card_{issue_season}_w{issue_week}_dst.csv")
     stat_rows.to_csv(card_path, index=False); candidates[candidate_columns].assign(issue_mode=ISSUE_MODE, **engine_fields).to_csv(candidates_path, index=False); dst_rows.to_csv(dst_path, index=False); frozen_path, frozen_sha = freeze_draws(week, issue_season, issue_week)
     status_counts = candidates.coverage_status.value_counts(); unexplained = int((candidates.coverage_status == "NOT ISSUED - unexplained").sum())
