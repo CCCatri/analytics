@@ -55,6 +55,19 @@ def link_order(links):
     return tuple(ordered)
 LINK_ORDER = link_order(LINKS)
 PLAYER_COUNTS = sorted(set(skill_columns + qb_columns) - {"redzone_targets", "redzone_carries", "redzone_attempts"})
+REGULAR_SNAP_SHARE, REGULAR_GAMES, CUT_SHORT_FRACTION = 0.5, 2, 0.6   # the full-game read, 2026-11-10 (acceptance-criteria/full-game-lines.md)
+SKILL_EXIT_GAMES = ("cut short", "teammate cut short")   # games with an exit at his position: set apart from grading (the share law reads every game: measuring it on full games only was WORSE, full-game-lines.md)
+def skill_game_kinds(history):
+    """The kind of game of every row (index of history): for a back, receiver or tight end, 'cut short' when he is a regular (a usual snap share of
+    REGULAR_SNAP_SHARE or more over REGULAR_GAMES or more earlier games this season) and his snaps are under CUT_SHORT_FRACTION of his usual; 'teammate cut
+    short' when another player at his position on his team was cut short that game; 'full game' for a regular otherwise; 'no test' for everyone else (not a
+    regular, no snap record, a quarterback, a team row).  Each game's kind reads only that game and his earlier games this season."""
+    h = history[history.position.isin(RECEIVER_POSITIONS)].sort_values(["key", "season", "week"]); snaps = h.snap_share; has = snaps.notna(); player_season = [h.key, h.season]
+    usual = snaps.groupby(player_season).transform(lambda x: x.shift().expanding().mean()); earlier = has.groupby(player_season).transform(lambda x: x.shift().fillna(False).astype(int).cumsum())
+    regular = has & (earlier >= REGULAR_GAMES) & (usual >= REGULAR_SNAP_SHARE); cut = regular & (snaps < CUT_SHORT_FRACTION * usual)
+    teammates_cut = cut.groupby([h.season, h.week, h.team, h.position]).transform("sum")
+    kind = pd.Series(np.select([cut, teammates_cut > 0, regular], ["cut short", "teammate cut short", "full game"], "no test"), index=h.index)
+    return kind.reindex(history.index, fill_value="no test")
 def link_chain_history(player_rows):
     """The facts the link chain reads, one row per game: every played player-game (key = player_id, the box score made whole by state.box_zero for its own group, his
     team's counts that game as team_*) and every team-game (key = team, position TEAM, the counts of state.team_volume - one producer)."""
@@ -63,7 +76,7 @@ def link_chain_history(player_rows):
     volume = team_volume(player_rows)
     players = played[["player_id", "season", "week", "team", "position", "opponent", "snap_share"] + PLAYER_COUNTS].rename(columns={"player_id": "key"})   # batch 82: the opponent, for the team environment
     players = players.assign(**{column: players[column].fillna(0.0) for column in PLAYER_COUNTS}).merge(volume.rename(columns={column: f"team_{column}" for column in count_columns}), on=["season", "week", "team"], how="left")
-    return pd.concat([players, volume.assign(key=volume.team, position=TEAM_KEY)], ignore_index=True)
+    history = pd.concat([players, volume.assign(key=volume.team, position=TEAM_KEY)], ignore_index=True); return history.assign(game_kind=skill_game_kinds(history))   # the full-game law: each game's kind
 def history_of(history, cell):
     """The rows a cell's pregame state reads: the team-games for a team cell, every played game of the players for a player cell (a player's rate follows him across labels and teams)."""
     return history[(history.position == TEAM_KEY) == (cell[1] == TEAM_KEY)]

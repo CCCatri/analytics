@@ -24,7 +24,7 @@ from evaluate import crps, rank, atlas_cells, share_band, ALPHA_FAMILY
 from state import issue_frames, dst_frame, DST_INPUTS, ISSUE_WEEKS, HISTORY_MINIMUM, RECEIVER_POSITIONS
 from participation import week_participation, who_plays_inputs, who_plays_fit, who_plays_probability, model_rows_of, who_starts_training, who_starts_fit, who_starts_probability
 from dk import skill_dk, qb_dk, dnp_zero, F8_TERM, DK_TERM, DST_TERM, BONUS_YARDS
-from link_chain import link_chain_history, fit_link_chain, link_rates, sibling_law, sibling_luck_of, LINKS, LINK_ORDER, SIBLINGS, TEAM_KEY
+from link_chain import link_chain_history, fit_link_chain, link_rates, sibling_law, sibling_luck_of, LINKS, LINK_ORDER, SIBLINGS, TEAM_KEY, SKILL_EXIT_GAMES
 DRAW_COUNT = 2000
 ROOT_SOURCE = os.environ.get("SLATE_ROOT_SOURCE", "kit")   # 'kit': the link chain's own root draw; 'engine': the root cells from an engine draw file (handoff section 6)
 ROOT_FILE = os.environ.get("SLATE_ROOT_FILE")              # engine mode: the .npz; its manifest is <path without .npz>.manifest.json
@@ -62,6 +62,11 @@ def qb_games(player_rows):
     passers = threw.groupby(team_game_of).transform("sum"); most = rows.attempts.groupby(team_game_of).transform("max")
     kind = np.select([threw & (passers == 1), threw & (rows.attempts == most), threw], [FULL_GAME, "started, left early", "came in relief"], "did not throw")
     return dict(zip(zip(rows.player_id, rows.season.astype(int), rows.week.astype(int)), kind))
+def game_kinds(player_rows, history):
+    """{(key, season, week): kind of game} for every player (the full-game law): quarterbacks by qb_games, backs, receivers and tight ends by
+    link_chain.skill_game_kinds (the history's game_kind) - one producer for the replay and its check."""
+    kinds = qb_games(player_rows); skill = history[history.position.isin(RECEIVER_POSITIONS)]
+    kinds.update(dict(zip(zip(skill.key, skill.season.astype(int), skill.week.astype(int)), skill.game_kind))); return kinds
 EXIT_GAMES = ("started, left early", "came in relief")   # games the full-game premise leaves out: a quarterback change during the game
 def split_full_game(graded_rows, kinds):
     """(graded, other games): a quarterback's full-game lines are graded only on games he started and finished, and his DK line (DNP = 0) on every game but
@@ -70,6 +75,7 @@ def split_full_game(graded_rows, kinds):
     quarterback = graded_rows.position == "QB"; full_game_line = quarterback & graded_rows.term.isin(QB_FULL_GAME_TERMS); dk_line = quarterback & (graded_rows.term == DK_TERM)
     kind = pd.Series([kinds.get((key, int(season), int(week)), "no record") for key, season, week in zip(graded_rows.key, graded_rows.season, graded_rows.week)], index=graded_rows.index, dtype=object)
     keep = (~full_game_line & ~dk_line) | (full_game_line & (kind == FULL_GAME)) | (dk_line & ~kind.isin(EXIT_GAMES))
+    keep = keep & ~(graded_rows.position.isin(RECEIVER_POSITIONS) & kind.isin(SKILL_EXIT_GAMES))   # backs, receivers, tight ends: every line, without the games with an exit at his position
     return graded_rows[keep], graded_rows[~keep].assign(game=kind[~keep])
 WORLD_TERM = "who starts"
 def quarterback_worlds(players, participation_rows, season, week):
@@ -284,7 +290,7 @@ def replay(previous_path, previous_dk_path=None):
     proj/atlas_rows.csv.gz, atlas.csv, ladder.csv and replay_report.txt.  Exit 0 iff the product is ISSUED."""
     report = Report(); player_rows, team_games = load(), team_game(); history = link_chain_history(player_rows); outcomes = outcome_frame(history, player_rows); previous_rows = read_table(previous_path); active = active_keys()
     seasons = sorted(int(season) for season in history.season.unique() if season <= FROZEN_THRU and (history.season < season).any()); graded, fit_lines, coverage = [], [], []
-    kinds, other_games, world_seasons = qb_games(player_rows), [], []   # the project owner's grading rule: a quarterback's full-game lines on games he started and finished
+    kinds, other_games, world_seasons = game_kinds(player_rows, history), [], []   # the project owner's grading rule: a quarterback's full-game lines on games he started and finished
     who_rows = model_rows_of(who_plays_inputs(player_rows, team_games, sorted(int(season) for season in history.season.unique() if season <= FROZEN_THRU))); dk_graded = []   # batch 73: who plays, fit once per season
     for season in seasons:
         fits = fit_link_chain(history, season, active); who_laws, unused = who_plays_fit(who_rows[who_rows.season < season]); season_rows = who_rows[who_rows.season == season]
@@ -318,12 +324,19 @@ def replay(previous_path, previous_dk_path=None):
     coverage = pd.DataFrame(coverage, columns=["season", "week", "candidates", "teams", "players", "law_rows", "f8_rows", "undrawn"])
     report.say(f"\nREADINGS - seasons {seasons}, slates {len(coverage)}: candidates {int(coverage.candidates.sum())}, teams {int(coverage.teams.sum())}, players {int(coverage.players.sum())}, law rows {int(coverage.law_rows.sum())}, F8 {int(coverage.f8_rows.sum())}, drew nothing {int(coverage.undrawn.sum())}; graded rows {len(graded_rows)}")
     full_rows = graded_rows[(graded_rows.position == "QB") & graded_rows.term.isin(QB_FULL_GAME_TERMS)]
-    report.say(f"QUARTERBACK FULL-GAME LINES (graded only on games he started and finished; the rest in proj/qb_other_games_rows.csv.gz): graded {len(full_rows)} | apart {len(other_rows)} | all {len(full_rows) + len(other_rows[other_rows.term != DK_TERM])} | DK graded with one quarterback per world in seasons {world_seasons}, not graded in {[s for s in seasons if s not in world_seasons]} (no who-starts law yet)")
+    report.say(f"QUARTERBACK FULL-GAME LINES (graded only on games he started and finished; the rest in proj/qb_other_games_rows.csv.gz): graded {len(full_rows)} | apart {int(((other_rows.position == 'QB') & (other_rows.term != DK_TERM)).sum())} | all {len(full_rows) + int(((other_rows.position == 'QB') & (other_rows.term != DK_TERM)).sum())} | DK graded with one quarterback per world in seasons {world_seasons}, not graded in {[s for s in seasons if s not in world_seasons]} (no who-starts law yet)")
     full_rows = pd.concat([full_rows, dk_rows[(dk_rows.position == "QB") & (dk_rows.term == DK_TERM)]])
     for term in QB_FULL_GAME_TERMS + (DK_TERM,):
         line = f"   {term}: {'started and finished' if term != DK_TERM else 'graded (full games and games he did not play)'} {int((full_rows.term == term).sum())} rows, CRPS {full_rows[full_rows.term == term].crps.mean():.3f}, bias {full_rows[full_rows.term == term].bias.mean():+.3f}"
-        for game, d in other_rows[other_rows.term == term].groupby("game"): line += f" | {game} {len(d)} rows, CRPS {d.crps.mean():.3f}, bias {d.bias.mean():+.3f}"
+        for game, d in other_rows[(other_rows.position == "QB") & (other_rows.term == term)].groupby("game"): line += f" | {game} {len(d)} rows, CRPS {d.crps.mean():.3f}, bias {d.bias.mean():+.3f}"
         report.say(line)
+    report.say("BACKS, RECEIVERS, TIGHT ENDS (the full-game law: games he was cut short, or a teammate at his position was, set apart; the rest graded)")
+    for position in RECEIVER_POSITIONS:
+        for term, rows_now in ((F8_TERM, graded_rows), (DK_TERM, dk_rows)):
+            g, a = rows_now[(rows_now.position == position) & (rows_now.term == term)], other_rows[(other_rows.position == position) & (other_rows.term == term)]
+            line = f"   {position} {term}: graded {len(g)} rows, CRPS {g.crps.mean():.3f}, bias {g.bias.mean():+.3f}"
+            for game, d in a.groupby("game"): line += f" | {game} {len(d)} rows, CRPS {d.crps.mean():.3f}, bias {d.bias.mean():+.3f}"
+            report.say(line)
     report.say("FITS (seasons < s):")
     for line in fit_lines: report.say(line)
     paired_cells = graded_rows.merge(previous_rows[["season", "week", "key", "term", "position", "crps", "bias"]], on=["season", "week", "key", "term", "position"], suffixes=("", "_previous"))
