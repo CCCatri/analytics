@@ -8,7 +8,7 @@ This file is the claim, not its status: status lives on the rubric page, the met
 ## What the product is
 A structural model of one NFL game, read before kickoff. The rule book fixes the pie. Each level splits the level above and asks two questions: how big is the pie (volume), and who gets which slice (share). A cause known before kickoff is traced down every level to where it lands.
 
-## The seven sentences (fixed order; only the project owner restates them)
+## The seven sentences (fixed order; only the project owner restates them; restating a sentence to fit results changes the measure)
 the rules level  Every game is 60 minutes; the ball changes hands after every score or stop; four downs to gain ten.
 the game level  This game should have about P plays between both teams, more or fewer than these teams' usual, because ___.
 the team level  His team gets about S of them, because ___.
@@ -17,7 +17,7 @@ the position-group level  Of the A throws, the receivers get Y, the tight ends Z
 the player level  He gets N of his group's, because ___.
 the touch level  Each is worth about M yards against this defense, because ___.
 
-Every count is a slice of the count above and the slices add up exactly. Every number carries its range (2SE). Every "because" names a measured link, or says "its own average so far; nothing measured moves it."
+Every count is a slice of the count above and the slices add up exactly. Each rate is per the count it names. Every number carries its range (2SE); where two measures of one link can't be told apart on held-out seasons, the range spans both. Every "because" names a measured link, or says "its own average so far; nothing measured moves it."
 
 ## How the levels connect
 - The rules are the conservation. The three record checks (`check_clock.py`, `check_possessions.py`, `check_downs.py`) prove the play-by-play record obeys the rule book. The engine's games are written in the play-by-play record's own columns and the same checks run on them unchanged.
