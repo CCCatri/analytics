@@ -37,5 +37,9 @@ The same words in the README a hiring manager reads, the case pages, the accepta
 | Evaluation | reference answer | expected response, model answer | The answer a rubric grades against | new |
 | Evaluation | inter-annotator agreement | inter-rater agreement | Agreement between graders | new |
 | Evaluation | flagging ambiguous cases | flag ambiguous cases | Marking cases the rubric cannot decide | new |
+| Football | possession | — | A team's snaps from gaining the ball to losing it, two-point tries excluded (3-35, 11-3-1); counted by `check_possessions.py` | new |
+| Football | drive | — | nflfastR's unit (`fixed_drive`): starts whenever the ball changes hands, with or without a snap; drives = possessions + named no-snap kinds (`check_possessions_crosswalk.py`) | new |
+| Football | the stop | — | How the offense's last snap ended its possession, one of eight: punt, field-goal try, interception, lost fumble, touchdown, safety, turnover on downs, clock (3-35-3, 11-2, 11-5, 7-3-2, 4-1); `rules.possession_stop` | new |
+| Football | the score on the play | — | The first change on the scoreboard from the last snap to the next snap or kickoff, Tries left out: offense 6, 3 or 2, other side 6 or 2, or none (11-1-2); `rules.score_on_play` | new |
 
 Keep distinct, never merged: data validation, data integrity, reconciliation, regression testing, fault injection, mutation testing, golden sets, hold-out sets, provenance, traceability, data lineage.

@@ -1,6 +1,6 @@
 """rules.py - the rules-module stage, one rules module, to rules-module.md. The rules the play-by-play record reads (check_possessions.py, check_clock.py, check_downs.py) and the engine (the engine stage) play by, each with its article.
 The book is rules/nfl_rulebook_2026.pdf (sha 144cec5bffd2). snap kinds; foul families; the next-down rule, next_down; the clock rule (windows, clock_class, the play clock);
-the next-possession rule, next_possession; the season rules, season_rules, read from out/season_rules.csv (written by measure_season_rules.py from the play-by-play record; 2022 is held_out and stays INSUFFICIENT_EVIDENCE). No record is read here."""
+the next-possession rule, next_possession; how every possession ends, possession_stop and score_on_play (possession_ends); the season rules, season_rules, read from out/season_rules.csv (written by measure_season_rules.py from the play-by-play record; 2022 is held_out and stays INSUFFICIENT_EVIDENCE). No record is read here."""
 import csv, hashlib, io, re, sys
 
 _ITEM5 = {}
@@ -204,6 +204,79 @@ def next_possession(ending, scorer=None, scored_on=None, team=None, other=None):
     their recovery; halftime and overtime return the rule only (the choice and the toss are not in the play-by-play record)."""
     who, why = POSSESSION[ending]
     return {"scored upon": scored_on, "scoring team": scorer, "other team": other, "kicking team": team}.get(who), why
+
+
+# how every possession ends: the stop and the score on the play (acceptance-criteria/possession-ends.md; VOCABULARY.md). The one definition: the engine's games
+# and every check read possession ends through these functions and nothing else.
+STOPS = (("punt", "3-35-3(c)"), ("field-goal try", "3-35-3(e), 11-4"), ("interception", "3-35-3(a)"), ("lost fumble", "3-35-3(b)"), ("touchdown", "11-2-1"),
+         ("safety", "11-5-1"), ("turnover on downs", "3-35-3(d), 7-3-2"), ("clock", "4-1-1, 4-8-1"))
+STOP_ORDER = [s for s, _ in STOPS]
+SCORES = ("offense 6", "offense 3", "offense 2", "other side 6", "other side 2", "none")   # 11-1-2: touchdown 6, field goal 3, safety 2
+
+
+def _one(x):
+    try: return float(x) == 1.0
+    except (TypeError, ValueError): return False
+
+
+def _num(x):
+    try: return float(x)
+    except (TypeError, ValueError): return None
+
+
+def possession_stop(last):
+    """The stop: how the offense's last snap ended its possession, read from that snap only, in the order of STOPS; a fourth down short of the line to gain is a
+    turnover on downs whatever the clock (3-35-3(d)); none of these is the clock."""
+    pt = last["play_type"]
+    if pt == "punt": return "punt"
+    if pt == "field_goal": return "field-goal try"
+    if _one(last["interception"]): return "interception"
+    if _one(last["fumble_lost"]): return "lost fumble"
+    if _one(last["touchdown"]): return "touchdown"
+    if _one(last["safety"]): return "safety"
+    d, g, t = _num(last["down"]), _num(last["yards_gained"]), _num(last["ydstogo"])
+    if d == 4 and g is not None and t is not None and g < t: return "turnover on downs"
+    return "clock"
+
+
+def score_on_play(before, window, team):
+    """The score on the play: the first change in the score columns from the last snap up to the next snap or kickoff, Tries removed, as 'offense N' or
+    'other side N', else 'none'. Read from the scoreboard, so every way of scoring counts the same."""
+    h0, a0 = before
+    for _, x in window.iterrows():
+        h, a = _num(x["total_home_score"]), _num(x["total_away_score"])
+        if h is None or a is None: continue
+        if (h, a) != (h0, a0):
+            side, pts = (x["home_team"], h - h0) if h != h0 else (x["away_team"], a - a0)
+            return f"{'offense' if side == team else 'other side'} {int(pts)}"
+    return "none"
+
+
+def nflfastr_result(stop, score):
+    """The drive result nflfastR's fixed_drive_result names for a possession ending: the score names it, else the stop."""
+    by_score = {"offense 6": "Touchdown", "offense 3": "Field goal", "other side 6": "Opp touchdown", "other side 2": "Safety", "offense 2": "Safety"}
+    if score in by_score: return by_score[score]
+    return {"punt": "Punt", "field-goal try": "Missed field goal", "interception": "Turnover", "lost fumble": "Turnover", "turnover on downs": "Turnover on downs", "clock": "End of half"}.get(stop)
+
+
+def possession_ends(P, R):
+    """One row per possession (game_id, pid, team, s1, stop, score). P: possessions (game_id, pid, team, s0, s1), from check_possessions.possessions on the
+    play-by-play record or on the engine's games; R: those games' rows with seq, play_type, posteam, two_point_attempt, interception, fumble_lost, touchdown,
+    safety, down, ydstogo, yards_gained, home_team, away_team, total_home_score, total_away_score."""
+    import pandas as pd
+    out = []
+    R = R[~R["two_point_attempt"].map(_one) & (R["play_type"] != "extra_point")]
+    for g, d in R.groupby("game_id"):
+        d = d.sort_values("seq").reset_index(drop=True)
+        snap_seq = set(d.loc[d["play_type"].isin(SNAP_KINDS) & d["posteam"].map(lambda t: isinstance(t, str) and t != ""), "seq"])
+        for _, p in P[P["game_id"] == g].iterrows():
+            i = d.index[d["seq"] == p["s1"]][0]
+            nxt = d[(d["seq"] > p["s1"]) & (d["seq"].isin(snap_seq) | (d["play_type"] == "kickoff"))]
+            end = nxt["seq"].iloc[0] if len(nxt) else float("inf")
+            prev = d.loc[:i - 1, ["total_home_score", "total_away_score"]].map(_num).dropna()
+            before = tuple(prev.iloc[-1]) if len(prev) else (0.0, 0.0)
+            out.append((g, p["pid"], p["team"], p["s1"], possession_stop(d.loc[i]), score_on_play(before, d[(d["seq"] >= p["s1"]) & (d["seq"] < end)], p["team"])))
+    return pd.DataFrame(out, columns=["game_id", "pid", "team", "s1", "stop", "score"])
 
 
 # the season rules, 2019-2025: measured by measure_season_rules.py into out/season_rules.csv; 2022 is the held_out season, its values from rule text only, INSUFFICIENT_EVIDENCE until read
