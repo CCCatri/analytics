@@ -43,6 +43,8 @@ card)
   step "the replay's outputs: full-game grading, DK DFS held"
   python3 checks/check_full_game_grading.py || exit 1
   python3 checks/check_dk_dfs_held.py "$P/card_2024_w15.csv" || exit 1
+  step "the card's flags against a shuffle (2025 held out)"
+  python3 checks/check_excel_struggle.py slate-kit/proj/atlas_rows.csv.gz 2025 || exit 1
   ;;
 *) echo "usage: bash checks/ci_verify.sh foundation|card"; exit 2 ;;
 esac
