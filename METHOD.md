@@ -48,6 +48,7 @@ Honesty, then accuracy: a well-calibrated lie is a failure. Every lie, blatant o
 - Acceptance criteria name, before any work, the file a run may change and the checks that accept it. When they pass, the file is written in the same run.
 - One cause, one change: change exactly what was asked; a pass means the asked change happened and nothing else moved.
 - A change later found wrong is reverted or corrected by an accepted change, never held back for fear of it.
+- A loop of revisions states its goal before its first run, as a count that must reach zero (for an evaluation item: a blind grader matches the key on every answer and names no reading that changes a score). A revision is accepted only when the next run shows that count lower and nothing new; otherwise it is reverted. Remove a choice before rewording (state the evidence in the task rather than add words to an anchor); a fix never restates another rule.
 - Ceilings fall, never rise. Only the project owner adds a quality gate, and only before a run.
 - Check only what the next step reads. Every counter prints or is deleted. Delete what nothing reads; never archive.
 - A script's exit status agrees with its verdict: no stage fails silently.
