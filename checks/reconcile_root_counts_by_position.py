@@ -1,4 +1,8 @@
-"""Attribution of the unequal team-games from reconcile_root_counts.py: engine-side snaps by the ball-handler's stats-file position. Reads only; writes nothing."""
+"""The attempt and carry reconciliation (acceptance-criteria/engine-to-kit-handoff.md section 1): for every regular-season team-week of 2019-2021 and 2023-2025,
+the engine-side count of attempts and carries (record.events under the section-1 rule, ball-handlers QB/RB/WR/TE) must equal the kit's (slate-kit facts).
+Prints the unequal count with every ball-handler and under the universe rule, the snaps outside the universe by position, and any kit-only team-week;
+exit 0 only when every team-week is equal. --injected-fault adds one attempt to the first team-week's kit count, and the run must end NOT RECONCILED (exit 1).
+Reads only; writes nothing."""
 import sys, os, pandas as pd
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "product")); sys.path.insert(0, os.path.join(ROOT, "slate-kit"))
@@ -22,6 +26,8 @@ e = pd.concat(rows); e["in_universe"] = e["who"].isin(UNIVERSE)
 tot = e.groupby(["season", "week", "team", "what"]).size().unstack(fill_value=0).reset_index()
 uni = e[e.in_universe].groupby(["season", "week", "team", "what"]).size().unstack(fill_value=0).reset_index()
 m = kit.merge(tot, on=["season", "week", "team"], suffixes=("", "_eng_all")).merge(uni, on=["season", "week", "team"], suffixes=("", "_eng_universe"))
+if "--injected-fault" in sys.argv:
+    m.loc[m.index[0], "attempts"] += 1; print(f"INJECTED FAULT: one attempt added to {m.loc[m.index[0], ['season', 'week', 'team']].tolist()}'s kit count; this run must end NOT RECONCILED")
 bad_all = (m.attempts != m.attempts_eng_all) | (m.carries != m.carries_eng_all); bad_uni = (m.attempts != m.attempts_eng_universe) | (m.carries != m.carries_eng_universe)
 print(f"team-games {len(m)} | unequal with every ball-handler {int(bad_all.sum())} | unequal with QB/RB/WR/TE only {int(bad_uni.sum())}")
 print("snaps outside the universe, by position:", e[~e.in_universe].groupby(["what", "who"]).size().to_dict())
