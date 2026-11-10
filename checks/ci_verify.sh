@@ -19,6 +19,7 @@ foundation)
   python3 product/rules_level.py || exit 1
   step "the claims the resume copies, and the checks on the checks (catch and false-alarm rates)"
   python3 checks/check_claims.py || exit 1
+  python3 checks/check_matrix.py || exit 1
   PYTHONPATH=product:slate-kit:checks python3 checks/validate_checks.py || exit 1
   ;;
 card)
