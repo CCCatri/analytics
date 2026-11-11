@@ -62,10 +62,10 @@ Honesty, then accuracy: a well-calibrated lie is a failure. Every lie, blatant o
 | Strength | The rule it names | Concepts (VOCABULARY.md) | Instances |
 |---|---|---|---|
 | Define what should happen | Acceptance criteria before the run, with the output that would fail | acceptance criteria; controlled perturbation | NFL: one team draw changed 36 to 60, its 67 mapped columns moved and no others; Healix prints its prediction first |
-| Test a known-good and known-bad case | A check fails on an injected fault before its PASS counts | fault injection; regression testing; negative control | NFL budget self-test; engine stage 1 (11 of 11 injected faults caught); Healix judge; the Mercor grading tool (method only) |
+| Test a known-good and known-bad case | A check fails on an injected fault before its PASS counts | fault injection; regression testing; negative control | NFL budget self-test; engine stage 1 (11 of 11 injected faults caught); Healix judge |
 | Find the discrepancy before acting | A second read from a different direction; INSUFFICIENT_EVIDENCE means no decision yet, and names what to collect | reconciliation; population-relative judgment; calibration | the concessions recount; 16 of 32 teams the average hid; rental guest photos and reviews; LeNoble merges reviewed with the client |
 | Weigh what a change fixes and what it costs | Help somewhere without hurting anywhere else | regression testing; hold-out set | Healix stricter rule: false confirmations 3 to 0, 51 of 267 true copies lost, rejected; three allocation fixes rejected |
-| Turn a failure into a repeatable check | Incident-derived rules; each failure kept as an injected fault | regression testing; fault injection | the Mercor fill-down rule (method only); the graded-line check after a green demo hid ungraded cards |
+| Turn a failure into a repeatable check | Incident-derived rules; each failure kept as an injected fault | regression testing; fault injection | the graded-line check after a green demo hid ungraded cards |
 | Refuse to guess | INSUFFICIENT_EVIDENCE always names the evidence that would settle it, and the next run collects it | abstention; NOT SHOWN | Healix "can't tell" on 95 of 99 files; NFL frame test closed as NOT SHOWN, not forced |
 
 Moved from system notes 02, 03 and 04 on 2026-11-10.
