@@ -18,7 +18,7 @@ The same words in the README a hiring manager reads, the case pages, the accepta
 | Work | Test written | specified, designed (as a status) | The pass test is stated before any run | new |
 | Verdict | NOT SHOWN | closed by a read, inconclusive (as a link verdict) | A link measured and not distinguishable from no effect at the stated bound; recorded and closed, never forced | new |
 | Object | executor | shared spine, trunk, shared engine, shared checker, runner (as the shared code) | The one piece of code that runs every product's cases and writes their evidence records (checks/experiment.py; acceptance-criteria/executor.md) | new |
-| Object | product | project, domain, domains, tree, branch (as NFL, Healix or the résumé; the title Project Owner stays) | The NFL engine, Healix, the résumé: each judged through its own connector; product files are the files it reads | new |
+| Object | product | project, domain, domains, tree, branch (as NFL, Healix or the résumé; the title Project Owner and the standard résumé heading PROJECTS stay) | The NFL engine, Healix, the résumé: each judged through its own connector; product files are the files it reads | new |
 | Practice | negative control | shuffle control | Breaking the link under test on purpose (shuffled, blinded); the result must vanish | new |
 | Practice | calibration | chances come true | A stated chance or error rate compared with how often it came true, on held-out data | new |
 | Practice | metamorphic test | invariance check, permuted (as a test) | A change that must not matter (row or column order, relabeling) leaves the result unchanged | new |
