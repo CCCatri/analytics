@@ -1,0 +1,76 @@
+reading season 2019: generated alone_2019.csv, record pbp_2019.csv.gz ...
+raw_frame pbp_2019.csv.gz columns 11 absent 0 betting 0
+  games in both 267 | snaps generated 32603 record 33250
+reading season 2020: generated alone_2020.csv, record pbp_2020.csv.gz ...
+raw_frame pbp_2020.csv.gz columns 11 absent 0 betting 0
+  games in both 269 | snaps generated 32824 record 33950
+reading season 2021: generated alone_2021.csv, record pbp_2021.csv.gz ...
+raw_frame pbp_2021.csv.gz columns 11 absent 0 betting 0
+  games in both 285 | snaps generated 34866 record 35278
+reading season 2023: generated alone_2023.csv, record pbp_2023.csv.gz ...
+raw_frame pbp_2023.csv.gz columns 11 absent 0 betting 0
+  games in both 285 | snaps generated 34647 record 35291
+reading season 2024: generated alone_2024.csv, record pbp_2024.csv.gz ...
+raw_frame pbp_2024.csv.gz columns 11 absent 0 betting 0
+  games in both 285 | snaps generated 34727 record 34728
+reading season 2025: generated alone_2025.csv, record pbp_2025.csv.gz ...
+raw_frame pbp_2025.csv.gz columns 11 absent 0 betting 0
+  games in both 285 | snaps generated 35043 record 34273
+
+----- injected fault 1, identity (must PASS) -----
+season | behind 9+: gen-rec (n gen) | behind 1-8: gen-rec (n gen) | tied: gen-rec (n gen) | ahead 1-8: gen-rec (n gen) | ahead 9+: gen-rec (n gen) | width gen/rec
+2019 | +0.000 (6551) | +0.000 (7130) | +0.000 (5568) | +0.000 (6057) | +0.000 (4138) | 1.000
+2020 | +0.000 (6582) | +0.000 (7533) | +0.000 (5471) | +0.000 (6167) | +0.000 (4281) | 1.000
+2021 | +0.000 (6762) | +0.000 (7304) | +0.000 (6198) | +0.000 (6326) | +0.000 (4499) | 1.000
+2023 | +0.000 (6133) | +0.000 (8128) | +0.000 (6452) | +0.000 (6481) | +0.000 (3998) | 1.000
+2024 | +0.000 (6023) | +0.000 (8313) | +0.000 (5811) | +0.000 (6346) | +0.000 (4117) | 1.000
+2025 | +0.000 (6095) | +0.000 (8055) | +0.000 (6027) | +0.000 (6178) | +0.000 (3872) | 1.000
+pooled over seasons (mean, 2SE across seasons, seasons with the same sign as the pool):
+  behind 9+   gap +0.000  2SE 0.000  same sign 0 of 6  within +/-0.030
+  behind 1-8  gap +0.000  2SE 0.000  same sign 0 of 6  within +/-0.030
+  tied        gap +0.000  2SE 0.000  same sign 0 of 6  within +/-0.030
+  ahead 1-8   gap +0.000  2SE 0.000  same sign 0 of 6  within +/-0.030
+  ahead 9+    gap +0.000  2SE 0.000  same sign 0 of 6  within +/-0.030
+  width of team-game dropbacks, generated / record: mean 1.000 over 6 seasons (1.000 = right width; below 1 = too narrow)
+injected fault 1, identity (must PASS): PASS
+(injected fault 2 shuffle seed 20261109)
+
+----- injected fault 2, score-blind (must FAIL) -----
+season | behind 9+: gen-rec (n gen) | behind 1-8: gen-rec (n gen) | tied: gen-rec (n gen) | ahead 1-8: gen-rec (n gen) | ahead 9+: gen-rec (n gen) | width gen/rec
+2019 | -0.100 (6551) | -0.021 (7130) | +0.015 (5568) | +0.037 (6057) | +0.121 (4138) | 0.777
+2020 | -0.098 (6582) | -0.022 (7533) | +0.017 (5471) | +0.032 (6167) | +0.121 (4281) | 0.794
+2021 | -0.118 (6762) | -0.016 (7304) | +0.011 (6198) | +0.041 (6326) | +0.130 (4499) | 0.750
+2023 | -0.105 (6133) | -0.013 (8128) | +0.003 (6452) | +0.045 (6481) | +0.110 (3998) | 0.863
+2024 | -0.108 (6023) | -0.003 (8313) | -0.005 (5811) | +0.032 (6346) | +0.123 (4117) | 0.768
+2025 | -0.121 (6095) | -0.010 (8055) | +0.005 (6027) | +0.035 (6178) | +0.147 (3872) | 0.822
+pooled over seasons (mean, 2SE across seasons, seasons with the same sign as the pool):
+  behind 9+   gap -0.108  2SE 0.008  same sign 6 of 6  OUTSIDE +/-0.030
+  behind 1-8  gap -0.014  2SE 0.006  same sign 6 of 6  within +/-0.030
+  tied        gap +0.008  2SE 0.007  same sign 5 of 6  within +/-0.030
+  ahead 1-8   gap +0.037  2SE 0.004  same sign 6 of 6  OUTSIDE +/-0.030
+  ahead 9+    gap +0.125  2SE 0.010  same sign 6 of 6  OUTSIDE +/-0.030
+  width of team-game dropbacks, generated / record: mean 0.796 over 6 seasons (1.000 = right width; below 1 = too narrow)
+injected fault 2, score-blind (must FAIL): FAIL
+
+injected faults behaved as declared: YES
+
+----- current product: generated games vs the record -----
+season | behind 9+: gen-rec (n gen) | behind 1-8: gen-rec (n gen) | tied: gen-rec (n gen) | ahead 1-8: gen-rec (n gen) | ahead 9+: gen-rec (n gen) | width gen/rec
+2019 | -0.011 (5240) | -0.026 (7947) | +0.010 (5546) | -0.002 (6411) | -0.008 (3848) | 0.751
+2020 | -0.010 (5573) | -0.016 (7235) | +0.020 (5991) | -0.011 (6211) | -0.008 (4222) | 0.759
+2021 | -0.011 (5298) | -0.005 (8481) | +0.002 (6698) | +0.018 (6598) | -0.001 (3935) | 0.745
+2023 | +0.007 (5349) | -0.014 (8637) | -0.007 (6182) | -0.005 (6720) | +0.001 (3968) | 0.857
+2024 | -0.021 (5516) | +0.007 (8173) | -0.000 (6721) | -0.003 (6694) | -0.006 (3831) | 0.792
+2025 | -0.004 (5702) | +0.002 (8356) | -0.012 (5981) | +0.008 (6758) | +0.005 (4461) | 0.796
+pooled over seasons (mean, 2SE across seasons, seasons with the same sign as the pool):
+  behind 9+   gap -0.008  2SE 0.008  same sign 5 of 6  within +/-0.030
+  behind 1-8  gap -0.009  2SE 0.010  same sign 4 of 6  within +/-0.030
+  tied        gap +0.002  2SE 0.009  same sign 3 of 6  within +/-0.030
+  ahead 1-8   gap +0.001  2SE 0.009  same sign 2 of 6  within +/-0.030
+  ahead 9+    gap -0.003  2SE 0.004  same sign 4 of 6  within +/-0.030
+  width of team-game dropbacks, generated / record: mean 0.783 over 6 seasons (1.000 = right width; below 1 = too narrow)
+current product: generated games vs the record: PASS
+
+===== VERDICT =====
+check_dropback_by_score: product PASS | injected faults counted
+Paste this whole printout back to Claude.
